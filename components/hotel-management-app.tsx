@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Activity, ArrowDownRight, ArrowUpRight, Bell, CalendarDays, Check, ChevronDown, ChevronLeft, ChevronRight, CircleHelp, ClipboardCheck, CreditCard, Download, FileText, Filter, Home, Hotel, LayoutDashboard, Menu, MessageCircle, MoreHorizontal, Plus, Search, Settings, ShieldCheck, Sparkles, TrendingUp, Users, Wallet, X } from 'lucide-react'
 import { ReservationsView, Reservation, BookingStatus, Role, ReservationAuditLog } from './reservations-view'
+import { AIFeaturesView } from './ai-features-view'
 
 const initialReservations: Reservation[] = [
   {
@@ -325,8 +326,30 @@ export function HotelManagementApp() {
       {(page === 'Daily Operations' || page === 'Staff & Tasks') && <Operations role={role} tasks={taskStates} setTask={setTask} notify={notify} />}
       {page === 'Payments & Finance' && <Finance revenue={totalRevenue} reservations={reservations} notify={notify} />}
       {(page === 'Pricing & Promotions' || page === 'Marketing & CRM') && <Marketing page={page} notify={notify} />}
-      {(page === 'Reports & Analytics' || page === 'AI Business Assistant') && <Insights page={page} revenue={totalRevenue} reservations={reservations} notify={notify} />}
-      {page === 'Audit Logs' && <Audit />}
+      {page === 'AI Business Assistant' && (
+        <AIFeaturesView
+          initialTab="chatbot"
+          role={role}
+          reservations={reservations}
+          notify={notify}
+        />
+      )}
+      {page === 'Reports & Analytics' && (
+        <AIFeaturesView
+          initialTab="reports"
+          role={role}
+          reservations={reservations}
+          notify={notify}
+        />
+      )}
+      {page === 'Audit Logs' && (
+        <AIFeaturesView
+          initialTab="audit"
+          role={role}
+          reservations={reservations}
+          notify={notify}
+        />
+      )}
       {page === 'Settings' && <SettingsView notify={notify} />}
       {page === 'Knowledge Center' && <Knowledge />}
     </div></main>

@@ -2,20 +2,199 @@
 
 import { useEffect, useMemo, useState } from 'react'
 import { Activity, ArrowDownRight, ArrowUpRight, Bell, CalendarDays, Check, ChevronDown, ChevronLeft, ChevronRight, CircleHelp, ClipboardCheck, CreditCard, Download, FileText, Filter, Home, Hotel, LayoutDashboard, Menu, MessageCircle, MoreHorizontal, Plus, Search, Settings, ShieldCheck, Sparkles, TrendingUp, Users, Wallet, X } from 'lucide-react'
-
-type Role = 'Owner' | 'Manager' | 'Deputy Manager' | 'Housekeeper'
-type BookingStatus = 'Pending Approval' | 'Confirmed' | 'Checked In' | 'Checked Out' | 'Cancelled'
-type Reservation = { id: string; guest: string; room: string; checkIn: string; checkOut: string; guests: number; source: string; total: number; paid: number; status: BookingStatus }
+import { ReservationsView, Reservation, BookingStatus, Role, ReservationAuditLog } from './reservations-view'
 
 const initialReservations: Reservation[] = [
-  { id: 'VT-2481', guest: 'Amelia Hart', room: 'Room 02', checkIn: '2026-11-14', checkOut: '2026-11-17', guests: 2, source: 'Booking.com', total: 68400, paid: 34200, status: 'Checked In' },
-  { id: 'VT-2482', guest: 'Nimal Perera', room: 'Room 01', checkIn: '2026-11-14', checkOut: '2026-11-16', guests: 2, source: 'Direct · WhatsApp', total: 45600, paid: 45600, status: 'Confirmed' },
-  { id: 'VT-2483', guest: 'Sophie Laurent', room: 'Room 04', checkIn: '2026-11-15', checkOut: '2026-11-19', guests: 3, source: 'Airbnb', total: 112000, paid: 56000, status: 'Confirmed' },
-  { id: 'VT-2484', guest: 'Kavindi Silva', room: 'Room 03', checkIn: '2026-11-15', checkOut: '2026-11-17', guests: 1, source: 'Website', total: 52000, paid: 0, status: 'Pending Approval' },
-  { id: 'VT-2485', guest: 'Oliver Bennett', room: 'Room 01', checkIn: '2026-11-18', checkOut: '2026-11-22', guests: 2, source: 'Booking.com', total: 91200, paid: 45600, status: 'Confirmed' },
-  { id: 'VT-2486', guest: 'Ishara Fernando', room: 'Room 03', checkIn: '2026-11-20', checkOut: '2026-11-23', guests: 2, source: 'Direct · Email', total: 78000, paid: 39000, status: 'Pending Approval' },
-  { id: 'VT-2487', guest: 'Maya & Leo Chen', room: 'Room 04', checkIn: '2026-11-23', checkOut: '2026-11-28', guests: 4, source: 'Agoda', total: 140000, paid: 70000, status: 'Confirmed' },
-  { id: 'VT-2488', guest: 'Daniel Kim', room: 'Room 02', checkIn: '2026-11-25', checkOut: '2026-11-27', guests: 1, source: 'Trip.com', total: 45600, paid: 0, status: 'Pending Approval' },
+  {
+    id: 'VT-2481',
+    guest: 'Amelia Hart',
+    guestEmail: 'amelia.hart@gmail.com',
+    guestPhone: '+44 7911 123456',
+    room: 'Room 02',
+    checkIn: '2026-11-14',
+    checkOut: '2026-11-17',
+    guests: 2,
+    source: 'Booking.com',
+    ratePerNight: 22800,
+    total: 68400,
+    paid: 34200,
+    status: 'Checked In',
+    paymentStatus: 'Partially Paid',
+    specialRequests: 'High floor, mountain view preference. Late arrival approx 4 PM.',
+    payments: [
+      { id: 'PAY-101', amount: 34200, date: '2026-11-10', method: 'Online Gateway', receiptNumber: 'REC-2026-4421', reference: 'OTA Advance 50%' }
+    ],
+    history: [
+      { id: 'LOG-1', timestamp: 'Nov 10, 2026, 09:30 AM', action: 'Created', performedBy: 'System (Booking.com)', note: 'Booking confirmed via channel manager.' },
+      { id: 'LOG-2', timestamp: 'Nov 14, 2026, 02:15 PM', action: 'Checked In', performedBy: 'Mira Jayasinghe (Manager)', note: 'Guest checked in at front desk, keycard issued.' }
+    ],
+    reminderSent: true
+  },
+  {
+    id: 'VT-2482',
+    guest: 'Nimal Perera',
+    guestEmail: 'nimal.p@sltnet.lk',
+    guestPhone: '+94 77 765 4321',
+    room: 'Room 01',
+    checkIn: '2026-11-14',
+    checkOut: '2026-11-16',
+    guests: 2,
+    source: 'Direct · WhatsApp',
+    ratePerNight: 22800,
+    total: 45600,
+    paid: 45600,
+    status: 'Confirmed',
+    paymentStatus: 'Paid',
+    specialRequests: 'Traditional Sri Lankan breakfast with pol sambol.',
+    payments: [
+      { id: 'PAY-102', amount: 45600, date: '2026-11-12', method: 'Bank Transfer', receiptNumber: 'REC-2026-4422', reference: 'Commercial Bank ref #9983' }
+    ],
+    history: [
+      { id: 'LOG-3', timestamp: 'Nov 12, 2026, 11:20 AM', action: 'Created', performedBy: 'Ruwan Perera (Deputy Manager)', note: 'Inquiry via WhatsApp confirmed with bank slip.' },
+      { id: 'LOG-4', timestamp: 'Nov 12, 2026, 11:45 AM', action: 'Approved', performedBy: 'Anushka Senanayake (Owner)', note: 'Bank transfer verified and approved.' }
+    ],
+    reminderSent: true
+  },
+  {
+    id: 'VT-2483',
+    guest: 'Sophie Laurent',
+    guestEmail: 'sophie.laurent@paris.fr',
+    guestPhone: '+33 6 12 34 56 78',
+    room: 'Room 04',
+    checkIn: '2026-11-15',
+    checkOut: '2026-11-19',
+    guests: 3,
+    source: 'Airbnb',
+    ratePerNight: 28000,
+    total: 112000,
+    paid: 56000,
+    status: 'Confirmed',
+    paymentStatus: 'Partially Paid',
+    specialRequests: 'Extra bed for teenager, tea factory tour booking assistance.',
+    payments: [
+      { id: 'PAY-103', amount: 56000, date: '2026-11-08', method: 'Credit Card', receiptNumber: 'REC-2026-4423', reference: 'Airbnb Payout' }
+    ],
+    history: [
+      { id: 'LOG-5', timestamp: 'Nov 08, 2026, 04:10 PM', action: 'Created', performedBy: 'System (Airbnb)', note: 'Confirmed 4-night stay in Valley View Master Room.' }
+    ],
+    reminderSent: false
+  },
+  {
+    id: 'VT-2484',
+    guest: 'Kavindi Silva',
+    guestEmail: 'kavindi.silva@outlook.com',
+    guestPhone: '+94 71 888 9900',
+    room: 'Room 03',
+    checkIn: '2026-11-15',
+    checkOut: '2026-11-17',
+    guests: 1,
+    source: 'Direct · Website',
+    ratePerNight: 26000,
+    total: 52000,
+    paid: 0,
+    status: 'Pending Approval',
+    paymentStatus: 'Unpaid',
+    specialRequests: 'Quiet room for remote work writing retreat.',
+    payments: [],
+    history: [
+      { id: 'LOG-6', timestamp: 'Nov 14, 2026, 08:30 PM', action: 'Created', performedBy: 'Guest (Direct Website)', note: 'Booking request placed, awaiting owner approval.' }
+    ],
+    reminderSent: false
+  },
+  {
+    id: 'VT-2485',
+    guest: 'Oliver Bennett',
+    guestEmail: 'oliver.b@sydney.com.au',
+    guestPhone: '+61 412 345 678',
+    room: 'Room 01',
+    checkIn: '2026-11-18',
+    checkOut: '2026-11-22',
+    guests: 2,
+    source: 'Booking.com',
+    ratePerNight: 22800,
+    total: 91200,
+    paid: 45600,
+    status: 'Confirmed',
+    paymentStatus: 'Partially Paid',
+    specialRequests: 'Airport pickup required from Colombo Katunayake (LKR 28,000 extra).',
+    payments: [
+      { id: 'PAY-104', amount: 45600, date: '2026-11-11', method: 'Credit Card', receiptNumber: 'REC-2026-4424', reference: 'Visa ending 8812' }
+    ],
+    history: [
+      { id: 'LOG-7', timestamp: 'Nov 11, 2026, 03:00 PM', action: 'Created', performedBy: 'System (Booking.com)', note: 'Confirmed 4-night stay.' }
+    ],
+    reminderSent: false
+  },
+  {
+    id: 'VT-2486',
+    guest: 'Ishara Fernando',
+    guestEmail: 'ishara.f@gmail.com',
+    guestPhone: '+94 77 444 5566',
+    room: 'Room 03',
+    checkIn: '2026-11-20',
+    checkOut: '2026-11-23',
+    guests: 2,
+    source: 'Direct · Email',
+    ratePerNight: 26000,
+    total: 78000,
+    paid: 39000,
+    status: 'Pending Approval',
+    paymentStatus: 'Partially Paid',
+    specialRequests: 'Anniversary celebration setup with tea country flowers.',
+    payments: [
+      { id: 'PAY-105', amount: 39000, date: '2026-11-13', method: 'Bank Transfer', receiptNumber: 'REC-2026-4425', reference: 'Sampath Bank deposit' }
+    ],
+    history: [
+      { id: 'LOG-8', timestamp: 'Nov 13, 2026, 06:12 PM', action: 'Created', performedBy: 'Mira Jayasinghe (Manager)', note: 'Special arrangement request forwarded to Owner for approval.' }
+    ],
+    reminderSent: false
+  },
+  {
+    id: 'VT-2487',
+    guest: 'Maya & Leo Chen',
+    guestEmail: 'maya.chen@singnet.com.sg',
+    guestPhone: '+65 9123 4567',
+    room: 'Room 04',
+    checkIn: '2026-11-23',
+    checkOut: '2026-11-28',
+    guests: 4,
+    source: 'Agoda',
+    ratePerNight: 28000,
+    total: 140000,
+    paid: 70000,
+    status: 'Confirmed',
+    paymentStatus: 'Partially Paid',
+    specialRequests: 'Two extra bedding sets, infant cot required.',
+    payments: [
+      { id: 'PAY-106', amount: 70000, date: '2026-11-09', method: 'Credit Card', receiptNumber: 'REC-2026-4426', reference: 'MasterCard Agoda' }
+    ],
+    history: [
+      { id: 'LOG-9', timestamp: 'Nov 09, 2026, 10:20 AM', action: 'Created', performedBy: 'System (Agoda)', note: 'Family reservation confirmed.' }
+    ],
+    reminderSent: false
+  },
+  {
+    id: 'VT-2488',
+    guest: 'Daniel Kim',
+    guestEmail: 'daniel.kim@seoul.kr',
+    guestPhone: '+82 10 9876 5432',
+    room: 'Room 02',
+    checkIn: '2026-11-25',
+    checkOut: '2026-11-27',
+    guests: 1,
+    source: 'Trip.com',
+    ratePerNight: 22800,
+    total: 45600,
+    paid: 0,
+    status: 'Pending Approval',
+    paymentStatus: 'Unpaid',
+    specialRequests: 'Late night arrival, requests heater setup in room.',
+    payments: [],
+    history: [
+      { id: 'LOG-10', timestamp: 'Nov 14, 2026, 01:45 PM', action: 'Created', performedBy: 'System (Trip.com)', note: 'Booking request awaiting approval.' }
+    ],
+    reminderSent: false
+  }
 ]
 const navGroups = [
   { label: 'OVERVIEW', items: [{ name: 'Dashboard', icon: LayoutDashboard, roles: ['Owner', 'Manager', 'Deputy Manager', 'Housekeeper'] }] },
@@ -64,15 +243,60 @@ export function HotelManagementApp() {
   const arrivals = reservations.filter(item => item.checkIn === '2026-11-14' && ['Confirmed', 'Checked In'].includes(item.status)).length
   const totalRevenue = reservations.filter(item => !['Cancelled'].includes(item.status)).reduce((sum, item) => sum + item.paid, 0)
   const notify = (message: string) => { setNotice(message); window.setTimeout(() => setNotice(''), 3200) }
-  const approve = (id: string, status: BookingStatus) => { setReservations(current => current.map(item => item.id === id ? { ...item, status } : item)); notify(status === 'Confirmed' ? 'Reservation approved · relevant staff notified' : 'Reservation rejected') }
+  const approve = (id: string, status: BookingStatus) => {
+    setReservations(current => current.map(item => {
+      if (item.id !== id) return item
+      const log: ReservationAuditLog = {
+        id: `LOG-${Date.now()}`,
+        timestamp: new Date().toLocaleString('en-US', { dateStyle: 'medium', timeStyle: 'short' }),
+        action: status === 'Confirmed' ? 'Approved' : 'Declined',
+        performedBy: `${role} (${role === 'Owner' ? 'Anushka S.' : 'Mira J.'})`,
+        note: `Reservation ${status.toLowerCase()} from dashboard.`
+      }
+      return {
+        ...item,
+        status,
+        history: [log, ...(item.history || [])]
+      }
+    }))
+    notify(status === 'Confirmed' ? 'Reservation approved · relevant staff & guest notified' : 'Reservation rejected')
+  }
   const createReservation = () => {
     if (!newGuest.trim() || !newDates.checkIn || !newDates.checkOut || newDates.checkOut <= newDates.checkIn) { notify('Add a guest name and valid stay dates'); return }
     const conflict = reservations.some(item => item.room === newRoom && !['Cancelled', 'Rejected', 'Checked Out'].includes(item.status) && newDates.checkIn < item.checkOut && newDates.checkOut > item.checkIn)
     if (conflict) { notify('Those dates overlap an active reservation for this room'); return }
     const nights = Math.max(1, Math.round((new Date(newDates.checkOut).getTime() - new Date(newDates.checkIn).getTime()) / 86400000))
     const price = newRoom === 'Room 03' ? 26000 : 22800
-    setReservations(current => [{ id: `VT-${2490 + current.length}`, guest: newGuest, room: newRoom, checkIn: newDates.checkIn, checkOut: newDates.checkOut, guests: 2, source: 'Direct · Website', total: nights * price, paid: 0, status: 'Pending Approval' }, ...current])
-    setShowCreate(false); setNewGuest(''); setPage('Reservations'); notify('Booking request created · awaiting owner approval')
+    const newId = `VT-${2490 + reservations.length}`
+    const newRes: Reservation = {
+      id: newId,
+      guest: newGuest,
+      guestEmail: `${newGuest.toLowerCase().replace(/\s+/g, '.')}@example.com`,
+      guestPhone: '+94 77 123 4567',
+      room: newRoom,
+      checkIn: newDates.checkIn,
+      checkOut: newDates.checkOut,
+      guests: 2,
+      source: 'Direct · Website',
+      ratePerNight: price,
+      total: nights * price,
+      paid: 0,
+      status: 'Pending Approval',
+      paymentStatus: 'Unpaid',
+      payments: [],
+      history: [
+        {
+          id: `LOG-${Date.now()}`,
+          timestamp: new Date().toLocaleString('en-US', { dateStyle: 'medium', timeStyle: 'short' }),
+          action: 'Created',
+          performedBy: `${role} (${role === 'Owner' ? 'Anushka S.' : 'Staff'})`,
+          note: `Quick booking created for ${newGuest} (${newRoom}, ${nights} nights).`
+        }
+      ],
+      reminderSent: false
+    }
+    setReservations(current => [newRes, ...current])
+    setShowCreate(false); setNewGuest(''); setPage('Reservations'); notify(`Booking request ${newId} created · awaiting owner approval`)
   }
   const setTask = (index: number, state: string) => setTaskStates(current => current.map((value, itemIndex) => itemIndex === index ? state : value))
 
@@ -88,7 +312,14 @@ export function HotelManagementApp() {
     </header>
     <div className="page-content">
       {page === 'Dashboard' && <Dashboard role={role} period={period} setPeriod={setPeriod} pending={pending} arrivals={arrivals} revenue={totalRevenue} reservations={reservations} approve={approve} setPage={setPage} tasks={taskStates} setTask={setTask} />}
-      {page === 'Reservations' && <Reservations reservations={filteredReservations} query={query} setQuery={setQuery} statusFilter={statusFilter} setStatusFilter={setStatusFilter} create={() => setShowCreate(true)} approve={approve} role={role} />}
+      {page === 'Reservations' && (
+        <ReservationsView
+          reservations={reservations}
+          onUpdateReservations={setReservations}
+          role={role}
+          notify={notify}
+        />
+      )}
       {page === 'Rooms' && <Rooms />}
       {page === 'Guests' && <Guests reservations={reservations} />}
       {(page === 'Daily Operations' || page === 'Staff & Tasks') && <Operations role={role} tasks={taskStates} setTask={setTask} notify={notify} />}

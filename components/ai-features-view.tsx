@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useMemo } from 'react'
+import React, { useState, useMemo, useEffect } from 'react'
 import {
   Sparkles,
   Bot,
@@ -103,53 +103,171 @@ export function AIFeaturesView({
   const [activeTab, setActiveTab] = useState<AIFeatureTab>(initialTab)
 
   // --------------------------------------------------------------------------
-  // FR-01: AI Chatbot State
+  // Internal Staff AI Copilot & Guest Escalation Queue
   // --------------------------------------------------------------------------
+  interface GuestInquiryTicket {
+    id: string
+    guest: string
+    channel: string
+    time: string
+    summary: string
+    assignedTo: string
+    status: 'Pending' | 'Actioned'
+  }
+
+  const roleConfigs: Record<Role, {
+    assistantName: string
+    assistantRole: string
+    welcomeMessage: string
+    placeholder: string
+    quickPrompts: string[]
+  }> = {
+    'Deputy Manager': {
+      assistantName: 'Front Desk Operations Copilot',
+      assistantRole: 'Front-Desk & Guest Operations',
+      welcomeMessage: 'Ayubowan Ruwan! I am your Front Desk Operations Copilot. Ask me about today’s arrivals, room inspection readiness, guest dietary notes, or drafting WhatsApp welcome messages.',
+      placeholder: 'Ask about today\'s arrivals, room readiness, guest requests...',
+      quickPrompts: [
+        'Who is arriving today and what are their requests?',
+        'Which rooms are waiting for manager inspection?',
+        'Draft WhatsApp welcome message for Nimal Perera',
+        'Check open guest service requests'
+      ]
+    },
+    'Manager': {
+      assistantName: 'Management Operations Copilot',
+      assistantRole: 'Tactical Hotel Operations & Team Oversight',
+      welcomeMessage: 'Ayubowan Mira! I am your Management Operations Copilot. Ask me about current occupancy, channel distribution, guest review sentiment, staff tasks, or unverified payments.',
+      placeholder: 'Ask about occupancy, booking channels, staff tasks, review ratings...',
+      quickPrompts: [
+        'How is our occupancy tracking this week across channels?',
+        'Show guest review ratings and service feedback',
+        'Are there unverified bank transfers or payment delays?',
+        'Show staff shift tasks and maintenance updates'
+      ]
+    },
+    'Owner': {
+      assistantName: 'Executive Business Intelligence Copilot',
+      assistantRole: 'Strategic Financial & Revenue Intelligence',
+      welcomeMessage: 'Ayubowan Anushka! I am your Executive AI Business Assistant. Ask me about net revenue tracking, OTA commission reduction, dynamic pricing opportunities, or audit anomalies.',
+      placeholder: 'Ask about revenue, OTA commission savings, dynamic pricing, audit flags...',
+      quickPrompts: [
+        'What is our gross revenue, expenses, and net profit this month?',
+        'How much commission can we save by converting 20% of OTA bookings to direct?',
+        'Review AI weekend dynamic pricing suggestion (+9.6%)',
+        'Are there any financial audit discrepancies or unauthorized discounts?'
+      ]
+    },
+    'Housekeeper': {
+      assistantName: 'Housekeeping Assistant',
+      assistantRole: 'Room Cleaning & Turn-down',
+      welcomeMessage: 'Room cleaning checklist loaded.',
+      placeholder: 'Cleaning tasks...',
+      quickPrompts: []
+    }
+  }
+
+  const currentConfig = roleConfigs[role] || roleConfigs['Owner']
+
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([
     {
-      id: 'msg-1',
+      id: 'msg-init',
       sender: 'bot',
-      text: 'Ayubowan & Welcome to Villa Tea Fields, Nuwara Eliya! 🌿 I am your AI Guest Concierge. You can ask me anything about our room availability, scenic tea plantation tours, dining experiences, or booking policies.',
+      text: currentConfig.welcomeMessage,
       timestamp: '10:00 AM',
-      suggestions: [
-        'What are your check-in and check-out times?',
-        'How much is the guided Tea Estate Tour package?',
-        'Does Room 02 have heating and mountain view?',
-        'Can you connect me with a staff member?'
-      ]
+      suggestions: currentConfig.quickPrompts
     }
   ])
   const [chatInput, setChatInput] = useState('')
   const [isTyping, setIsTyping] = useState(false)
   const [escalationStatus, setEscalationStatus] = useState<string | null>(null)
 
+  const [inquiryTickets, setInquiryTickets] = useState<GuestInquiryTicket[]>([
+    {
+      id: 'ESC-883',
+      guest: 'Amelia Hart (Room 02)',
+      channel: 'Guest Concierge Bot',
+      time: '15 mins ago',
+      summary: 'Guest requested extra wool blankets and early breakfast at 6:30 AM before hiking.',
+      assignedTo: 'Ruwan Perera (Deputy Manager)',
+      status: 'Pending'
+    },
+    {
+      id: 'ESC-881',
+      guest: 'Priya Senanayake (Web Lead)',
+      channel: 'Direct Website',
+      time: '1 hour ago',
+      summary: 'Inquiry for full villa buyout (all 4 suites) for 3 nights in mid-December.',
+      assignedTo: 'Mira Jayasinghe (Manager)',
+      status: 'Pending'
+    },
+    {
+      id: 'ESC-879',
+      guest: 'Daniel Kim (Trip.com)',
+      channel: 'Trip.com Portal',
+      time: '3 hours ago',
+      summary: 'Late night arrival at 11:30 PM. Requested electric heater be pre-warmed.',
+      assignedTo: 'Lakmali Fernando (Housekeeping)',
+      status: 'Actioned'
+    }
+  ])
+
+  // Update chat initial message when switching roles
+  useEffect(() => {
+    setChatMessages([
+      {
+        id: `msg-${Date.now()}`,
+        sender: 'bot',
+        text: currentConfig.welcomeMessage,
+        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        suggestions: currentConfig.quickPrompts
+      }
+    ])
+  }, [role])
+
   const sendBotResponse = (userText: string) => {
     setIsTyping(true)
     setTimeout(() => {
       const lower = userText.toLowerCase()
       let reply = ''
-      let isEsc = false
       let newSuggestions: string[] | undefined
 
-      if (lower.includes('check-in') || lower.includes('check in') || lower.includes('time') || lower.includes('checkout')) {
-        reply = 'Standard check-in is at 2:00 PM and check-out is by 11:00 AM. Early check-in or late check-out can be requested subject to room readiness. Would you like me to flag an early arrival for your reservation?'
-        newSuggestions = ['Request early check-in', 'View cancellation terms']
-      } else if (lower.includes('tea') || lower.includes('tour') || lower.includes('plantation') || lower.includes('estate')) {
-        reply = 'Our signature "Highland Tea Trail & Tasting Tour" takes guests through our organic tea bushes with a private tea master. It is priced at LKR 6,500 per person and includes artisanal high-tea pairing at the terrace lounge.'
-        newSuggestions = ['Book a tour slot', 'Dietary options for high tea']
-      } else if (lower.includes('room 02') || lower.includes('heater') || lower.includes('mountain') || lower.includes('amenities')) {
-        reply = 'Room 02 (Valley View Suite) offers a king bed, panoramic views over the misty Pedro tea valley, and an electric room heater to keep you cozy during cool Nuwara Eliya evenings. Rates start from LKR 22,800/night.'
-        newSuggestions = ['Check Room 02 availability', 'Ask about breakfast']
-      } else if (lower.includes('food') || lower.includes('breakfast') || lower.includes('dining') || lower.includes('dinner')) {
-        reply = 'We offer complimentary estate breakfast featuring traditional Sri Lankan pol sambol & string hoppers or a classic English farm breakfast. Dinner is served à la carte with locally sourced organic produce.'
-        newSuggestions = ['Special dietary requests', 'High tea timings']
-      } else if (lower.includes('human') || lower.includes('staff') || lower.includes('manager') || lower.includes('speak') || lower.includes('escalate')) {
-        reply = 'I am routing your conversation directly to our Front Office Manager, Mira Jayasinghe. You can also connect immediately via WhatsApp or phone.'
-        isEsc = true
-        setEscalationStatus('Enquiry escalated to Front Office Manager (Mira Jayasinghe). Ticket #ESC-2026-883 created.')
+      if (lower.includes('arriving') || lower.includes('arrival') || lower.includes('check-in') || lower.includes('who is')) {
+        reply = 'Villa Tea Fields has 2 arrivals scheduled: 1) Nimal Perera (Room 01 · 2 guests · Direct WhatsApp · Paid in full LKR 45,600 · ETA 2:00 PM); 2) Sophie Laurent (Room 04 · 3 guests · Airbnb · Arriving tomorrow). Amelia Hart in Room 02 is currently checked in until Nov 17.'
+        newSuggestions = ['Draft WhatsApp welcome message for Nimal Perera', 'Check open guest service requests']
+      } else if (lower.includes('inspection') || lower.includes('clean') || lower.includes('room ready') || lower.includes('housekeeping')) {
+        reply = 'Room status overview: Room 03 departure clean is completed by Sewwandi Silva and is marked "Inspection Required". Room 01 guest arrival prep is in progress by Lakmali Fernando (due 1:00 PM). Room 02 evening turndown is scheduled for 4:00 PM.'
+        newSuggestions = ['Who is arriving today and what are their requests?', 'Check open guest service requests']
+      } else if (lower.includes('whatsapp') || lower.includes('welcome message') || lower.includes('draft')) {
+        reply = 'Draft Welcome Message for Nimal Perera (Room 01):\n\n"Ayubowan Mr. Perera! Warm greetings from Villa Tea Fields, Nuwara Eliya. Your Planter\'s Valley Suite (Room 01) is prepared for your 2:00 PM arrival today. Mountain temperature is currently 17°C with misty tea views. Please let us know if you need driver directions or estate high-tea upon arrival! - Villa Tea Fields Team"'
+        newSuggestions = ['Who is arriving today and what are their requests?', 'Check open guest service requests']
+      } else if (lower.includes('request') || lower.includes('blanket') || lower.includes('breakfast')) {
+        reply = 'Active guest requests: 1) Room 02 (Amelia Hart) requested an extra wool blanket and hot water bottle for the evening; 2) Room 04 (Sophie Laurent) requested early breakfast at 6:30 AM before their Horton Plains excursion.'
+        newSuggestions = ['Which rooms are waiting for manager inspection?', 'Draft WhatsApp welcome message for Nimal Perera']
+      } else if (lower.includes('occupancy') || lower.includes('channel') || lower.includes('tracking')) {
+        reply = 'Current property occupancy is 75% across 4 boutique suites. Channel breakdown: Direct bookings 42% (up +8.4%), Booking.com 28%, Airbnb 18%, Agoda/Other 12%. Direct channels generated the highest net revenue at LKR 828,000 this month.'
+        newSuggestions = ['Show guest review ratings and service feedback', 'Are there unverified bank transfers or payment delays?']
+      } else if (lower.includes('rating') || lower.includes('review') || lower.includes('sentiment') || lower.includes('feedback')) {
+        reply = 'Guest satisfaction is rated 4.8 / 5.0 across 42 verified reviews. Category satisfaction: Staff Service (96%), Cleanliness (91%), Breakfast & Dining (88%), Room Comfort & Heating (82%). No open complaints.'
+        newSuggestions = ['How is our occupancy tracking this week across channels?', 'Show staff shift tasks and maintenance updates']
+      } else if (lower.includes('payment') || lower.includes('bank') || lower.includes('transfer') || lower.includes('unverified')) {
+        reply = 'Two bank transfers are pending verification: 1) VT-2481 (Amelia Hart) stay payment LKR 34,200 via Commercial Bank; 2) VT-2482 (Nimal Perera) deposit LKR 45,600. Recommended to verify against bank portal before guest checkout.'
+        newSuggestions = ['How is our occupancy tracking this week across channels?', 'Show staff shift tasks and maintenance updates']
+      } else if (lower.includes('revenue') || lower.includes('profit') || lower.includes('margin') || lower.includes('gross')) {
+        reply = 'Month-to-date collected revenue is LKR 1,240,000 across 28 bookings. Operating expenses stand at LKR 424,800, leaving estimated net profit of LKR 815,200 (profit margin: 66.1%).'
+        newSuggestions = ['How much commission can we save by converting 20% of OTA bookings to direct?', 'Review AI weekend dynamic pricing suggestion (+9.6%)']
+      } else if (lower.includes('commission') || lower.includes('ota') || lower.includes('save') || lower.includes('direct')) {
+        reply = 'Online travel agencies (Booking.com & Airbnb) generated an estimated LKR 184,600 in commissions this month. Converting 20% of these OTA stays to direct bookings will save an estimated LKR 36,920 monthly in commission fees.'
+        newSuggestions = ['What is our gross revenue, expenses, and net profit this month?', 'Review AI weekend dynamic pricing suggestion (+9.6%)']
+      } else if (lower.includes('price') || lower.includes('pricing') || lower.includes('weekend') || lower.includes('dynamic')) {
+        reply = 'AI Dynamic Pricing analysis detected +18% higher weekend demand for Nov 27–29. Suggested action: increase Room 01 & 02 base rates from LKR 22,800 to LKR 25,000 (+9.6%). Projected revenue lift: +LKR 17,600. Requires Owner approval.'
+        newSuggestions = ['What is our gross revenue, expenses, and net profit this month?', 'Are there any financial audit discrepancies or unauthorized discounts?']
+      } else if (lower.includes('audit') || lower.includes('discrepanc') || lower.includes('override') || lower.includes('discount')) {
+        reply = 'AI Financial Integrity engine flagged 2 active discrepancies: 1) Critical: Duplicate bank transfer entry on VT-2482 (LKR 45,600); 2) Warning: Manual 35% discount override on Room 01 applied without Owner PIN authorization.'
+        newSuggestions = ['What is our gross revenue, expenses, and net profit this month?', 'Review AI weekend dynamic pricing suggestion (+9.6%)']
       } else {
-        reply = `Thank you for your enquiry! Villa Tea Fields offers 4 luxury boutique suites nestled among Nuwara Eliya's tea hills. For specific reservation adjustments or custom package quotes, I can connect you directly with our front desk staff.`
-        newSuggestions = ['Connect with staff', 'View room rates', 'Cancel or change booking']
+        reply = `Analysis for ${role}: Villa Tea Fields has 4 active suites operating at 75% occupancy. 2 arrivals scheduled today, 2 bank transfers pending verification, and 1 room ready for inspection. Let me know which area you would like to explore.`
+        newSuggestions = currentConfig.quickPrompts
       }
 
       setChatMessages(prev => [
@@ -159,12 +277,11 @@ export function AIFeaturesView({
           sender: 'bot',
           text: reply,
           timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-          isEscalation: isEsc,
           suggestions: newSuggestions
         }
       ])
       setIsTyping(false)
-    }, 700)
+    }, 600)
   }
 
   const handleSendMessage = (textToSend?: string) => {
@@ -183,17 +300,11 @@ export function AIFeaturesView({
     sendBotResponse(text)
   }
 
-  const handleTriggerEscalation = () => {
-    const escMsg: ChatMessage = {
-      id: `msg-${Date.now()}`,
-      sender: 'system',
-      text: '⚠️ Guest enquiry flagged for staff attention. Front Office (Mira Jayasinghe & Ruwan Perera) notified via the operations terminal and WhatsApp.',
-      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-      isEscalation: true
-    }
-    setChatMessages(prev => [...prev, escMsg])
-    setEscalationStatus('Enquiry escalated to Front Office Manager (Mira Jayasinghe). Ticket #ESC-2026-883 created.')
-    notify('Guest enquiry escalated to Front Office Manager')
+  const handleResolveTicket = (ticketId: string) => {
+    setInquiryTickets(prev =>
+      prev.map(t => (t.id === ticketId ? { ...t, status: 'Actioned' } : t))
+    )
+    notify(`Inquiry ticket ${ticketId} marked as actioned by ${role}`)
   }
 
   // --------------------------------------------------------------------------
@@ -457,65 +568,98 @@ export function AIFeaturesView({
 
   const openDiscrepanciesCount = discrepancies.filter(d => d.status !== 'Resolved').length
 
+  // Define available tabs based on user position / role
+  const allowedTabs = useMemo(() => {
+    const copilotLabel =
+      role === 'Owner'
+        ? 'Executive Copilot'
+        : role === 'Manager'
+        ? 'Management Copilot'
+        : 'Operations Copilot'
+
+    // Deputy Manager handles Front Desk & Operations
+    if (role === 'Deputy Manager') {
+      return [
+        { id: 'chatbot' as AIFeatureTab, label: copilotLabel, icon: <Bot size={14} /> }
+      ]
+    }
+
+    // Owner and Manager have access to Financial Reports and Audit Engine
+    if (role === 'Owner' || role === 'Manager') {
+      return [
+        { id: 'chatbot' as AIFeatureTab, label: copilotLabel, icon: <Bot size={14} /> },
+        { id: 'reports' as AIFeatureTab, label: 'Financial Reports', icon: <FileSpreadsheet size={14} /> },
+        {
+          id: 'audit' as AIFeatureTab,
+          label: 'Audit & Integrity',
+          icon: <ShieldCheck size={14} />,
+          badge: openDiscrepanciesCount > 0 ? openDiscrepanciesCount : undefined
+        }
+      ]
+    }
+
+    // Housekeeper has no access
+    return []
+  }, [role, openDiscrepanciesCount])
+
+  // Synchronize active tab with permitted role tabs
+  useEffect(() => {
+    if (allowedTabs.length > 0 && !allowedTabs.some(t => t.id === activeTab)) {
+      setActiveTab(allowedTabs[0].id)
+    }
+  }, [allowedTabs, activeTab])
+
+  if (role === 'Housekeeper' || allowedTabs.length === 0) {
+    return (
+      <div className="card p-8 text-center max-w-md mx-auto my-12">
+        <div className="w-12 h-12 rounded-full bg-amber-50 text-amber-700 flex items-center justify-center mx-auto mb-3">
+          <ShieldCheck size={24} />
+        </div>
+        <h2 className="text-base font-bold text-[#202922]">Access Restricted</h2>
+        <p className="text-xs text-[#627065] mt-1.5">
+          Intelligence features are reserved for front office and management personnel.
+        </p>
+      </div>
+    )
+  }
+
   return (
     <div className="space-y-6">
       {/* Module Header & Tab Navigation */}
       <div className="page-heading">
         <div>
-          <p className="eyebrow">
-            INTELLIGENCE & GOVERNANCE <span className="live-pill"><i /> AI POWERED</span>
-          </p>
-          <h1>AI Features & Automation Suite</h1>
-          <p className="subheading">
-            AI Customer Concierge, Automated Financial Reports, and Financial Anomaly Auditing for Villa Tea Fields.
-          </p>
+          <p className="eyebrow">INTELLIGENCE</p>
+          <h1>AI & Financial Intelligence</h1>
         </div>
-        <div className="heading-actions">
-          <div className="flex bg-[#edf1e9] p-1 rounded-lg border border-[#e1e6dc] gap-1">
-            <button
-              onClick={() => setActiveTab('chatbot')}
-              className={`px-3 py-1.5 text-xs font-semibold rounded-md flex items-center gap-1.5 transition-all ${
-                activeTab === 'chatbot'
-                  ? 'bg-[#31583d] text-white shadow-sm'
-                  : 'text-[#425246] hover:bg-[#e2e7dd]'
-              }`}
-            >
-              <Bot size={14} />
-              <span>FR-01: AI Chatbot</span>
-            </button>
-            <button
-              onClick={() => setActiveTab('reports')}
-              className={`px-3 py-1.5 text-xs font-semibold rounded-md flex items-center gap-1.5 transition-all ${
-                activeTab === 'reports'
-                  ? 'bg-[#31583d] text-white shadow-sm'
-                  : 'text-[#425246] hover:bg-[#e2e7dd]'
-              }`}
-            >
-              <FileSpreadsheet size={14} />
-              <span>FR-02: Financial Reports</span>
-            </button>
-            <button
-              onClick={() => setActiveTab('audit')}
-              className={`px-3 py-1.5 text-xs font-semibold rounded-md flex items-center gap-1.5 transition-all ${
-                activeTab === 'audit'
-                  ? 'bg-[#31583d] text-white shadow-sm'
-                  : 'text-[#425246] hover:bg-[#e2e7dd]'
-              }`}
-            >
-              <ShieldCheck size={14} />
-              <span>FR-03: Financial Auditing</span>
-              {openDiscrepanciesCount > 0 && (
-                <span className="bg-[#b33a3a] text-white text-[10px] px-1.5 py-0.2 rounded-full font-bold ml-0.5">
-                  {openDiscrepanciesCount}
-                </span>
-              )}
-            </button>
+        {allowedTabs.length > 1 && (
+          <div className="heading-actions">
+            <div className="flex bg-[#edf1e9] p-1 rounded-lg border border-[#e1e6dc] gap-1">
+              {allowedTabs.map(tab => (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id)}
+                  className={`px-3 py-1.5 text-xs font-semibold rounded-md flex items-center gap-1.5 transition-all ${
+                    activeTab === tab.id
+                      ? 'bg-[#31583d] text-white shadow-sm'
+                      : 'text-[#425246] hover:bg-[#e2e7dd]'
+                  }`}
+                >
+                  {tab.icon}
+                  <span>{tab.label}</span>
+                  {tab.badge && (
+                    <span className="bg-[#b33a3a] text-white text-[10px] px-1.5 py-0.2 rounded-full font-bold ml-0.5">
+                      {tab.badge}
+                    </span>
+                  )}
+                </button>
+              ))}
+            </div>
           </div>
-        </div>
+        )}
       </div>
 
       {/* ==================================================================== */}
-      {/* TAB 1: FR-01 AI CHATBOT                                              */}
+      {/* TAB 1: INTERNAL STAFF AI COPILOT & GUEST ESCALATION INBOX            */}
       {/* ==================================================================== */}
       {activeTab === 'chatbot' && (
         <div className="space-y-6">
@@ -524,12 +668,8 @@ export function AIFeaturesView({
               <Sparkles size={24} />
             </div>
             <div>
-              <span>FR-01 COMPLIANT · 24/7 GUEST CONCIERGE</span>
-              <h2>AI-Powered Customer Enquiry & Handoff Assistant</h2>
-              <p>
-                Provides instant responses to routine FAQs on room reservations, villa amenities, high-tea packages, and
-                escalates complex enquiries directly to front desk personnel.
-              </p>
+              <span>{role === 'Owner' ? 'EXECUTIVE INTELLIGENCE' : role === 'Manager' ? 'TACTICAL OPERATIONS AI' : 'FRONT DESK AI'}</span>
+              <h2>{currentConfig.assistantName}</h2>
             </div>
           </div>
 
@@ -542,20 +682,13 @@ export function AIFeaturesView({
                     <Bot size={20} />
                   </div>
                   <div>
-                    <strong className="text-sm text-[#202922] block">Villa Tea Fields Concierge Bot</strong>
+                    <strong className="text-sm text-[#202922] block">{currentConfig.assistantName}</strong>
                     <span className="text-xs text-[#6e7870] flex items-center gap-1.5">
                       <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                      Online · Responding in &lt;1 second
+                      {currentConfig.assistantRole}
                     </span>
                   </div>
                 </div>
-                <button
-                  onClick={handleTriggerEscalation}
-                  className="button secondary text-xs flex items-center gap-1.5 py-1.5 px-3 border border-[#d7ddd4]"
-                >
-                  <PhoneCall size={13} className="text-[#31583d]" />
-                  <span>Escalate to Staff</span>
-                </button>
               </div>
 
               {/* Message List */}
@@ -578,10 +711,10 @@ export function AIFeaturesView({
                       </div>
                     ) : (
                       <div
-                        className={`max-w-[80%] rounded-xl p-3.5 text-xs leading-relaxed ${
+                        className={`max-w-[85%] rounded-xl p-3.5 text-xs leading-relaxed ${
                           msg.sender === 'user'
                             ? 'bg-[#31583d] text-white rounded-br-none shadow-sm'
-                            : 'bg-[#f4f6f2] text-[#242e26] border border-[#e5eae2] rounded-bl-none'
+                            : 'bg-[#f4f6f2] text-[#242e26] border border-[#e5eae2] rounded-bl-none whitespace-pre-line'
                         }`}
                       >
                         <p>{msg.text}</p>
@@ -600,7 +733,7 @@ export function AIFeaturesView({
                               <button
                                 key={sug}
                                 onClick={() => handleSendMessage(sug)}
-                                className="bg-white hover:bg-[#edf2ed] text-[#31583d] border border-[#d2ddd1] px-2.5 py-1 rounded-full text-[11px] font-medium transition-colors"
+                                className="bg-white hover:bg-[#edf2ed] text-[#31583d] border border-[#d2ddd1] px-2.5 py-1 rounded-full text-[11px] font-medium transition-colors text-left"
                               >
                                 {sug}
                               </button>
@@ -615,27 +748,13 @@ export function AIFeaturesView({
                 {isTyping && (
                   <div className="flex items-center gap-2 text-xs text-[#737e75] italic">
                     <Bot size={14} className="text-[#31583d] animate-bounce" />
-                    <span>AI Concierge is typing...</span>
+                    <span>Processing hotel records...</span>
                   </div>
                 )}
               </div>
 
               {/* Chat Input */}
               <div className="mt-4 pt-3 border-t">
-                {escalationStatus && (
-                  <div className="mb-2 bg-[#edf7ee] border border-[#cbe4cf] p-2 rounded text-[11px] text-[#295b34] flex items-center justify-between">
-                    <span className="flex items-center gap-1.5">
-                      <CheckCircle2 size={13} />
-                      {escalationStatus}
-                    </span>
-                    <button
-                      onClick={() => setEscalationStatus(null)}
-                      className="text-[#556958] hover:text-[#295b34]"
-                    >
-                      <X size={13} />
-                    </button>
-                  </div>
-                )}
                 <div className="flex items-center gap-2">
                   <input
                     type="text"
@@ -644,76 +763,84 @@ export function AIFeaturesView({
                     onKeyDown={e => {
                       if (e.key === 'Enter') handleSendMessage()
                     }}
-                    placeholder="Ask about rooms, rates, tea trails, dining, or booking..."
+                    placeholder={currentConfig.placeholder}
                     className="flex-1 border border-[#dcdfd8] rounded-lg px-3.5 py-2.5 text-xs focus:outline-none focus:ring-1 focus:ring-[#31583d]"
                   />
                   <button
                     onClick={() => handleSendMessage()}
                     className="button primary py-2.5 px-4 flex items-center gap-1.5"
                   >
-                    <span>Send</span>
+                    <span>Ask</span>
                     <Send size={14} />
                   </button>
                 </div>
               </div>
             </div>
 
-            {/* Right Col: Functional Details & Staff Handoff Panel */}
+            {/* Right Col: Quick Queries & Customer Chatbot Escalation Queue */}
             <div className="space-y-4">
               <div className="card p-4">
                 <div className="card-heading pb-2 mb-3 border-b">
                   <div>
-                    <h2 className="text-sm font-bold text-[#202922]">Automated FAQ Engine</h2>
-                    <p className="text-xs text-[#778078]">Instant topics answered without staff intervention</p>
+                    <h2 className="text-sm font-bold text-[#202922]">Position AI Queries</h2>
                   </div>
                 </div>
                 <div className="space-y-2">
-                  {[
-                    'Check-in & Check-out policies',
-                    'Room rates & scenic valley view details',
-                    'Guided tea plantation & factory tours',
-                    'Traditional Sri Lankan & English breakfasts',
-                    'Room heater & hill-country amenities',
-                    'Cancellation & advance payment terms'
-                  ].map((topic, i) => (
+                  {currentConfig.quickPrompts.map(prompt => (
                     <div
-                      key={topic}
-                      onClick={() => handleSendMessage(topic)}
+                      key={prompt}
+                      onClick={() => handleSendMessage(prompt)}
                       className="flex items-center justify-between p-2 rounded-lg bg-[#f9faf8] hover:bg-[#edf2ed] border border-[#edf0ea] text-xs cursor-pointer text-[#334036] transition-colors"
                     >
-                      <span>{topic}</span>
-                      <ChevronRight size={14} className="text-[#889289]" />
+                      <span className="font-medium">{prompt}</span>
+                      <ChevronRight size={14} className="text-[#889289] shrink-0 ml-1" />
                     </div>
                   ))}
                 </div>
               </div>
 
               <div className="card p-4 bg-[#f8f9f6] border border-[#e7ebe4]">
-                <div className="card-heading pb-2 mb-2">
+                <div className="card-heading pb-2 mb-3 border-b flex items-center justify-between">
                   <div>
-                    <h2 className="text-sm font-bold text-[#202922]">Escalation & Staff Handoff</h2>
-                    <p className="text-xs text-[#778078]">Direct routing for complex or unhandled requests</p>
+                    <h2 className="text-sm font-bold text-[#202922]">Customer Inquiries & Handoff Queue</h2>
                   </div>
+                  <span className="text-[10px] font-bold bg-[#edf2ed] text-[#31583d] px-2 py-0.5 rounded">
+                    {inquiryTickets.filter(t => t.status === 'Pending').length} Pending
+                  </span>
                 </div>
-                <p className="text-xs text-[#525f55] leading-relaxed mb-3">
-                  When guest queries require manual intervention (such as bespoke corporate bookings, special dietary
-                  needs, or booking disputes), the chatbot notifies authorized personnel directly.
-                </p>
-                <div className="space-y-2 text-xs">
-                  <div className="flex items-center gap-2 p-2 bg-white rounded border border-[#e2e7dd]">
-                    <UserCheck size={16} className="text-[#31583d]" />
-                    <div>
-                      <strong>Mira Jayasinghe</strong>
-                      <span className="block text-[11px] text-[#747e76]">General Manager · On Duty</span>
+
+                <div className="space-y-2.5">
+                  {inquiryTickets.map(ticket => (
+                    <div
+                      key={ticket.id}
+                      className={`p-2.5 rounded-lg border text-xs ${
+                        ticket.status === 'Actioned'
+                          ? 'bg-white/60 border-[#e5ebe2] opacity-60'
+                          : 'bg-white border-[#dce3da] shadow-2xs'
+                      }`}
+                    >
+                      <div className="flex items-center justify-between gap-2 mb-1">
+                        <strong className="text-[#202922]">{ticket.guest}</strong>
+                        <span className="text-[10px] font-mono text-[#768278]">{ticket.time}</span>
+                      </div>
+                      <p className="text-[#4f5c51] leading-relaxed mb-2 text-[11px]">{ticket.summary}</p>
+                      <div className="flex items-center justify-between pt-1.5 border-t border-[#f0f3ee] text-[11px]">
+                        <span className="text-[#78857a]">{ticket.assignedTo}</span>
+                        {ticket.status === 'Pending' ? (
+                          <button
+                            onClick={() => handleResolveTicket(ticket.id)}
+                            className="text-[#31583d] font-semibold hover:underline"
+                          >
+                            Mark Handled
+                          </button>
+                        ) : (
+                          <span className="text-emerald-700 font-semibold flex items-center gap-0.5">
+                            <Check size={12} /> Handled
+                          </span>
+                        )}
+                      </div>
                     </div>
-                  </div>
-                  <div className="flex items-center gap-2 p-2 bg-white rounded border border-[#e2e7dd]">
-                    <UserCheck size={16} className="text-[#31583d]" />
-                    <div>
-                      <strong>Ruwan Perera</strong>
-                      <span className="block text-[11px] text-[#747e76]">Deputy Manager / Front Desk</span>
-                    </div>
-                  </div>
+                  ))}
                 </div>
               </div>
             </div>
@@ -722,7 +849,7 @@ export function AIFeaturesView({
       )}
 
       {/* ==================================================================== */}
-      {/* TAB 2: FR-02 AUTOMATED FINANCIAL REPORT GENERATION                   */}
+      {/* TAB 2: FINANCIAL REPORT GENERATION                                   */}
       {/* ==================================================================== */}
       {activeTab === 'reports' && (
         <div className="space-y-6">
@@ -731,12 +858,8 @@ export function AIFeaturesView({
               <TrendingUp size={24} />
             </div>
             <div>
-              <span>FR-02 COMPLIANT · AUTOMATED FINANCIAL INTELLIGENCE</span>
-              <h2>Automated Financial Report Generation</h2>
-              <p>
-                Aggregates real-time guest folio charges, OTA channel payouts, restaurant orders, and operating expenses to
-                automatically generate daily, weekly, monthly, and annual financial summaries.
-              </p>
+              <span>FINANCIAL INTELLIGENCE</span>
+              <h2>Financial Statement Generation</h2>
             </div>
           </div>
 
@@ -745,19 +868,21 @@ export function AIFeaturesView({
             <div className="flex items-center gap-3">
               <span className="text-xs font-bold text-[#445147] uppercase tracking-wide">Summary Interval:</span>
               <div className="flex bg-[#edf1e9] p-1 rounded-lg border border-[#e1e6dc] gap-1">
-                {(['Daily', 'Weekly', 'Monthly', 'Annual'] as const).map(period => (
-                  <button
-                    key={period}
-                    onClick={() => setReportPeriod(period)}
-                    className={`px-3 py-1 text-xs font-semibold rounded-md transition-all ${
-                      reportPeriod === period
-                        ? 'bg-[#31583d] text-white shadow-sm'
-                        : 'text-[#4b594f] hover:bg-[#e2e7dd]'
-                    }`}
-                  >
-                    {period}
-                  </button>
-                ))}
+                {(['Daily', 'Weekly', 'Monthly', 'Annual'] as const)
+                  .filter(period => period !== 'Annual' || role === 'Owner')
+                  .map(period => (
+                    <button
+                      key={period}
+                      onClick={() => setReportPeriod(period)}
+                      className={`px-3 py-1 text-xs font-semibold rounded-md transition-all ${
+                        reportPeriod === period
+                          ? 'bg-[#31583d] text-white shadow-sm'
+                          : 'text-[#4b594f] hover:bg-[#e2e7dd]'
+                      }`}
+                    >
+                      {period}
+                    </button>
+                  ))}
               </div>
               <span className="text-xs text-[#707c72] pl-2 border-l border-[#dee3dc] font-medium">
                 {currentSummary.period}
@@ -831,7 +956,6 @@ export function AIFeaturesView({
               <div className="card-heading pb-3 mb-4 border-b">
                 <div>
                   <h2 className="text-sm font-bold text-[#202922]">Income Stream Distribution</h2>
-                  <p className="text-xs text-[#778078]">Revenue sources for {currentSummary.period}</p>
                 </div>
               </div>
               <div className="space-y-4">
@@ -860,7 +984,6 @@ export function AIFeaturesView({
               <div className="card-heading pb-3 mb-4 border-b">
                 <div>
                   <h2 className="text-sm font-bold text-[#202922]">Expense Categories</h2>
-                  <p className="text-xs text-[#778078]">Operational cost deductions for {currentSummary.period}</p>
                 </div>
               </div>
               <div className="space-y-4">
@@ -890,8 +1013,7 @@ export function AIFeaturesView({
           <div className="card p-5">
             <div className="card-heading pb-3 mb-4 border-b flex justify-between items-center">
               <div>
-                <h2 className="text-sm font-bold text-[#202922]">Generated Financial Statement Summary</h2>
-                <p className="text-xs text-[#778078]">Automated line-item breakdown for accounting governance</p>
+                <h2 className="text-sm font-bold text-[#202922]">Statement Summary</h2>
               </div>
               <span className="text-xs text-[#31583d] bg-[#edf2ed] px-2.5 py-1 rounded font-semibold">
                 Audit Status: Balanced
@@ -967,7 +1089,7 @@ export function AIFeaturesView({
       )}
 
       {/* ==================================================================== */}
-      {/* TAB 3: FR-03 FINANCIAL AUDITING                                      */}
+      {/* TAB 3: FINANCIAL AUDITING & INTEGRITY                                */}
       {/* ==================================================================== */}
       {activeTab === 'audit' && (
         <div className="space-y-6">
@@ -976,12 +1098,8 @@ export function AIFeaturesView({
               <ShieldCheck size={24} />
             </div>
             <div>
-              <span>FR-03 COMPLIANT · FINANCIAL GOVERNANCE & INTEGRITY</span>
-              <h2>Automated Financial Auditing & Discrepancy Detection</h2>
-              <p>
-                Continuously analyzes transaction records to identify inconsistencies, detect duplicate payments, highlight
-                unusual discounts, and maintain an immutable audit trail for hotel management.
-              </p>
+              <span>FINANCIAL INTEGRITY</span>
+              <h2>Automated Anomaly & Discrepancy Audit</h2>
             </div>
           </div>
 
@@ -1083,8 +1201,7 @@ export function AIFeaturesView({
           <div className="card p-5">
             <div className="card-heading pb-3 mb-4 border-b flex flex-wrap items-center justify-between gap-3">
               <div>
-                <h2 className="text-sm font-bold text-[#202922]">System Financial Activity & Audit Trail</h2>
-                <p className="text-xs text-[#778078]">Immutable log of transactions, rate changes, and verifications</p>
+                <h2 className="text-sm font-bold text-[#202922]">Audit Trail & System Activity</h2>
               </div>
 
               <div className="flex items-center gap-2">

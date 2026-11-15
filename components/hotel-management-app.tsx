@@ -201,8 +201,8 @@ const navGroups = [
   { label: 'OVERVIEW', items: [{ name: 'Dashboard', icon: LayoutDashboard, roles: ['Owner', 'Manager', 'Deputy Manager', 'Housekeeper'] }] },
   { label: 'HOTEL OPERATIONS', items: [{ name: 'Reservations', icon: CalendarDays, roles: ['Owner', 'Manager', 'Deputy Manager'] }, { name: 'Rooms', icon: Hotel, roles: ['Owner', 'Manager', 'Deputy Manager', 'Housekeeper'] }, { name: 'Guests', icon: Users, roles: ['Owner', 'Manager', 'Deputy Manager'] }, { name: 'Daily Operations', icon: ClipboardCheck, roles: ['Owner', 'Manager', 'Deputy Manager', 'Housekeeper'] }, { name: 'Staff & Tasks', icon: Activity, roles: ['Owner', 'Manager', 'Deputy Manager', 'Housekeeper'] }] },
   { label: 'BUSINESS MANAGEMENT', items: [{ name: 'Payments & Finance', icon: Wallet, roles: ['Owner'] }, { name: 'Pricing & Promotions', icon: TrendingUp, roles: ['Owner'] }, { name: 'Marketing & CRM', icon: MessageCircle, roles: ['Owner', 'Manager'] }] },
-  { label: 'INTELLIGENCE', items: [{ name: 'Reports & Analytics', icon: FileText, roles: ['Owner', 'Manager'] }, { name: 'AI Business Assistant', icon: Sparkles, roles: ['Owner', 'Manager', 'Deputy Manager'] }] },
-  { label: 'ADMINISTRATION', items: [{ name: 'Audit Logs', icon: ShieldCheck, roles: ['Owner', 'Manager'] }, { name: 'Settings', icon: Settings, roles: ['Owner'] }] },
+  { label: 'INTELLIGENCE', items: [{ name: 'Reports & Analytics', icon: FileText, roles: ['Owner', 'Manager'] }, { name: 'AI Business Assistant', icon: Sparkles, roles: ['Owner', 'Manager'] }] },
+  { label: 'ADMINISTRATION', items: [{ name: 'Audit Logs', icon: ShieldCheck, roles: ['Owner'] }, { name: 'Settings', icon: Settings, roles: ['Owner'] }] },
 ] as const
 const rooms = [
   { name: 'Room 01', state: 'Reserved', guest: 'Nimal Perera', detail: 'Arriving today · 2 nights', image: 'photo-1611892440504-42a792e24d32' },
@@ -320,88 +320,79 @@ export function HotelManagementApp() {
   return <div className="app-shell">
     <aside className="sidebar">
       <div className="brand"><div className="brand-mark"><span>V</span></div><div><strong>villa tea fields</strong><small>HOTEL MANAGEMENT</small></div><button className="icon-button mobile-menu" aria-label="Menu"><Menu /></button></div>
-      <div className="property-switch"><div className="property-avatar">VT</div><div><strong>Villa Tea Fields</strong><span>Nuwara Eliya, Sri Lanka</span></div><ChevronDown size={15} /></div>
-      <nav className="side-nav" aria-label="Main navigation">{visibleNav.map(group => <section className="nav-group" key={group.label}><p>{group.label}</p>{group.items.map(item => <button key={item.name} onClick={() => setPage(item.name)} className={`nav-link ${page === item.name ? 'active' : ''}`}><item.icon size={17} /><span>{item.name}</span>{item.name === 'Reservations' && pending > 0 && <i>{pending}</i>}</button>)}</section>)}</nav>
-      <div className="sidebar-bottom"><div className="help-card"><div className="help-icon"><CircleHelp size={17} /></div><strong>Need a hand?</strong><span>Visit the knowledge center for guides and SOPs.</span><button onClick={() => setPage('Knowledge Center')}>Browse help <span>→</span></button></div><div className="sidebar-user"><div className="user-avatar">{role === 'Owner' ? 'AS' : role === 'Manager' ? 'MJ' : role === 'Deputy Manager' ? 'RP' : 'SS'}</div><div><strong>{role === 'Owner' ? 'Anushka Senanayake' : role === 'Manager' ? 'Mira Jayasinghe' : role === 'Deputy Manager' ? 'Ruwan Perera' : 'Sewwandi Silva'}</strong><span>{role}</span></div><MoreHorizontal size={18} /></div></div>
+      <div className="property-switch"><div className="property-avatar">VT</div><div><strong>Villa Tea Fields</strong><span>Nuwara Eliya, Sri Lanka</span></div><ChevronDown size={15}/></div>
+      <nav className="side-nav" aria-label="Main navigation">{visibleNav.map(group => <section className="nav-group" key={group.label}><p>{group.label}</p>{group.items.map(item => <button key={item.name} onClick={() => setPage(item.name)} className={`nav-link ${page === item.name ? 'active' : ''}`}><item.icon size={17}/><span>{item.name}</span>{item.name === 'Reservations' && pending > 0 && <i>{pending}</i>}</button>)}</section>)}</nav>
+      <div className="sidebar-bottom"><div className="help-card"><div className="help-icon"><CircleHelp size={17}/></div><strong>Need a hand?</strong><span>Visit the knowledge center for guides and SOPs.</span><button onClick={() => setPage('Knowledge Center')}>Browse help <span>→</span></button></div><div className="sidebar-user"><div className="user-avatar">{role === 'Owner' ? 'AS' : role === 'Manager' ? 'MJ' : role === 'Deputy Manager' ? 'RP' : 'SS'}</div><div><strong>{role === 'Owner' ? 'Anushka Senanayake' : role === 'Manager' ? 'Mira Jayasinghe' : role === 'Deputy Manager' ? 'Ruwan Perera' : 'Sewwandi Silva'}</strong><span>{role}</span></div><MoreHorizontal size={18}/></div></div>
     </aside>
-    <main className="main-area"><header className="topbar"><div className="crumb"><span>Villa Tea Fields</span><ChevronRight size={14} /><strong>{page}</strong></div><div className="top-actions"><label className="global-search"><Search size={16} /><input value={query} onChange={event => setQuery(event.target.value)} placeholder="Search anything..." /><kbd>⌘ K</kbd></label><button className="icon-button notification-button" aria-label="Notifications" onClick={() => setShowNotifications(!showNotifications)}><Bell size={18} /><b /></button><div className="top-divider" /><div className="profile-select"><div className="user-avatar small">{role === 'Owner' ? 'AS' : role === 'Manager' ? 'MJ' : role === 'Deputy Manager' ? 'RP' : 'SS'}</div><select aria-label="Switch active role" value={role} onChange={event => setRole(event.target.value as Role)}><option>Owner</option><option>Manager</option><option>Deputy Manager</option><option>Housekeeper</option></select><ChevronDown size={14} /></div></div>
-      <main className="main-area"><header className="topbar"><div className="crumb"><span>Villa Tea Fields</span><ChevronRight size={14} /><strong>{page}</strong></div><div className="top-actions"><label className="global-search"><Search size={16} /><input value={query} onChange={event => setQuery(event.target.value)} placeholder="Search anything..." /><kbd>⌘ K</kbd></label><button className="icon-button notification-button" aria-label="Notifications" onClick={() => setShowNotifications(!showNotifications)}><Bell size={18} /><b /></button><div className="top-divider" /><div className="profile-select"><div className="user-avatar small">{role === 'Owner' ? 'AS' : role === 'Manager' ? 'MJ' : role === 'Deputy Manager' ? 'RP' : 'SS'}</div><select aria-label="Switch demo role" value={role} onChange={event => { const next = event.target.value as Role; setRole(next); if (next === 'Housekeeper' && !['Dashboard', 'Rooms', 'Daily Operations', 'Staff & Tasks'].includes(page)) setPage('Dashboard'); if (next === 'Deputy Manager' && !['Dashboard', 'Reservations', 'Rooms', 'Guests', 'Daily Operations', 'Staff & Tasks', 'AI Business Assistant', 'Knowledge Center'].includes(page)) setPage('Dashboard'); if (next === 'Manager' && ['Payments & Finance', 'Pricing & Promotions', 'Settings'].includes(page)) setPage('Dashboard') }}><option>Owner</option><option>Manager</option><option>Deputy Manager</option><option>Housekeeper</option></select><ChevronDown size={14} /></div></div>
-        {showNotifications && <div className="notification-popover"><div className="popover-head"><strong>Notifications</strong><button onClick={() => { setShowNotifications(false); notify('All caught up') }}>Mark all read</button></div><div className="notice-row"><span className="notice-dot gold-dot" /><div><strong>{pending} booking requests need review</strong><small>New reservations · just now</small></div></div><div className="notice-row"><span className="notice-dot green-dot" /><div><strong>Room 03 is ready for inspection</strong><small>Housekeeping · 18 minutes ago</small></div></div><div className="notice-row"><span className="notice-dot blue-dot" /><div><strong>Guest arrival: Nimal Perera</strong><small>Today at 2:00 PM</small></div></div></div>}
-      </header>
-        <div className="page-content">
-          {page === 'Dashboard' && <Dashboard role={role} period={period} setPeriod={setPeriod} pending={pending} arrivals={arrivals} revenue={totalRevenue} reservations={reservations} approve={approve} setPage={setPage} tasks={taskStates} setTask={setTask} />}
-          {page === 'Reservations' && allowedPages.includes('Reservations') && (
-            <ReservationsView
-              reservations={reservations}
-              onUpdateReservations={setReservations}
-              role={role}
-              notify={notify}
-            />
-          )}
-          {page === 'Rooms' && allowedPages.includes('Rooms') && <Rooms />}
-          {page === 'Guests' && allowedPages.includes('Guests') && <Guests reservations={reservations} />}
-          {(page === 'Daily Operations' || page === 'Staff & Tasks') && allowedPages.includes(page) && <Operations role={role} tasks={taskStates} setTask={setTask} notify={notify} />}
-          {page === 'Payments & Finance' && allowedPages.includes('Payments & Finance') && <Finance revenue={totalRevenue} reservations={reservations} notify={notify} />}
-          {(page === 'Pricing & Promotions' || page === 'Marketing & CRM') && allowedPages.includes(page) && <Marketing page={page} notify={notify} />}
-          {(page === 'Reports & Analytics' || page === 'AI Business Assistant') && allowedPages.includes(page) && <Insights page={page} revenue={totalRevenue} reservations={reservations} notify={notify} />}
-          {page === 'Audit Logs' && allowedPages.includes('Audit Logs') && <Audit />}
-          {page === 'Settings' && allowedPages.includes('Settings') && <SettingsView notify={notify} />}
-          {page === 'Rooms' && <Rooms />}
-          {page === 'Guests' && <Guests reservations={reservations} />}
-          {(page === 'Daily Operations' || page === 'Staff & Tasks') && <Operations role={role} tasks={taskStates} setTask={setTask} notify={notify} />}
-          {page === 'Payments & Finance' && <Finance revenue={totalRevenue} reservations={reservations} notify={notify} />}
-          {(page === 'Pricing & Promotions' || page === 'Marketing & CRM') && <Marketing page={page} notify={notify} />}
-          {page === 'AI Business Assistant' && (
-            <AIFeaturesView
-              initialTab="chatbot"
-              role={role}
-              reservations={reservations}
-              notify={notify}
-            />
-          )}
-          {page === 'Reports & Analytics' && (
-            <AIFeaturesView
-              initialTab="reports"
-              role={role}
-              reservations={reservations}
-              notify={notify}
-            />
-          )}
-          {page === 'Audit Logs' && (
-            <AIFeaturesView
-              initialTab="audit"
-              role={role}
-              reservations={reservations}
-              notify={notify}
-            />
-          )}
-          {page === 'Settings' && <SettingsView notify={notify} />}
-          {page === 'Knowledge Center' && <Knowledge />}
-          {!allowedPages.includes(page) && (
-            <div className="card" style={{ padding: '3rem', textAlign: 'center' }}>
-              <ShieldCheck size={36} style={{ margin: '0 auto 1rem', color: '#c28e38' }} />
-              <h2 style={{ fontSize: '1.25rem', fontWeight: 'bold', marginBottom: '0.5rem' }}>Access Restricted</h2>
-              <p style={{ color: '#737b74', fontSize: '0.875rem', marginBottom: '1.5rem' }}>
-                Your active role ({role}) does not have permission to view {page}.
-              </p>
-              <button className="button primary" onClick={() => setPage('Dashboard')}>Return to Dashboard</button>
-            </div>
-          )}
-        </div></main>
-      {showCreate && role !== 'Housekeeper' && <div className="modal-backdrop" role="presentation" onClick={event => { if (event.target === event.currentTarget) setShowCreate(false) }}><section className="modal" role="dialog" aria-modal="true" aria-labelledby="create-title"><div className="modal-head"><div><p className="eyebrow">NEW BOOKING</p><h2 id="create-title">Create reservation request</h2></div><button className="icon-button" onClick={() => setShowCreate(false)} aria-label="Close"><X size={18} /></button></div><p className="modal-copy">New requests are sent to the owner for approval before confirmation.</p><div className="form-grid"><label className="form-field wide">Guest name<input autoFocus placeholder="e.g. Priya Perera" value={newGuest} onChange={event => setNewGuest(event.target.value)} /></label><label className="form-field">Room<select value={newRoom} onChange={event => setNewRoom(event.target.value)}>{rooms.map(room => <option key={room.name}>{room.name}</option>)}</select></label><label className="form-field">Guests<select><option>2 guests</option><option>1 guest</option><option>3 guests</option><option>4 guests</option></select></label><label className="form-field">Check in<input type="date" value={newDates.checkIn} onChange={event => setNewDates({ ...newDates, checkIn: event.target.value })} /></label><label className="form-field">Check out<input type="date" value={newDates.checkOut} onChange={event => setNewDates({ ...newDates, checkOut: event.target.value })} /></label></div><div className="modal-footer"><button className="button secondary" onClick={() => setShowCreate(false)}>Cancel</button><button className="button primary" onClick={createReservation}>Submit for approval <ChevronRight size={15} /></button></div></section></div>}
-      {notice && <div className="toast-message"><span><Check size={15} /></span>{notice}</div>}
-    </div>
+    <main className="main-area"><header className="topbar"><div className="crumb"><span>Villa Tea Fields</span><ChevronRight size={14}/><strong>{page}</strong></div><div className="top-actions"><label className="global-search"><Search size={16}/><input value={query} onChange={event => setQuery(event.target.value)} placeholder="Search anything..."/><kbd>⌘ K</kbd></label><button className="icon-button notification-button" aria-label="Notifications" onClick={() => setShowNotifications(!showNotifications)}><Bell size={18}/><b/></button><div className="top-divider"/><div className="profile-select"><div className="user-avatar small">{role === 'Owner' ? 'AS' : role === 'Manager' ? 'MJ' : role === 'Deputy Manager' ? 'RP' : 'SS'}</div><select aria-label="Switch active role" value={role} onChange={event => setRole(event.target.value as Role)}><option>Owner</option><option>Manager</option><option>Deputy Manager</option><option>Housekeeper</option></select><ChevronDown size={14}/></div></div>
+      {showNotifications && <div className="notification-popover"><div className="popover-head"><strong>Notifications</strong><button onClick={() => { setShowNotifications(false); notify('All caught up') }}>Mark all read</button></div><div className="notice-row"><span className="notice-dot gold-dot"/><div><strong>{pending} booking requests need review</strong><small>New reservations · just now</small></div></div><div className="notice-row"><span className="notice-dot green-dot"/><div><strong>Room 03 is ready for inspection</strong><small>Housekeeping · 18 minutes ago</small></div></div><div className="notice-row"><span className="notice-dot blue-dot"/><div><strong>Guest arrival: Nimal Perera</strong><small>Today at 2:00 PM</small></div></div></div>}
+    </header>
+    <div className="page-content">
+      {page === 'Dashboard' && <Dashboard role={role} period={period} setPeriod={setPeriod} pending={pending} arrivals={arrivals} revenue={totalRevenue} reservations={reservations} approve={approve} setPage={setPage} tasks={taskStates} setTask={setTask} />}
+      {page === 'Reservations' && allowedPages.includes('Reservations') && (
+        <ReservationsView
+          reservations={reservations}
+          onUpdateReservations={setReservations}
+          role={role}
+          notify={notify}
+        />
+      )}
+      {page === 'Rooms' && allowedPages.includes('Rooms') && <Rooms />}
+      {page === 'Guests' && allowedPages.includes('Guests') && <Guests reservations={reservations} />}
+      {(page === 'Daily Operations' || page === 'Staff & Tasks') && allowedPages.includes(page) && <Operations role={role} tasks={taskStates} setTask={setTask} notify={notify} />}
+      {page === 'Payments & Finance' && allowedPages.includes('Payments & Finance') && <Finance revenue={totalRevenue} reservations={reservations} notify={notify} />}
+      {(page === 'Pricing & Promotions' || page === 'Marketing & CRM') && allowedPages.includes(page) && <Marketing page={page} notify={notify} />}
+      {page === 'AI Business Assistant' && allowedPages.includes('AI Business Assistant') && (
+        <AIFeaturesView
+          initialTab="chatbot"
+          role={role}
+          reservations={reservations}
+          notify={notify}
+        />
+      )}
+      {page === 'Reports & Analytics' && allowedPages.includes('Reports & Analytics') && (
+        <AIFeaturesView
+          initialTab="reports"
+          role={role}
+          reservations={reservations}
+          notify={notify}
+        />
+      )}
+      {page === 'Audit Logs' && allowedPages.includes('Audit Logs') && (
+        <AIFeaturesView
+          initialTab="audit"
+          role={role}
+          reservations={reservations}
+          notify={notify}
+        />
+      )}
+      {page === 'Settings' && allowedPages.includes('Settings') && <SettingsView notify={notify} />}
+      {page === 'Knowledge Center' && <Knowledge />}
+      {!allowedPages.includes(page) && (
+        <div className="card" style={{ padding: '3rem', textAlign: 'center' }}>
+          <ShieldCheck size={36} style={{ margin: '0 auto 1rem', color: '#c28e38' }} />
+          <h2 style={{ fontSize: '1.25rem', fontWeight: 'bold', marginBottom: '0.5rem' }}>Access Restricted</h2>
+          <p style={{ color: '#737b74', fontSize: '0.875rem', marginBottom: '1.5rem' }}>
+            Your active role ({role}) does not have permission to view {page}.
+          </p>
+          <button className="button primary" onClick={() => setPage('Dashboard')}>Return to Dashboard</button>
+        </div>
+      )}
+    </div></main>
+    {showCreate && role !== 'Housekeeper' && <div className="modal-backdrop" role="presentation" onClick={event => { if (event.target === event.currentTarget) setShowCreate(false) }}><section className="modal" role="dialog" aria-modal="true" aria-labelledby="create-title"><div className="modal-head"><div><p className="eyebrow">NEW BOOKING</p><h2 id="create-title">Create reservation request</h2></div><button className="icon-button" onClick={() => setShowCreate(false)} aria-label="Close"><X size={18}/></button></div><p className="modal-copy">New requests are sent to the owner for approval before confirmation.</p><div className="form-grid"><label className="form-field wide">Guest name<input autoFocus placeholder="e.g. Priya Perera" value={newGuest} onChange={event => setNewGuest(event.target.value)}/></label><label className="form-field">Room<select value={newRoom} onChange={event => setNewRoom(event.target.value)}>{rooms.map(room => <option key={room.name}>{room.name}</option>)}</select></label><label className="form-field">Guests<select><option>2 guests</option><option>1 guest</option><option>3 guests</option><option>4 guests</option></select></label><label className="form-field">Check in<input type="date" value={newDates.checkIn} onChange={event => setNewDates({ ...newDates, checkIn: event.target.value })}/></label><label className="form-field">Check out<input type="date" value={newDates.checkOut} onChange={event => setNewDates({ ...newDates, checkOut: event.target.value })}/></label></div><div className="modal-footer"><button className="button secondary" onClick={() => setShowCreate(false)}>Cancel</button><button className="button primary" onClick={createReservation}>Submit for approval <ChevronRight size={15}/></button></div></section></div>}
+    {notice && <div className="toast-message"><span><Check size={15}/></span>{notice}</div>}
+  </div>
 }
 
-      function Dashboard({role, period, setPeriod, pending, arrivals, revenue, reservations, approve, setPage, tasks, setTask}: {role: Role; period: string; setPeriod: (period: string) => void; pending: number; arrivals: number; revenue: number; reservations: Reservation[]; approve: (id: string, status: BookingStatus) => void; setPage: (page: string) => void; tasks: string[]; setTask: (index: number, state: string) => void }) {
- const isOwner = role === 'Owner';
-      const isManager = role === 'Manager';
-      const isHousekeeper = role === 'Housekeeper';
-      const canApprove = isOwner || isManager;
-      const canCreateBooking = !isHousekeeper;
-      const canViewFinancials = isOwner || isManager;
+function Dashboard({ role, period, setPeriod, pending, arrivals, revenue, reservations, approve, setPage, tasks, setTask }: { role: Role; period: string; setPeriod: (period: string) => void; pending: number; arrivals: number; revenue: number; reservations: Reservation[]; approve: (id: string, status: BookingStatus) => void; setPage: (page: string) => void; tasks: string[]; setTask: (index: number, state: string) => void }) {
+  const isOwner = role === 'Owner';
+  const isManager = role === 'Manager';
+  const isHousekeeper = role === 'Housekeeper';
+  const canApprove = isOwner || isManager;
+  const canCreateBooking = !isHousekeeper;
+  const canViewFinancials = isOwner || isManager;
 
-      return <><div className="page-heading"><div><p className="eyebrow">SATURDAY, NOVEMBER 14, 2026 <span className="live-pill"><i /> LIVE OVERVIEW</span></p><h1>{isHousekeeper ? 'Good morning, Sewwandi' : role === 'Owner' ? 'Good morning, Anushka' : `Good morning, ${role === 'Manager' ? 'Mira' : 'Ruwan'}`}</h1><p className="subheading">{isHousekeeper ? 'Here are your room preparations for today.' : 'Here’s what’s happening at Villa Tea Fields today.'}</p></div>{!isHousekeeper && <div className="heading-actions"><select className="period-select" value={period} onChange={event => setPeriod(event.target.value)}><option>This month</option><option>This week</option><option>This year</option></select>{canCreateBooking && <button className="button primary" onClick={() => setPage('Reservations')}><Plus size={16} /> New reservation</button>}</div>}</div>
+  return <><div className="page-heading"><div><p className="eyebrow">SATURDAY, NOVEMBER 14, 2026 <span className="live-pill"><i /> LIVE OVERVIEW</span></p><h1>{isHousekeeper ? 'Good morning, Sewwandi' : role === 'Owner' ? 'Good morning, Anushka' : `Good morning, ${role === 'Manager' ? 'Mira' : 'Ruwan'}`}</h1><p className="subheading">{isHousekeeper ? 'Here are your room preparations for today.' : 'Here’s what’s happening at Villa Tea Fields today.'}</p></div>{!isHousekeeper && <div className="heading-actions"><select className="period-select" value={period} onChange={event => setPeriod(event.target.value)}><option>This month</option><option>This week</option><option>This year</option></select>{canCreateBooking && <button className="button primary" onClick={() => setPage('Reservations')}><Plus size={16} /> New reservation</button>}</div>}</div>
         {isHousekeeper ? <Housekeeper tasks={tasks} setTask={setTask} /> : <><section className="stats-grid"><Stat icon={<Hotel />} label="OCCUPANCY RATE" value="75%" change="12.5%" note="vs. last month" tone="green" /><Stat icon={<CalendarDays />} label="TODAY’S ARRIVALS" value={String(arrivals).padStart(2, '0')} note="1 check-in remaining" tone="sand" /><Stat icon={<LogOutIcon />} label="TODAY’S DEPARTURES" value="01" note="Room 02 · 11:00 AM" tone="blue" /><Stat icon={canViewFinancials ? <Wallet /> : <ClipboardCheck />} label={canViewFinancials ? 'REVENUE THIS MONTH' : 'ROOMS READY'} value={canViewFinancials ? `LKR ${(revenue / 1000).toFixed(0)}k` : '2 / 4'} change={canViewFinancials ? '8.2%' : '50%'} note={canViewFinancials ? 'vs. last month' : '2 need attention'} tone="purple" /></section>
           <section className="dashboard-grid"><div className="card trend-card"><div className="card-heading"><div><h2>{canViewFinancials ? 'Revenue & occupancy' : 'Today at a glance'}</h2><p>{canViewFinancials ? 'Your property performance over time' : 'A live view of hotel operations'}</p></div><button className="text-button" onClick={() => setPage(canViewFinancials ? 'Reports & Analytics' : 'Daily Operations')}>View report <ChevronRight size={14} /></button></div><div className="chart-key"><span><i className="key-green" /> Revenue <b>LKR 1.24M</b></span><span><i className="key-gold" /> Occupancy <b>68%</b></span></div><RevenueChart /><div className="chart-months"><span>JUN</span><span>JUL</span><span>AUG</span><span>SEP</span><span>OCT</span><span>NOV</span></div></div><div className="card channel-card"><div className="card-heading"><div><h2>Booking channels</h2><p>Reservations by source</p></div><button className="subtle-icon" aria-label="More options"><MoreHorizontal size={18} /></button></div><ChannelChart /><div className="channel-legend"><span><i className="dot direct" />Direct <b>42%</b></span><span><i className="dot ota" />Booking.com <b>28%</b></span><span><i className="dot airbnb" />Airbnb <b>18%</b></span><span><i className="dot other" />Other <b>12%</b></span></div><div className="channel-insight"><TrendingUp size={15} /><span>Direct bookings are up <strong>8.4%</strong> this month</span></div></div></section>
           <section className="lower-grid"><div className="card arrivals-card"><div className="card-heading"><div><h2>Upcoming reservations</h2><p>Your next arrivals and pending bookings</p></div><button className="text-button" onClick={() => setPage('Reservations')}>All reservations <ChevronRight size={14} /></button></div><div className="table-wrap"><table><thead><tr><th>GUEST</th><th>ROOM</th><th>CHECK IN</th><th>SOURCE</th><th>STATUS</th>{canApprove && <th />}</tr></thead><tbody>{reservations.filter(item => !['Checked Out', 'Cancelled'].includes(item.status)).slice(0, 5).map(item => <tr key={item.id}><td><div className="guest-cell"><div className="guest-avatar">{item.guest.split(' ').map(part => part[0]).slice(0, 2).join('')}</div><div><strong>{item.guest}</strong><small>{item.id}</small></div></div></td><td>{item.room}</td><td>{item.checkIn === '2026-11-14' ? 'Today' : new Date(`${item.checkIn}T12:00:00`).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</td><td>{item.source.replace('Direct · ', '')}</td><td><StatusBadge status={item.status} /></td>{canApprove && item.status === 'Pending Approval' && <td><button className="approve-mini" onClick={() => approve(item.id, 'Confirmed')}>Approve</button></td>}</tr>)}</tbody></table></div><div className="table-footer"><span>Showing <strong>5</strong> of {reservations.length} reservations</span><button onClick={() => setPage('Reservations')}>View all reservations <span>→</span></button></div></div><div className="card attention-card"><div className="card-heading"><div><h2>Needs your attention</h2><p>Items that may need a follow-up</p></div><span className="attention-count">{canViewFinancials ? pending + 2 : pending + 1}</span></div><div className="attention-item"><div className="attention-icon amber"><CalendarDays size={16} /></div><div><strong>{pending} booking requests awaiting approval</strong><span>Review and respond to booking inquiries</span></div><button onClick={() => setPage('Reservations')} aria-label="View booking requests"><ChevronRight size={16} /></button></div><div className="attention-item"><div className="attention-icon rose"><ClipboardCheck size={16} /></div><div><strong>Room 03 ready for inspection</strong><span>Housekeeping · 18 min ago</span></div><button onClick={() => setPage('Daily Operations')} aria-label="View room inspection"><ChevronRight size={16} /></button></div>{canViewFinancials && <div className="attention-item"><div className="attention-icon blue"><CreditCard size={16} /></div><div><strong>2 payments need verification</strong><span>Bank transfers · LKR 68,400</span></div><button onClick={() => setPage('Payments & Finance')} aria-label="View payment verification"><ChevronRight size={16} /></button></div>}{(isOwner || isManager) && <div className="ai-insight"><div><Sparkles size={15} /><strong>AI business insight</strong><span>Weekend demand is trending 18% higher. Consider reviewing rates for the final week of November.</span></div><button onClick={() => setPage('AI Business Assistant')}>Explore insight <span>→</span></button></div>}</div></section></>}

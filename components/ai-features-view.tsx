@@ -568,26 +568,12 @@ export function AIFeaturesView({
 
   const openDiscrepanciesCount = discrepancies.filter(d => d.status !== 'Resolved').length
 
-  // Define available tabs based on user position / role
+  // Define available tabs based on user position / role according to main
   const allowedTabs = useMemo(() => {
-    const copilotLabel =
-      role === 'Owner'
-        ? 'Executive Copilot'
-        : role === 'Manager'
-        ? 'Management Copilot'
-        : 'Operations Copilot'
-
-    // Deputy Manager handles Front Desk & Operations
-    if (role === 'Deputy Manager') {
+    // Owner has full access to Executive Copilot, Financial Reports, and Audit Engine
+    if (role === 'Owner') {
       return [
-        { id: 'chatbot' as AIFeatureTab, label: copilotLabel, icon: <Bot size={14} /> }
-      ]
-    }
-
-    // Owner and Manager have access to Financial Reports and Audit Engine
-    if (role === 'Owner' || role === 'Manager') {
-      return [
-        { id: 'chatbot' as AIFeatureTab, label: copilotLabel, icon: <Bot size={14} /> },
+        { id: 'chatbot' as AIFeatureTab, label: 'Executive Copilot', icon: <Bot size={14} /> },
         { id: 'reports' as AIFeatureTab, label: 'Financial Reports', icon: <FileSpreadsheet size={14} /> },
         {
           id: 'audit' as AIFeatureTab,
@@ -598,7 +584,15 @@ export function AIFeaturesView({
       ]
     }
 
-    // Housekeeper has no access
+    // Manager has access to Management Copilot and Financial Reports (no Audit Logs in main)
+    if (role === 'Manager') {
+      return [
+        { id: 'chatbot' as AIFeatureTab, label: 'Management Copilot', icon: <Bot size={14} /> },
+        { id: 'reports' as AIFeatureTab, label: 'Financial Reports', icon: <FileSpreadsheet size={14} /> }
+      ]
+    }
+
+    // Deputy Manager and Housekeeper do not have access to Intelligence/Audit features in main
     return []
   }, [role, openDiscrepanciesCount])
 
@@ -609,7 +603,7 @@ export function AIFeaturesView({
     }
   }, [allowedTabs, activeTab])
 
-  if (role === 'Housekeeper' || allowedTabs.length === 0) {
+  if (role === 'Housekeeper' || role === 'Deputy Manager' || allowedTabs.length === 0) {
     return (
       <div className="card p-8 text-center max-w-md mx-auto my-12">
         <div className="w-12 h-12 rounded-full bg-amber-50 text-amber-700 flex items-center justify-center mx-auto mb-3">
@@ -617,7 +611,7 @@ export function AIFeaturesView({
         </div>
         <h2 className="text-base font-bold text-[#202922]">Access Restricted</h2>
         <p className="text-xs text-[#627065] mt-1.5">
-          Intelligence features are reserved for front office and management personnel.
+          Your active role ({role}) does not have permission to view AI and Financial Intelligence features.
         </p>
       </div>
     )
@@ -668,7 +662,7 @@ export function AIFeaturesView({
               <Sparkles size={24} />
             </div>
             <div>
-              <span>{role === 'Owner' ? 'EXECUTIVE INTELLIGENCE' : role === 'Manager' ? 'TACTICAL OPERATIONS AI' : 'FRONT DESK AI'}</span>
+              <span>{role === 'Owner' ? 'EXECUTIVE INTELLIGENCE' : 'TACTICAL OPERATIONS AI'}</span>
               <h2>{currentConfig.assistantName}</h2>
             </div>
           </div>

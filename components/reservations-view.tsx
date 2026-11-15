@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useMemo } from 'react'
+import React, { useEffect, useState, useMemo } from 'react'
 import {
   CalendarDays, Plus, Search, Filter, Download, ChevronRight, ChevronLeft,
   X, Check, AlertCircle, Clock, CreditCard, FileText, Printer, Send,
@@ -78,13 +78,17 @@ interface ReservationsViewProps {
   onUpdateReservations: (updater: (prev: Reservation[]) => Reservation[]) => void
   role: Role
   notify: (msg: string) => void
+  openCreateRequest: boolean
+  onCreateRequestOpened: () => void
 }
 
 export function ReservationsView({
   reservations,
   onUpdateReservations,
   role,
-  notify
+  notify,
+  openCreateRequest,
+  onCreateRequestOpened
 }: ReservationsViewProps) {
   // Navigation tabs within Reservations
   const [activeTab, setActiveTab] = useState<'table' | 'availability' | 'reports'>('table')
@@ -146,6 +150,13 @@ export function ReservationsView({
   const canViewFinancials = !isHousekeeper
   const canViewReports = isOwner || isManager
   const canExport = !isHousekeeper
+
+  useEffect(() => {
+    if (openCreateRequest && canCreateReservation) {
+      setShowCreateModal(true)
+      onCreateRequestOpened()
+    }
+  }, [openCreateRequest, canCreateReservation, onCreateRequestOpened])
 
   // Switch tab back if role does not have report access
   React.useEffect(() => {
@@ -2066,4 +2077,3 @@ export function ReservationsView({
     </div>
   )
 }
-

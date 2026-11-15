@@ -1,13 +1,13 @@
 'use client'
 
 import { useEffect, useMemo, useState } from 'react'
-import { Activity, ArrowDownRight, ArrowUpRight, Bell, CalendarDays, Check, ChevronDown, ChevronLeft, ChevronRight, CircleHelp, ClipboardCheck, CreditCard, Download, FileText, Filter, Home, Hotel, LayoutDashboard, Menu, MessageCircle, MoreHorizontal, Plus, Search, Settings, ShieldCheck, Sparkles, TrendingUp, Users, Wallet, X } from 'lucide-react'
+import { Activity, ArrowDownRight, ArrowUpRight, Bell, CalendarDays, Check, ChevronDown, ChevronLeft, ChevronRight, CircleHelp, ClipboardCheck, CreditCard, Download, FileText, Filter, Home, Hotel, LayoutDashboard, Mail, MapPin, Menu, MessageCircle, MoreHorizontal, Phone, Plus, Search, Settings, ShieldCheck, Sparkles, TrendingUp, Users, Wallet, X } from 'lucide-react'
 import { ReservationsView, Reservation, BookingStatus, Role, ReservationAuditLog } from './reservations-view'
 import { AIFeaturesView } from './ai-features-view'
 import { PaymentsFinanceView } from './payments-finance-view'
 import { PricingPromotionsView } from './pricing-promotions-view'
 
-const initialReservations: Reservation[] = [
+const currentReservations: Reservation[] = [
   {
     id: 'VT-2481',
     guest: 'Amelia Hart',
@@ -199,6 +199,75 @@ const initialReservations: Reservation[] = [
     reminderSent: false
   }
 ]
+type HistoricalDemoReservation = Pick<Reservation, 'id' | 'guest' | 'room' | 'checkIn' | 'checkOut' | 'guests' | 'source' | 'ratePerNight' | 'paid' | 'status'>
+
+const historicalDemoReservations: Reservation[] = ([
+  { id: 'VT-2460', guest: 'Mila Perera', room: 'Room 01', checkIn: '2026-01-05', checkOut: '2026-01-09', guests: 2, source: 'Direct · Website', ratePerNight: 22800, paid: 91200, status: 'Checked Out' },
+  { id: 'VT-2461', guest: 'James Wilson', room: 'Room 02', checkIn: '2026-01-05', checkOut: '2026-01-10', guests: 2, source: 'Booking.com', ratePerNight: 22800, paid: 114000, status: 'Checked Out' },
+  { id: 'VT-2462', guest: 'Roshani Fernando', room: 'Room 03', checkIn: '2026-01-17', checkOut: '2026-01-21', guests: 2, source: 'Airbnb', ratePerNight: 26000, paid: 104000, status: 'Checked Out' },
+  { id: 'VT-2463', guest: 'Oliver James', room: 'Room 04', checkIn: '2026-01-24', checkOut: '2026-01-27', guests: 3, source: 'Agoda', ratePerNight: 28000, paid: 84000, status: 'Checked Out' },
+  { id: 'VT-2464', guest: 'Asha Kumar', room: 'Room 01', checkIn: '2026-02-01', checkOut: '2026-02-05', guests: 2, source: 'Direct · WhatsApp', ratePerNight: 22800, paid: 91200, status: 'Checked Out' },
+  { id: 'VT-2465', guest: 'Noah Smith', room: 'Room 03', checkIn: '2026-02-01', checkOut: '2026-02-04', guests: 2, source: 'Booking.com', ratePerNight: 26000, paid: 78000, status: 'Checked Out' },
+  { id: 'VT-2474', guest: 'Priya Wijesinghe', room: 'Room 02', checkIn: '2026-02-11', checkOut: '2026-02-14', guests: 2, source: 'Direct · Website', ratePerNight: 22800, paid: 68400, status: 'Checked Out' },
+  { id: 'VT-2466', guest: 'Luca Martin', room: 'Room 04', checkIn: '2026-02-20', checkOut: '2026-02-25', guests: 3, source: 'Airbnb', ratePerNight: 28000, paid: 140000, status: 'Checked Out' },
+  { id: 'VT-2467', guest: 'Sanjana de Silva', room: 'Room 01', checkIn: '2026-03-03', checkOut: '2026-03-08', guests: 2, source: 'Direct · Website', ratePerNight: 22800, paid: 114000, status: 'Checked Out' },
+  { id: 'VT-2468', guest: 'Ethan Brooks', room: 'Room 02', checkIn: '2026-03-03', checkOut: '2026-03-07', guests: 2, source: 'Booking.com', ratePerNight: 22800, paid: 91200, status: 'Checked Out' },
+  { id: 'VT-2469', guest: 'Ishani Rajapaksa', room: 'Room 03', checkIn: '2026-03-12', checkOut: '2026-03-16', guests: 2, source: 'Direct · WhatsApp', ratePerNight: 26000, paid: 104000, status: 'Checked Out' },
+  { id: 'VT-2470', guest: 'Mason Clarke', room: 'Room 04', checkIn: '2026-03-19', checkOut: '2026-03-24', guests: 4, source: 'Agoda', ratePerNight: 28000, paid: 140000, status: 'Checked Out' },
+  { id: 'VT-2475', guest: 'Aiden Cole', room: 'Room 03', checkIn: '2026-04-04', checkOut: '2026-04-07', guests: 2, source: 'Booking.com', ratePerNight: 26000, paid: 78000, status: 'Checked Out' },
+  { id: 'VT-2471', guest: 'Zara Thompson', room: 'Room 01', checkIn: '2026-04-12', checkOut: '2026-04-17', guests: 2, source: 'Airbnb', ratePerNight: 22800, paid: 114000, status: 'Checked Out' },
+  { id: 'VT-2472', guest: 'Kavish Perera', room: 'Room 04', checkIn: '2026-04-22', checkOut: '2026-04-27', guests: 3, source: 'Direct · Website', ratePerNight: 28000, paid: 140000, status: 'Checked Out' },
+  { id: 'VT-2473', guest: 'Grace Liu', room: 'Room 02', checkIn: '2026-05-02', checkOut: '2026-05-07', guests: 2, source: 'Booking.com', ratePerNight: 22800, paid: 114000, status: 'Checked Out' },
+  { id: 'VT-2489', guest: 'Dilan Jayawardena', room: 'Room 03', checkIn: '2026-05-04', checkOut: '2026-05-10', guests: 2, source: 'Direct · WhatsApp', ratePerNight: 26000, paid: 156000, status: 'Checked Out' },
+  { id: 'VT-2490', guest: 'Sofia Garcia', room: 'Room 01', checkIn: '2026-05-18', checkOut: '2026-05-23', guests: 2, source: 'Airbnb', ratePerNight: 22800, paid: 114000, status: 'Checked Out' },
+  { id: 'VT-2476', guest: 'Tharushi de Silva', room: 'Room 01', checkIn: '2026-06-12', checkOut: '2026-06-15', guests: 2, source: 'Direct · WhatsApp', ratePerNight: 22800, paid: 68400, status: 'Checked Out' },
+  { id: 'VT-2491', guest: 'Nethmi Silva', room: 'Room 02', checkIn: '2026-06-08', checkOut: '2026-06-13', guests: 2, source: 'Booking.com', ratePerNight: 22800, paid: 114000, status: 'Checked Out' },
+  { id: 'VT-2492', guest: 'Arjun Mehta', room: 'Room 04', checkIn: '2026-06-20', checkOut: '2026-06-25', guests: 4, source: 'Agoda', ratePerNight: 28000, paid: 140000, status: 'Checked Out' },
+  { id: 'VT-2493', guest: 'Mia Robinson', room: 'Room 01', checkIn: '2026-07-02', checkOut: '2026-07-08', guests: 2, source: 'Direct · Website', ratePerNight: 22800, paid: 136800, status: 'Checked Out' },
+  { id: 'VT-2494', guest: 'Kasun Ekanayake', room: 'Room 02', checkIn: '2026-07-02', checkOut: '2026-07-09', guests: 2, source: 'Booking.com', ratePerNight: 22800, paid: 159600, status: 'Checked Out' },
+  { id: 'VT-2495', guest: 'Amelie Dubois', room: 'Room 03', checkIn: '2026-07-12', checkOut: '2026-07-17', guests: 3, source: 'Airbnb', ratePerNight: 26000, paid: 130000, status: 'Checked Out' },
+  { id: 'VT-2496', guest: 'Harini Senanayake', room: 'Room 04', checkIn: '2026-07-21', checkOut: '2026-07-26', guests: 4, source: 'Direct · WhatsApp', ratePerNight: 28000, paid: 140000, status: 'Checked Out' },
+  { id: 'VT-2477', guest: 'Elena Rossi', room: 'Room 04', checkIn: '2026-08-19', checkOut: '2026-08-23', guests: 3, source: 'Airbnb', ratePerNight: 28000, paid: 84000, status: 'Checked Out' },
+  { id: 'VT-2497', guest: 'Liam Taylor', room: 'Room 01', checkIn: '2026-08-05', checkOut: '2026-08-10', guests: 2, source: 'Booking.com', ratePerNight: 22800, paid: 114000, status: 'Checked Out' },
+  { id: 'VT-2498', guest: 'Dinithi Perera', room: 'Room 02', checkIn: '2026-08-12', checkOut: '2026-08-17', guests: 2, source: 'Direct · Website', ratePerNight: 22800, paid: 114000, status: 'Checked Out' },
+  { id: 'VT-2478', guest: 'Theo Martin', room: 'Room 02', checkIn: '2026-09-10', checkOut: '2026-09-13', guests: 2, source: 'Airbnb', ratePerNight: 22800, paid: 68400, status: 'Checked Out' },
+  { id: 'VT-2499', guest: 'Ella Williams', room: 'Room 01', checkIn: '2026-09-01', checkOut: '2026-09-05', guests: 2, source: 'Direct · WhatsApp', ratePerNight: 22800, paid: 91200, status: 'Checked Out' },
+  { id: 'VT-2500', guest: 'Ravi Jayasinghe', room: 'Room 04', checkIn: '2026-09-18', checkOut: '2026-09-23', guests: 3, source: 'Agoda', ratePerNight: 28000, paid: 140000, status: 'Checked Out' },
+  { id: 'VT-2479', guest: 'Amara Jayawardena', room: 'Room 03', checkIn: '2026-10-02', checkOut: '2026-10-05', guests: 2, source: 'Agoda', ratePerNight: 26000, paid: 78000, status: 'Checked Out' },
+  { id: 'VT-2480', guest: 'Samir Patel', room: 'Room 01', checkIn: '2026-10-21', checkOut: '2026-10-24', guests: 2, source: 'Booking.com', ratePerNight: 22800, paid: 68400, status: 'Checked Out' },
+  { id: 'VT-2501', guest: 'Mei Tan', room: 'Room 02', checkIn: '2026-10-08', checkOut: '2026-10-13', guests: 2, source: 'Airbnb', ratePerNight: 22800, paid: 114000, status: 'Checked Out' },
+  { id: 'VT-2502', guest: 'Ruwan Fernando', room: 'Room 04', checkIn: '2026-10-14', checkOut: '2026-10-20', guests: 3, source: 'Direct · Website', ratePerNight: 28000, paid: 168000, status: 'Checked Out' },
+  { id: 'VT-2503', guest: 'Isabel Costa', room: 'Room 03', checkIn: '2026-10-17', checkOut: '2026-10-22', guests: 2, source: 'Booking.com', ratePerNight: 26000, paid: 130000, status: 'Checked Out' },
+  { id: 'VT-2504', guest: 'Daniela Moretti', room: 'Room 02', checkIn: '2026-12-03', checkOut: '2026-12-08', guests: 2, source: 'Airbnb', ratePerNight: 22800, paid: 57000, status: 'Confirmed' },
+  { id: 'VT-2505', guest: 'Benjamin Lee', room: 'Room 04', checkIn: '2026-12-14', checkOut: '2026-12-20', guests: 4, source: 'Direct · Website', ratePerNight: 28000, paid: 84000, status: 'Confirmed' },
+ ] satisfies HistoricalDemoReservation[]).map((reservation): Reservation => {
+  const total = Math.round((Date.parse(`${reservation.checkOut}T00:00:00`) - Date.parse(`${reservation.checkIn}T00:00:00`)) / 86400000) * reservation.ratePerNight
+  const payment: Reservation['payments'][number] = {
+    id: `PAY-${reservation.id}`,
+    amount: reservation.paid,
+    date: reservation.checkIn,
+    method: 'Credit Card',
+    receiptNumber: `REC-${reservation.id}`,
+    reference: 'Demo reservation payment'
+  }
+  return {
+    ...reservation,
+    guestEmail: `${reservation.guest.toLowerCase().replace(/\s+/g, '.')}@example.com`,
+    guestPhone: '+94 77 123 4567',
+    total,
+    paymentStatus: reservation.paid >= total ? 'Paid' : 'Partially Paid',
+    payments: [payment],
+    history: [{
+      id: `LOG-${reservation.id}`,
+      timestamp: `${reservation.checkIn}T09:00:00`,
+      action: 'Created',
+      performedBy: `Demo data · ${reservation.source}`,
+      note: 'Sample historical reservation for dashboard presentation.'
+    }]
+  }
+})
+const initialReservations: Reservation[] = [...historicalDemoReservations, ...currentReservations]
+
 const navGroups = [
   { label: 'OVERVIEW', items: [{ name: 'Dashboard', icon: LayoutDashboard, roles: ['Owner', 'Manager', 'Deputy Manager', 'Housekeeper'] }] },
   { label: 'HOTEL OPERATIONS', items: [{ name: 'Reservations', icon: CalendarDays, roles: ['Owner', 'Manager', 'Deputy Manager'] }, { name: 'Rooms', icon: Hotel, roles: ['Owner', 'Manager', 'Deputy Manager', 'Housekeeper'] }, { name: 'Guests', icon: Users, roles: ['Owner', 'Manager', 'Deputy Manager'] }, { name: 'Daily Operations', icon: ClipboardCheck, roles: ['Owner', 'Manager', 'Deputy Manager', 'Housekeeper'] }, { name: 'Staff & Tasks', icon: Activity, roles: ['Owner', 'Manager', 'Deputy Manager', 'Housekeeper'] }] },
@@ -221,20 +290,27 @@ export function HotelManagementApp() {
   const [reservations, setReservations] = useState<Reservation[]>(initialReservations)
   const [query, setQuery] = useState('')
   const [statusFilter, setStatusFilter] = useState('All statuses')
-  const [showCreate, setShowCreate] = useState(false)
+  const [createReservationRequested, setCreateReservationRequested] = useState(false)
   const [showNotifications, setShowNotifications] = useState(false)
   const [notice, setNotice] = useState('')
   const [period, setPeriod] = useState('This month')
   const [taskStates, setTaskStates] = useState(['In progress', 'Pending', 'Inspection required'])
-  const [newGuest, setNewGuest] = useState('')
-  const [newRoom, setNewRoom] = useState('Room 01')
-  const [newDates, setNewDates] = useState({ checkIn: '2026-11-29', checkOut: '2026-12-02' })
   const [saved, setSaved] = useState(false)
 
   useEffect(() => {
     const stored = window.localStorage.getItem('villa-tea-fields-demo')
     if (stored) {
-      try { const data = JSON.parse(stored); if (data.reservations) setReservations(data.reservations); if (data.taskStates) setTaskStates(data.taskStates) } catch { window.localStorage.removeItem('villa-tea-fields-demo') }
+      try {
+        const data = JSON.parse(stored)
+        if (data.reservations) {
+          const savedReservations = data.reservations as Reservation[]
+          const savedIds = new Set(savedReservations.map(item => item.id))
+          setReservations([...historicalDemoReservations.filter(item => !savedIds.has(item.id)), ...savedReservations])
+        }
+        if (data.taskStates) setTaskStates(data.taskStates)
+      } catch {
+        window.localStorage.removeItem('villa-tea-fields-demo')
+      }
     }
     setSaved(true)
   }, [])
@@ -259,7 +335,6 @@ export function HotelManagementApp() {
 
   const filteredReservations = useMemo(() => reservations.filter(item => (statusFilter === 'All statuses' || item.status === statusFilter) && `${item.id} ${item.guest} ${item.room} ${item.source}`.toLowerCase().includes(query.toLowerCase())), [reservations, statusFilter, query])
   const pending = reservations.filter(item => item.status === 'Pending Approval').length
-  const arrivals = reservations.filter(item => item.checkIn === '2026-11-14' && ['Confirmed', 'Checked In'].includes(item.status)).length
   const totalRevenue = reservations.filter(item => !['Cancelled'].includes(item.status)).reduce((sum, item) => sum + item.paid, 0)
   const notify = (message: string) => { setNotice(message); window.setTimeout(() => setNotice(''), 3200) }
   const approve = (id: string, status: BookingStatus) => {
@@ -280,42 +355,9 @@ export function HotelManagementApp() {
     }))
     notify(status === 'Confirmed' ? 'Reservation approved · relevant staff & guest notified' : 'Reservation rejected')
   }
-  const createReservation = () => {
-    if (!newGuest.trim() || !newDates.checkIn || !newDates.checkOut || newDates.checkOut <= newDates.checkIn) { notify('Add a guest name and valid stay dates'); return }
-    const conflict = reservations.some(item => item.room === newRoom && !['Cancelled', 'Rejected', 'Checked Out'].includes(item.status) && newDates.checkIn < item.checkOut && newDates.checkOut > item.checkIn)
-    if (conflict) { notify('Those dates overlap an active reservation for this room'); return }
-    const nights = Math.max(1, Math.round((new Date(newDates.checkOut).getTime() - new Date(newDates.checkIn).getTime()) / 86400000))
-    const price = newRoom === 'Room 03' ? 26000 : 22800
-    const newId = `VT-${2490 + reservations.length}`
-    const newRes: Reservation = {
-      id: newId,
-      guest: newGuest,
-      guestEmail: `${newGuest.toLowerCase().replace(/\s+/g, '.')}@example.com`,
-      guestPhone: '+94 77 123 4567',
-      room: newRoom,
-      checkIn: newDates.checkIn,
-      checkOut: newDates.checkOut,
-      guests: 2,
-      source: 'Direct · Website',
-      ratePerNight: price,
-      total: nights * price,
-      paid: 0,
-      status: 'Pending Approval',
-      paymentStatus: 'Unpaid',
-      payments: [],
-      history: [
-        {
-          id: `LOG-${Date.now()}`,
-          timestamp: new Date().toLocaleString('en-US', { dateStyle: 'medium', timeStyle: 'short' }),
-          action: 'Created',
-          performedBy: `${role} (${role === 'Owner' ? 'Anushka S.' : 'Staff'})`,
-          note: `Quick booking created for ${newGuest} (${newRoom}, ${nights} nights).`
-        }
-      ],
-      reminderSent: false
-    }
-    setReservations(current => [newRes, ...current])
-    setShowCreate(false); setNewGuest(''); setPage('Reservations'); notify(`Booking request ${newId} created · awaiting owner approval`)
+  const openNewReservation = () => {
+    setPage('Reservations')
+    setCreateReservationRequested(true)
   }
   const setTask = (index: number, state: string) => setTaskStates(current => current.map((value, itemIndex) => itemIndex === index ? state : value))
 
@@ -330,13 +372,15 @@ export function HotelManagementApp() {
       {showNotifications && <div className="notification-popover"><div className="popover-head"><strong>Notifications</strong><button onClick={() => { setShowNotifications(false); notify('All caught up') }}>Mark all read</button></div><div className="notice-row"><span className="notice-dot gold-dot"/><div><strong>{pending} booking requests need review</strong><small>New reservations · just now</small></div></div><div className="notice-row"><span className="notice-dot green-dot"/><div><strong>Room 03 is ready for inspection</strong><small>Housekeeping · 18 minutes ago</small></div></div><div className="notice-row"><span className="notice-dot blue-dot"/><div><strong>Guest arrival: Nimal Perera</strong><small>Today at 2:00 PM</small></div></div></div>}
     </header>
     <div className="page-content">
-      {page === 'Dashboard' && <Dashboard role={role} period={period} setPeriod={setPeriod} pending={pending} arrivals={arrivals} revenue={totalRevenue} reservations={reservations} approve={approve} setPage={setPage} tasks={taskStates} setTask={setTask} />}
+      {page === 'Dashboard' && <Dashboard role={role} period={period} setPeriod={setPeriod} reservations={reservations} approve={approve} setPage={setPage} onNewReservation={openNewReservation} tasks={taskStates} setTask={setTask} />}
       {page === 'Reservations' && allowedPages.includes('Reservations') && (
         <ReservationsView
           reservations={reservations}
           onUpdateReservations={setReservations}
           role={role}
           notify={notify}
+          openCreateRequest={createReservationRequested}
+          onCreateRequestOpened={() => setCreateReservationRequested(false)}
         />
       )}
       {page === 'Rooms' && allowedPages.includes('Rooms') && <Rooms />}
@@ -382,12 +426,104 @@ export function HotelManagementApp() {
         </div>
       )}
     </div></main>
-    {showCreate && role !== 'Housekeeper' && <div className="modal-backdrop" role="presentation" onClick={event => { if (event.target === event.currentTarget) setShowCreate(false) }}><section className="modal" role="dialog" aria-modal="true" aria-labelledby="create-title"><div className="modal-head"><div><p className="eyebrow">NEW BOOKING</p><h2 id="create-title">Create reservation request</h2></div><button className="icon-button" onClick={() => setShowCreate(false)} aria-label="Close"><X size={18}/></button></div><p className="modal-copy">New requests are sent to the owner for approval before confirmation.</p><div className="form-grid"><label className="form-field wide">Guest name<input autoFocus placeholder="e.g. Priya Perera" value={newGuest} onChange={event => setNewGuest(event.target.value)}/></label><label className="form-field">Room<select value={newRoom} onChange={event => setNewRoom(event.target.value)}>{rooms.map(room => <option key={room.name}>{room.name}</option>)}</select></label><label className="form-field">Guests<select><option>2 guests</option><option>1 guest</option><option>3 guests</option><option>4 guests</option></select></label><label className="form-field">Check in<input type="date" value={newDates.checkIn} onChange={event => setNewDates({ ...newDates, checkIn: event.target.value })}/></label><label className="form-field">Check out<input type="date" value={newDates.checkOut} onChange={event => setNewDates({ ...newDates, checkOut: event.target.value })}/></label></div><div className="modal-footer"><button className="button secondary" onClick={() => setShowCreate(false)}>Cancel</button><button className="button primary" onClick={createReservation}>Submit for approval <ChevronRight size={15}/></button></div></section></div>}
     {notice && <div className="toast-message"><span><Check size={15}/></span>{notice}</div>}
   </div>
 }
 
-function Dashboard({ role, period, setPeriod, pending, arrivals, revenue, reservations, approve, setPage, tasks, setTask }: { role: Role; period: string; setPeriod: (period: string) => void; pending: number; arrivals: number; revenue: number; reservations: Reservation[]; approve: (id: string, status: BookingStatus) => void; setPage: (page: string) => void; tasks: string[]; setTask: (index: number, state: string) => void }) {
+function Dashboard({ role, period, setPeriod, reservations, approve, setPage, onNewReservation, tasks, setTask }: { role: Role; period: string; setPeriod: (period: string) => void; reservations: Reservation[]; approve: (id: string, status: BookingStatus) => void; setPage: (page: string) => void; onNewReservation: () => void; tasks: string[]; setTask: (index: number, state: string) => void }) {
+  if (role === 'Housekeeper') {
+    return <LegacyDashboard role={role} period={period} setPeriod={setPeriod} pending={0} arrivals={reservations.filter(item => item.checkIn === '2026-11-14').length} revenue={0} reservations={reservations} approve={approve} setPage={setPage} tasks={tasks} setTask={setTask} />
+  }
+
+  const canApprove = role === 'Owner' || role === 'Manager'
+  const canViewFinancials = canApprove
+  const rangeStart = period === 'This week' ? '2026-11-08' : period === 'This month' ? '2026-11-01' : '2026-01-01'
+  const rangeEnd = period === 'This week' ? '2026-11-14' : period === 'This month' ? '2026-11-30' : '2026-12-31'
+  const periodReservations = reservations.filter(item =>
+    item.checkIn >= rangeStart && item.checkIn <= rangeEnd && item.status !== 'Cancelled'
+  )
+  const periodPending = periodReservations.filter(item => item.status === 'Pending Approval').length
+  const periodRevenue = periodReservations.reduce((sum, item) => sum + item.paid, 0)
+  const dayCount = Math.round((Date.parse(`${rangeEnd}T00:00:00`) - Date.parse(`${rangeStart}T00:00:00`)) / 86400000) + 1
+  const occupiedNights = reservations.reduce((sum, item) => {
+    if (item.status === 'Cancelled') return sum
+    const start = Math.max(Date.parse(`${item.checkIn}T00:00:00`), Date.parse(`${rangeStart}T00:00:00`))
+    const end = Math.min(Date.parse(`${item.checkOut}T00:00:00`), Date.parse(`${rangeEnd}T00:00:00`) + 86400000)
+    return sum + Math.max(0, Math.round((end - start) / 86400000))
+  }, 0)
+  const occupancy = Math.min(100, Math.round(occupiedNights / (dayCount * 4) * 100))
+  const todayArrivals = reservations.filter(item => item.checkIn === '2026-11-14' && ['Confirmed', 'Checked In'].includes(item.status)).length
+  const todayDepartures = reservations.filter(item => item.checkOut === '2026-11-14' && item.status !== 'Cancelled').length
+
+  const dateLabel = (date: Date) => date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+  const buckets = period === 'This week'
+    ? Array.from({ length: 7 }, (_, index) => {
+      const date = `2026-11-${String(8 + index).padStart(2, '0')}`
+      return { start: date, end: date, label: dateLabel(new Date(`${date}T12:00:00`)) }
+    })
+    : period === 'This month'
+      ? Array.from({ length: 5 }, (_, index) => {
+        const firstDay = index * 7 + 1
+        const lastDay = Math.min(firstDay + 6, 30)
+        const start = `2026-11-${String(firstDay).padStart(2, '0')}`
+        const end = `2026-11-${String(lastDay).padStart(2, '0')}`
+        return { start, end, label: `${firstDay}-${lastDay}` }
+      })
+      : Array.from({ length: 12 }, (_, index) => {
+        const monthStart = new Date(Date.UTC(2026, index, 1))
+        const monthEnd = new Date(Date.UTC(2026, index + 1, 0))
+        return {
+          start: monthStart.toISOString().slice(0, 10),
+          end: monthEnd.toISOString().slice(0, 10),
+          label: monthStart.toLocaleDateString('en-US', { month: 'short' })
+        }
+      })
+  const chartValues = buckets.map(bucket => periodReservations
+    .filter(item => item.checkIn >= bucket.start && item.checkIn <= bucket.end)
+    .reduce((sum, item) => sum + item.paid, 0))
+  const occupancyValues = buckets.map(bucket => {
+    const bucketStart = Date.parse(`${bucket.start}T00:00:00`)
+    const bucketEnd = Date.parse(`${bucket.end}T00:00:00`) + 86400000
+    const nights = reservations.reduce((sum, item) => {
+      if (item.status === 'Cancelled') return sum
+      const start = Math.max(Date.parse(`${item.checkIn}T00:00:00`), bucketStart)
+      const end = Math.min(Date.parse(`${item.checkOut}T00:00:00`), bucketEnd)
+      return sum + Math.max(0, Math.round((end - start) / 86400000))
+    }, 0)
+    const days = Math.round((bucketEnd - bucketStart) / 86400000)
+    return Math.min(100, Math.round(nights / (days * 4) * 100))
+  })
+  const channels = [
+    { name: 'Direct', matches: (source: string) => source.startsWith('Direct') || source === 'Walk-in Guest' },
+    { name: 'Booking.com', matches: (source: string) => source === 'Booking.com' },
+    { name: 'Airbnb', matches: (source: string) => source === 'Airbnb' },
+    { name: 'Other', matches: (source: string) => !['Booking.com', 'Airbnb', 'Walk-in Guest'].includes(source) && !source.startsWith('Direct') }
+  ].map(channel => {
+    const count = periodReservations.filter(item => channel.matches(item.source)).length
+    return { ...channel, count, share: periodReservations.length ? Math.round(count / periodReservations.length * 100) : 0 }
+  })
+  const upcoming = periodReservations
+    .filter(item => !['Checked Out', 'Cancelled'].includes(item.status))
+    .sort((a, b) => a.checkIn.localeCompare(b.checkIn))
+    .slice(0, 5)
+
+  return <><div className="page-heading"><div><p className="eyebrow">SATURDAY, NOVEMBER 14, 2026 <span className="live-pill"><i /> LIVE OVERVIEW</span></p><h1>{role === 'Owner' ? 'Good morning, Anushka' : role === 'Manager' ? 'Good morning, Mira' : 'Good morning, Ruwan'}</h1><p className="subheading">Here’s what’s happening at Villa Tea Fields {period.toLowerCase()}.</p></div><div className="heading-actions"><select className="period-select" aria-label="Dashboard date range" value={period} onChange={event => setPeriod(event.target.value)}><option>This week</option><option>This month</option><option>This year</option></select><button className="button primary" onClick={onNewReservation}><Plus size={16} /> New reservation</button></div></div>
+    <section className="stats-grid">
+      <Stat icon={<Hotel />} label="OCCUPANCY RATE" value={`${occupancy}%`} note={`During ${period.toLowerCase()}`} tone="green" />
+      <Stat icon={<CalendarDays />} label="TODAY’S ARRIVALS" value={String(todayArrivals).padStart(2, '0')} note={todayArrivals ? `${todayArrivals} guest check-in${todayArrivals === 1 ? '' : 's'} today` : 'No confirmed arrivals'} tone="sand" />
+      <Stat icon={<LogOutIcon />} label="TODAY’S DEPARTURES" value={String(todayDepartures).padStart(2, '0')} note={todayDepartures ? 'Scheduled check-outs today' : 'No check-outs today'} tone="blue" />
+      <Stat icon={canViewFinancials ? <Wallet /> : <ClipboardCheck />} label={canViewFinancials ? 'REVENUE' : 'ROOMS READY'} value={canViewFinancials ? money(periodRevenue) : '2 / 4'} note={canViewFinancials ? `For ${period.toLowerCase()}` : '2 rooms need attention'} tone="purple" />
+    </section>
+    <section className="dashboard-grid">
+      <div className="card trend-card"><div className="card-heading"><div><h2>{canViewFinancials ? 'Revenue & occupancy' : 'Today at a glance'}</h2><p>{canViewFinancials ? `Performance for ${period.toLowerCase()}` : 'A live view of hotel operations'}</p></div><button className="text-button" onClick={() => setPage(canViewFinancials ? 'Reports & Analytics' : 'Daily Operations')}>{canViewFinancials ? 'View Reports & Analytics' : 'View report'} <ChevronRight size={14} /></button></div><div className="chart-key"><span><i className="key-green" /> Revenue <b>{money(periodRevenue)}</b></span><span><i className="key-gold" /> Occupancy % <b>{occupancy}%</b></span></div><PeriodRevenueChart values={chartValues} occupancyValues={occupancyValues} labels={buckets.map(bucket => bucket.label)} /><div className="chart-months">{buckets.map(bucket => <span key={bucket.label}>{bucket.label}</span>)}</div></div>
+      <div className="card channel-card"><div className="card-heading"><div><h2>Booking channels</h2><p>Reservations for {period.toLowerCase()}</p></div><button className="subtle-icon" aria-label={canViewFinancials ? 'View channel analytics' : 'View reservations'} onClick={() => setPage(canViewFinancials ? 'Reports & Analytics' : 'Reservations')}><MoreHorizontal size={18} /></button></div><PeriodChannelChart count={periodReservations.length} shares={channels.map(channel => channel.share)} /><div className="channel-legend">{channels.map((channel, index) => <span key={channel.name}><i className={`dot ${['direct', 'ota', 'airbnb', 'other'][index]}`} />{channel.name} <b>{channel.share}%</b></span>)}</div><div className="channel-insight"><TrendingUp size={15} /><span>{channels[0].share}% of {period.toLowerCase()} bookings are direct</span></div></div>
+    </section>
+    <section className="lower-grid"><div className="card arrivals-card"><div className="card-heading"><div><h2>Upcoming reservations</h2><p>Arrivals and booking requests · {period.toLowerCase()}</p></div><button className="text-button" onClick={() => setPage('Reservations')}>All reservations <ChevronRight size={14} /></button></div><div className="table-wrap"><table><thead><tr><th>GUEST</th><th>ROOM</th><th>CHECK IN</th><th>SOURCE</th><th>STATUS</th>{canApprove && <th />}</tr></thead><tbody>{upcoming.map(item => <tr key={item.id}><td><div className="guest-cell"><div className="guest-avatar">{item.guest.split(' ').map(part => part[0]).slice(0, 2).join('')}</div><div><strong>{item.guest}</strong><small>{item.id}</small></div></div></td><td>{item.room}</td><td>{item.checkIn === '2026-11-14' ? 'Today' : new Date(`${item.checkIn}T12:00:00`).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</td><td>{item.source.replace('Direct · ', '')}</td><td><StatusBadge status={item.status} /></td>{canApprove && item.status === 'Pending Approval' && <td><button className="approve-mini" onClick={() => approve(item.id, 'Confirmed')}>Approve</button></td>}</tr>)}</tbody></table></div><div className="table-footer"><span>Showing <strong>{upcoming.length}</strong> of {periodReservations.length} reservations</span><button onClick={() => setPage('Reservations')}>View all reservations <span>→</span></button></div></div>
+      <div className="card attention-card"><div className="card-heading"><div><h2>Needs your attention</h2><p>Items that may need a follow-up</p></div><span className="attention-count">{periodPending + 2}</span></div><div className="attention-item"><div className="attention-icon amber"><CalendarDays size={16} /></div><div><strong>{periodPending} booking requests awaiting approval</strong><span>Review and respond to booking inquiries</span></div><button onClick={() => setPage('Reservations')} aria-label="View booking requests"><ChevronRight size={16} /></button></div><div className="attention-item"><div className="attention-icon rose"><ClipboardCheck size={16} /></div><div><strong>Room 03 ready for inspection</strong><span>Housekeeping · 18 min ago</span></div><button onClick={() => setPage('Daily Operations')} aria-label="View room inspection"><ChevronRight size={16} /></button></div>{canViewFinancials && <div className="attention-item"><div className="attention-icon blue"><CreditCard size={16} /></div><div><strong>2 payments need verification</strong><span>Bank transfers · LKR 68,400</span></div><button onClick={() => setPage('Payments & Finance')} aria-label="View payment verification"><ChevronRight size={16} /></button></div>}{canApprove && <div className="ai-insight"><div><Sparkles size={15} /><strong>AI business insight</strong><span>Weekend demand is trending 18% higher. Consider reviewing rates for the final week of November.</span></div><button onClick={() => setPage('AI Business Assistant')}>Explore insight <span>→</span></button></div>}</div></section>
+  </>
+}
+
+function LegacyDashboard({ role, period, setPeriod, pending, arrivals, revenue, reservations, approve, setPage, tasks, setTask }: { role: Role; period: string; setPeriod: (period: string) => void; pending: number; arrivals: number; revenue: number; reservations: Reservation[]; approve: (id: string, status: BookingStatus) => void; setPage: (page: string) => void; tasks: string[]; setTask: (index: number, state: string) => void }) {
   const isOwner = role === 'Owner';
   const isManager = role === 'Manager';
   const isHousekeeper = role === 'Housekeeper';
@@ -404,12 +540,197 @@ function Dashboard({ role, period, setPeriod, pending, arrivals, revenue, reserv
 function LogOutIcon(){return <ArrowDownRight />}
 function Stat({icon, label, value, change, note, tone}:{icon:React.ReactNode;label:string;value:string;change?:string;note:string;tone:string}){return <article className="stat-card"><div className="stat-top"><span className={`stat-icon ${tone}`}>{icon}</span>{change && <span className="stat-change"><ArrowUpRight size={13} />{change}</span>}</div><p>{label}</p><div className="stat-value">{value}</div><small>{note}</small></article>}
 function StatusBadge({status}:{status:string}){const cls=status.toLowerCase().replaceAll(' ','-');return <span className={`status-badge ${cls}`}><i />{status}</span>}
+function PeriodRevenueChart({ values, occupancyValues, labels }: { values: number[]; occupancyValues: number[]; labels: string[] }) {
+  const maximum = Math.max(...values, 1)
+  const points = values.map((value, index) => {
+    const x = values.length === 1 ? 320 : index / (values.length - 1) * 640
+    const y = 170 - value / maximum * 140
+    return `${x},${y}`
+  }).join(' ')
+  const areaPoints = values.length ? `0,180 ${points} 640,180` : ''
+  const occupancyPoints = occupancyValues.map((value, index) => {
+    const x = occupancyValues.length === 1 ? 320 : index / (occupancyValues.length - 1) * 640
+    const y = 170 - value / 100 * 140
+    return `${x},${y}`
+  }).join(' ')
+
+  return <div className="chart-area"><div className="chart-y"><span>{money(maximum)}</span><span>{money(maximum * .75)}</span><span>{money(maximum * .5)}</span><span>{money(maximum * .25)}</span><span>LKR 0</span></div><div className="chart-plot"><div className="chart-gridline" /><div className="chart-gridline" /><div className="chart-gridline" /><div className="chart-gridline" /><svg viewBox="0 0 640 190" preserveAspectRatio="none" role="img" aria-label={`Revenue and monthly occupancy for ${labels.join(', ')}`}><defs><linearGradient id="periodRevenueFill" x1="0" x2="0" y1="0" y2="1"><stop offset="0%" stopColor="#496f55" stopOpacity=".18" /><stop offset="100%" stopColor="#496f55" stopOpacity="0" /></linearGradient></defs><polygon points={areaPoints} fill="url(#periodRevenueFill)" /><polyline points={points} fill="none" stroke="#416849" strokeWidth="3" strokeLinejoin="round" strokeLinecap="round" /><polyline points={occupancyPoints} fill="none" stroke="#d1ab6b" strokeWidth="2.5" strokeDasharray="5 5" strokeLinejoin="round" strokeLinecap="round" /></svg><div className="chart-hover"><strong>{labels[labels.length - 1]}</strong><span>{money(values[values.length - 1] || 0)} revenue · {occupancyValues[occupancyValues.length - 1] || 0}% occupancy</span></div></div></div>
+}
+function PeriodChannelChart({ count, shares }: { count: number; shares: number[] }) {
+  const colors = ['#416849', '#d1ab6b', '#91a591', '#d8ddd5']
+  let cumulative = 0
+  const stops = shares.map((share, index) => {
+    const start = cumulative
+    cumulative += share
+    return `${colors[index]} ${start}% ${cumulative}%`
+  }).join(', ')
+  const style = { background: count ? `conic-gradient(${stops})` : '#e9ece7' }
+  return <div className="donut-wrap"><div className="donut" style={style}><div className="donut-inner"><strong>{count}</strong><span>bookings</span></div></div><div className="donut-total"><small>SELECTED PERIOD</small><strong>{count}</strong><span>reservations</span></div></div>
+}
 function RevenueChart(){const vals=[42,58,48,68,62,80,67,75,56,88,73,96,68,83,72,91,76,88,64,97,79,92,72,84,66,90,74,98,83,92,70,86,76,96,84,100,73,88,76,94];return <div className="chart-area"><div className="chart-y"><span>120k</span><span>90k</span><span>60k</span><span>30k</span><span>0</span></div><div className="chart-plot"><div className="chart-gridline" /><div className="chart-gridline" /><div className="chart-gridline" /><div className="chart-gridline" /><svg viewBox="0 0 640 190" preserveAspectRatio="none" role="img" aria-label="Revenue and occupancy line chart for June to November"><defs><linearGradient id="revenueFill" x1="0" x2="0" y1="0" y2="1"><stop offset="0%" stopColor="#496f55" stopOpacity=".18" /><stop offset="100%" stopColor="#496f55" stopOpacity="0" /></linearGradient></defs><path d="M0 145 C25 140 28 110 50 118 S90 150 108 126 S140 85 160 100 S190 132 210 95 S240 72 258 84 S290 120 310 90 S340 35 360 52 S390 92 408 62 S440 40 458 55 S490 90 510 50 S540 25 558 43 S590 62 608 30 S630 14 640 22 L640 190 L0 190Z" fill="url(#revenueFill)" /><path d="M0 145 C25 140 28 110 50 118 S90 150 108 126 S140 85 160 100 S190 132 210 95 S240 72 258 84 S290 120 310 90 S340 35 360 52 S390 92 408 62 S440 40 458 55 S490 90 510 50 S540 25 558 43 S590 62 608 30 S630 14 640 22" fill="none" stroke="#416849" strokeWidth="3" /><path d="M0 158 C28 148 33 135 52 142 S90 153 108 140 S142 120 160 130 S194 148 210 132 S240 105 258 116 S290 141 310 123 S340 90 360 97 S390 122 408 106 S440 92 458 104 S490 124 510 96 S540 80 558 93 S590 105 608 84 S630 72 640 78" fill="none" stroke="#d1ab6b" strokeWidth="2.5" strokeDasharray="5 5" /></svg><div className="chart-hover"><strong>Nov 14</strong><span>LKR 94,200 · 78% occupancy</span></div></div></div>}
 function ChannelChart(){return <div className="donut-wrap"><div className="donut"><div className="donut-inner"><strong>28</strong><span>bookings</span></div></div><div className="donut-total"><small>THIS MONTH</small><strong>28</strong><span>reservations</span></div></div>}
 
 function Rooms(){return <><div className="page-heading"><div><p className="eyebrow">HOTEL OPERATIONS</p><h1>Rooms & property</h1><p className="subheading">A clear view of availability and room readiness.</p></div><button className="button secondary"><CalendarDays size={16} /> Room calendar</button></div><div className="room-summary"><span><i className="room-dot occupied-dot" />Occupied <strong>1</strong></span><span><i className="room-dot ready-dot" />Ready <strong>1</strong></span><span><i className="room-dot reserved-dot" />Reserved <strong>2</strong></span><span className="room-summary-total">4 rooms total</span></div><div className="room-grid">{rooms.map((room, index) => <article className="card room-card" key={room.name}><div className="room-photo" style={{ backgroundImage: `url(https://images.unsplash.com/${room.image}?auto=format&fit=crop&w=900&q=80)` }}><span className={`room-state ${room.state.toLowerCase().replaceAll(' ', '-')}`}><i />{room.state}</span><button className="room-more" aria-label={`${room.name} options`}><MoreHorizontal size={18} /></button></div><div className="room-content"><div className="room-title"><h2>{room.name}</h2><span>2 guests</span></div><p className="room-guest"><Users size={14} />{room.guest}</p><p className="room-detail"><CalendarDays size={14} />{room.detail}</p><div className="room-footer"><div><span>BASE RATE</span><strong>{money(index === 2 ? 26000 : 22800)} <small>/ night</small></strong></div><button className="text-button">Room details <ChevronRight size={14} /></button></div></div></article>)}</div><div className="card room-note"><div className="attention-icon amber"><ClipboardCheck size={17} /></div><div><strong>Room combinations</strong><span>Combination bookings block all component rooms to prevent double bookings.</span></div><button className="text-button">Configure <ChevronRight size={14} /></button></div></>}
 
-function Guests({reservations}:{reservations:Reservation[]}){const guests=[{name:'Amelia Hart',country:'United Kingdom',stays:3,last:'Today',segment:'Repeat guest',email:'amelia.hart@example.com',consent:true},{name:'Nimal Perera',country:'Sri Lanka',stays:2,last:'Today',segment:'Local · Repeat',email:'nimal.p@example.com',consent:true},{name:'Sophie Laurent',country:'France',stays:1,last:'Nov 15, 2026',segment:'International',email:'sophie.l@example.com',consent:false},{name:'Kavindi Silva',country:'Sri Lanka',stays:1,last:'Nov 15, 2026',segment:'First-time',email:'kavindi.s@example.com',consent:true},{name:'Oliver Bennett',country:'Australia',stays:2,last:'Nov 18, 2026',segment:'Repeat guest',email:'oliver.b@example.com',consent:false},{name:'Maya Chen',country:'Singapore',stays:1,last:'Nov 23, 2026',segment:'Family',email:'maya.chen@example.com',consent:true},{name:'Daniel Kim',country:'South Korea',stays:1,last:'Nov 25, 2026',segment:'Solo traveler',email:'daniel.k@example.com',consent:false},{name:'Ishara Fernando',country:'Sri Lanka',stays:4,last:'Nov 20, 2026',segment:'Repeat · Local',email:'ishara.f@example.com',consent:true}];return <><div className="page-heading"><div><p className="eyebrow">HOTEL OPERATIONS</p><h1>Guest directory</h1><p className="subheading">Thoughtful, personal service starts with knowing your guests.</p></div><button className="button secondary"><Download size={15} /> Export guests</button></div><div className="guest-stats"><div><strong>186</strong><span>guest profiles</span></div><div><strong>32%</strong><span>repeat guests</span></div><div><strong>68%</strong><span>marketing opt-in</span></div><div><strong>4.8<span className="star">★</span></strong><span>average guest rating</span></div></div><div className="card directory-card"><div className="filter-row"><label className="table-search"><Search size={16} /><input placeholder="Search guests by name, email or country..." /></label><button className="button secondary"><Filter size={15} /> Segments <ChevronDown size={14} /></button><button className="button secondary">All guests <ChevronDown size={14} /></button></div><div className="table-wrap"><table><thead><tr><th>GUEST</th><th>LOCATION</th><th>STAYS</th><th>LIFETIME VALUE</th><th>LAST VISIT</th><th>SEGMENT</th><th>MARKETING</th></tr></thead><tbody>{guests.map((guest, index) => <tr key={guest.name}><td><div className="guest-cell"><div className="guest-avatar">{guest.name.split(' ').map(part => part[0]).slice(0, 2).join('')}</div><div><strong>{guest.name}</strong><small>{guest.email}</small></div></div></td><td>{guest.country}</td><td>{guest.stays}</td><td>{money([186400, 102000, 112000, 52000, 174000, 140000, 45600, 268000][index])}</td><td>{guest.last}</td><td><span className="segment-pill">{guest.segment}</span></td><td><span className={`consent ${guest.consent ? 'yes' : 'no'}`}>{guest.consent ? 'Subscribed' : 'Not opted in'}</span></td></tr>)}</tbody></table></div><div className="table-footer"><span>Showing 8 of 186 guest profiles</span><div className="pager"><button className="page-current">1</button><button>2</button><button>3</button><button aria-label="Next"><ChevronRight size={16} /></button></div></div></div><p className="privacy-note"><ShieldCheck size={14} /> Guest contact details are only available to authorized staff.</p></>}
+type GuestProfile = {
+  name: string
+  country: string
+  stays: number
+  last: string
+  segment: string
+  email: string
+  phone: string
+  lifetimeValue: number
+  consent: boolean
+  rating: number
+  preference: string
+  reviews?: { date: string; source: string; rating: number; text: string }[]
+}
+
+const demoGuests: GuestProfile[] = [
+  { name: 'Amelia Hart', country: 'United Kingdom', stays: 3, last: 'Nov 14, 2026', segment: 'Repeat guest', email: 'amelia.hart@example.com', phone: '+44 7911 123456', lifetimeValue: 186400, consent: true, rating: 5, preference: 'Mountain view; late-afternoon tea service.', reviews: [{ date: 'Nov 14, 2026', source: 'Guest feedback · demo', rating: 5, text: 'A peaceful stay with beautiful views and thoughtful afternoon tea. We felt very well looked after.' }] },
+  { name: 'Nimal Perera', country: 'Sri Lanka', stays: 2, last: 'Nov 14, 2026', segment: 'Local · Repeat', email: 'nimal.p@example.com', phone: '+94 77 765 4321', lifetimeValue: 102000, consent: true, rating: 5, preference: 'Traditional breakfast with pol sambol.', reviews: [{ date: 'Nov 14, 2026', source: 'Guest feedback · demo', rating: 5, text: 'Warm hospitality, a comfortable room, and a delicious local breakfast. I would happily return.' }] },
+  { name: 'Sophie Laurent', country: 'France', stays: 1, last: 'Nov 15, 2026', segment: 'International', email: 'sophie.l@example.com', phone: '+33 6 12 34 56 78', lifetimeValue: 112000, consent: false, rating: 5, preference: 'Extra bed; interested in a tea factory tour.' },
+  { name: 'Kavindi Silva', country: 'Sri Lanka', stays: 1, last: 'Nov 15, 2026', segment: 'First-time', email: 'kavindi.s@example.com', phone: '+94 71 888 9900', lifetimeValue: 52000, consent: true, rating: 4, preference: 'Quiet room and a desk for remote work.' },
+  { name: 'Oliver Bennett', country: 'Australia', stays: 2, last: 'Nov 18, 2026', segment: 'Repeat guest', email: 'oliver.b@example.com', phone: '+61 412 345 678', lifetimeValue: 174000, consent: false, rating: 5, preference: 'Airport pickup and early check-in when available.' },
+  { name: 'Maya Chen', country: 'Singapore', stays: 1, last: 'Nov 23, 2026', segment: 'Family', email: 'maya.chen@example.com', phone: '+65 9123 4567', lifetimeValue: 140000, consent: true, rating: 5, preference: 'Family bedding and infant cot.' },
+  { name: 'Daniel Kim', country: 'South Korea', stays: 1, last: 'Nov 25, 2026', segment: 'Solo traveler', email: 'daniel.k@example.com', phone: '+82 10 9876 5432', lifetimeValue: 45600, consent: false, rating: 4, preference: 'Late arrival; heater requested.' },
+  { name: 'Ishara Fernando', country: 'Sri Lanka', stays: 4, last: 'Nov 20, 2026', segment: 'Repeat · Local', email: 'ishara.f@example.com', phone: '+94 77 444 5566', lifetimeValue: 268000, consent: true, rating: 5, preference: 'Anniversary arrangement with local flowers.', reviews: [{ date: 'Sep 02, 2026', source: 'Guest feedback · demo', rating: 5, text: 'Our anniversary was made truly special. The personal touches and tea garden setting were wonderful.' }, { date: 'May 18, 2026', source: 'Guest feedback · demo', rating: 5, text: 'Another lovely visit. The staff remembered our preferences and made us feel at home.' }] },
+  { name: 'Priya Wijesinghe', country: 'Sri Lanka', stays: 2, last: 'Feb 11, 2026', segment: 'Local · Repeat', email: 'priya.w@example.com', phone: '+94 76 222 3344', lifetimeValue: 136800, consent: true, rating: 5, preference: 'Direct booking; prefers a garden-facing room.' },
+  { name: 'Aiden Cole', country: 'United States', stays: 1, last: 'Apr 04, 2026', segment: 'First-time', email: 'aiden.c@example.com', phone: '+1 415 555 0142', lifetimeValue: 78000, consent: false, rating: 4, preference: 'Vegetarian breakfast.' },
+  { name: 'Tharushi de Silva', country: 'Sri Lanka', stays: 3, last: 'Jun 12, 2026', segment: 'Repeat · Local', email: 'tharushi.d@example.com', phone: '+94 71 555 1212', lifetimeValue: 205200, consent: true, rating: 5, preference: 'WhatsApp is the preferred contact channel.' },
+  { name: 'Elena Rossi', country: 'Italy', stays: 1, last: 'Aug 19, 2026', segment: 'International', email: 'elena.rossi@example.com', phone: '+39 333 555 0123', lifetimeValue: 112000, consent: false, rating: 5, preference: 'Tea tasting and a quiet room.', reviews: [{ date: 'Aug 23, 2026', source: 'Guest feedback · demo', rating: 5, text: 'Loved learning about the local tea and enjoying the quiet surroundings.' }] }
+]
+
+function Guests({ reservations }: { reservations: Reservation[] }) {
+  const [query, setQuery] = useState('')
+  const [segment, setSegment] = useState('All guests')
+  const [marketing, setMarketing] = useState('All preferences')
+  const [selectedGuest, setSelectedGuest] = useState<GuestProfile | null>(null)
+
+  const matchingGuests = demoGuests.filter(guest => {
+    const matchesQuery = `${guest.name} ${guest.email} ${guest.country} ${guest.segment}`.toLowerCase().includes(query.toLowerCase())
+    const matchesSegment = segment === 'All guests'
+      || (segment === 'Repeat guests' ? guest.stays > 1 : segment === 'First-time guests' ? guest.stays === 1 : guest.segment === segment)
+    const matchesMarketing = marketing === 'All preferences'
+      || (marketing === 'Subscribed' ? guest.consent : !guest.consent)
+    return matchesQuery && matchesSegment && matchesMarketing
+  })
+  const repeatCount = demoGuests.filter(guest => guest.stays > 1).length
+  const subscribedCount = demoGuests.filter(guest => guest.consent).length
+  const averageRating = demoGuests.reduce((sum, guest) => sum + guest.rating, 0) / demoGuests.length
+  const matchingReservations = selectedGuest
+    ? reservations.filter(reservation => reservation.guest === selectedGuest.name)
+    : []
+
+  const exportGuests = () => {
+    const headers = ['Guest', 'Email', 'Phone', 'Country', 'Stays', 'Lifetime Value (LKR)', 'Last Stay', 'Segment', 'Marketing Consent']
+    const rows = matchingGuests.map(guest => [
+      guest.name, guest.email, guest.phone, guest.country, guest.stays,
+      guest.lifetimeValue, guest.last, guest.segment, guest.consent ? 'Subscribed' : 'Not opted in'
+    ])
+    const csv = [headers, ...rows].map(row => row.map(value => `"${String(value).replaceAll('"', '""')}"`).join(',')).join('\n')
+    const link = document.createElement('a')
+    link.href = `data:text/csv;charset=utf-8,${encodeURIComponent(csv)}`
+    link.download = 'villa-tea-fields-guest-directory-demo.csv'
+    document.body.appendChild(link)
+    link.click()
+    link.remove()
+  }
+
+  return <>
+    <div className="page-heading">
+      <div>
+        <p className="eyebrow">HOTEL OPERATIONS · GUEST RELATIONSHIPS</p>
+        <h1>Guest directory</h1>
+        <p className="subheading">Recognize returning guests and tailor every stay with a thoughtful, consistent welcome.</p>
+      </div>
+      <button className="button secondary" onClick={exportGuests}><Download size={15} /> Export filtered guests</button>
+    </div>
+    <div className="guest-stats">
+      <div><strong>{demoGuests.length}</strong><span>demo guest profiles</span></div>
+      <div><strong>{Math.round(repeatCount / demoGuests.length * 100)}%</strong><span>returning guests</span></div>
+      <div><strong>{Math.round(subscribedCount / demoGuests.length * 100)}%</strong><span>marketing opt-in</span></div>
+      <div><strong>{averageRating.toFixed(1)}<span className="star">★</span></strong><span>average demo rating</span></div>
+    </div>
+    <section className="card directory-card guest-directory-table">
+      <div className="filter-row">
+        <label className="table-search"><Search size={16} /><input aria-label="Search guests" value={query} onChange={event => setQuery(event.target.value)} placeholder="Search name, email, country or guest type..." /></label>
+        <label className="sr-only" htmlFor="guest-segment">Filter by guest type</label>
+        <select id="guest-segment" className="button secondary" value={segment} onChange={event => setSegment(event.target.value)}>
+          <option>All guests</option><option>Repeat guests</option><option>First-time guests</option><option>Family</option><option>International</option><option>Solo traveler</option>
+        </select>
+        <label className="sr-only" htmlFor="guest-marketing">Filter by marketing preference</label>
+        <select id="guest-marketing" className="button secondary" value={marketing} onChange={event => setMarketing(event.target.value)}>
+          <option>All preferences</option><option>Subscribed</option><option>Not opted in</option>
+        </select>
+      </div>
+      <div className="table-wrap">
+        <table>
+          <thead><tr><th>GUEST</th><th>LOCATION</th><th>STAYS</th><th>LIFETIME VALUE</th><th>LAST VISIT</th><th>GUEST TYPE</th><th>MARKETING</th></tr></thead>
+          <tbody>{matchingGuests.map(guest => <tr key={guest.name}>
+            <td><div className="guest-cell"><div className="guest-avatar">{guest.name.split(' ').map(part => part[0]).slice(0, 2).join('')}</div><div><button type="button" className="text-left font-semibold text-[#202922] hover:text-[#31583d]" onClick={() => setSelectedGuest(guest)}>{guest.name}</button><small>{guest.email}</small></div></div></td>
+            <td>{guest.country}</td><td>{guest.stays}</td><td>{money(guest.lifetimeValue)}</td><td>{guest.last}</td>
+            <td><span className="segment-pill">{guest.segment}</span></td>
+            <td><span className={`consent ${guest.consent ? 'yes' : 'no'}`}>{guest.consent ? 'Subscribed' : 'Not opted in'}</span></td>
+          </tr>)}</tbody>
+        </table>
+        {matchingGuests.length === 0 && <div className="p-8 text-center text-[#818982]"><Search size={24} className="mx-auto mb-2" /><strong className="block text-[#202922]">No guests match these filters</strong><span className="text-xs">Try another name, guest type, or marketing preference.</span></div>}
+      </div>
+      <div className="table-footer"><span>Showing <strong>{matchingGuests.length}</strong> of {demoGuests.length} demo guest profiles</span><span className="text-[10px] text-[#818982]">Select a guest to view profile details</span></div>
+    </section>
+    <p className="privacy-note"><ShieldCheck size={14} /> Contact details and marketing preferences are shown for authorized staff only. All displayed profiles are sample demonstration data.</p>
+    {selectedGuest && <div className="fixed inset-0 z-50 bg-black/40 flex items-center justify-center p-4" role="presentation" onClick={event => { if (event.target === event.currentTarget) setSelectedGuest(null) }}>
+      <section className="guest-profile-modal" role="dialog" aria-modal="true" aria-labelledby="guest-profile-title">
+        <header className="guest-profile-header">
+          <div className="guest-profile-avatar">{selectedGuest.name.split(' ').map(part => part[0]).slice(0, 2).join('')}</div>
+          <div className="guest-profile-identity">
+            <p className="eyebrow">GUEST PROFILE <span className="guest-demo-badge">DEMO</span></p>
+            <h2 id="guest-profile-title">{selectedGuest.name}</h2>
+            <div className="guest-profile-tags"><span className="segment-pill">{selectedGuest.segment}</span><span className={`consent ${selectedGuest.consent ? 'yes' : 'no'}`}>{selectedGuest.consent ? 'Marketing opted in' : 'Marketing not opted in'}</span></div>
+          </div>
+          <button className="guest-profile-close" aria-label="Close guest profile" onClick={() => setSelectedGuest(null)}><X size={18} /></button>
+        </header>
+        <div className="guest-profile-content">
+          <section className="guest-profile-stats" aria-label="Guest summary">
+            <div><strong>{selectedGuest.stays}</strong><span>Completed stays</span></div>
+            <div><strong>{money(selectedGuest.lifetimeValue)}</strong><span>Lifetime value · demo</span></div>
+            <div><strong>{selectedGuest.rating}.0 <span className="guest-profile-star">★</span></strong><span>Average rating</span></div>
+          </section>
+          <section className="guest-profile-section">
+            <h3>Contact & stay</h3>
+            <div className="guest-contact-grid">
+              <div><Mail size={15} /><span><small>Email</small><a href={`mailto:${selectedGuest.email}`}>{selectedGuest.email}</a></span></div>
+              <div><Phone size={15} /><span><small>Phone</small><a href={`tel:${selectedGuest.phone.replace(/\s/g, '')}`}>{selectedGuest.phone}</a></span></div>
+              <div><MapPin size={15} /><span><small>Country</small><strong>{selectedGuest.country}</strong></span></div>
+              <div><CalendarDays size={15} /><span><small>Last visit</small><strong>{selectedGuest.last}</strong></span></div>
+            </div>
+          </section>
+          <section className="guest-profile-section">
+            <h3>Service preferences</h3>
+            <p className="guest-preference">{selectedGuest.preference}</p>
+          </section>
+          <section className="guest-profile-section">
+            <div className="guest-section-heading"><h3>Guest reviews</h3><span>{selectedGuest.reviews?.length || 0}</span></div>
+            {selectedGuest.reviews?.length ? <div className="guest-reviews">{selectedGuest.reviews.map((review, index) => <article className="guest-review" key={`${review.date}-${index}`}>
+              <div className="guest-review-top"><span className="guest-review-stars" aria-label={`${review.rating} out of 5 stars`}>{'★'.repeat(review.rating)}<span>{'★'.repeat(5 - review.rating)}</span></span><time>{review.date}</time></div>
+              <p>“{review.text}”</p><small>{review.source}</small>
+            </article>)}</div> : <p className="guest-empty-review">No guest review has been recorded for this profile yet.</p>}
+          </section>
+          <section className="guest-profile-section">
+            <div className="guest-section-heading"><h3>Reservation history</h3><span>{matchingReservations.length}</span></div>
+            {matchingReservations.length ? <ul className="guest-reservation-list">{matchingReservations.map(reservation => <li key={reservation.id}>
+              <span className="guest-reservation-icon"><Hotel size={15} /></span>
+              <span className="guest-reservation-info"><strong>{reservation.room}</strong><small>{reservation.checkIn} – {reservation.checkOut}</small></span>
+              <span className={`status-badge ${reservation.status.toLowerCase().replaceAll(' ', '-')}`}><i />{reservation.status}</span>
+            </li>)}</ul> : <p className="guest-empty-review">No reservation linked in the current demo records.</p>}
+          </section>
+        </div>
+        <footer className="guest-profile-footer"><ShieldCheck size={14} /><span>Guest details and preferences are visible to authorized staff only.</span><button onClick={() => setSelectedGuest(null)}>Done</button></footer>
+      </section>
+    </div>}
+  </>
+}
 
 function Operations({role, tasks, setTask, notify}:{role:Role;tasks:string[];setTask:(index:number,state:string)=>void;notify:(message:string)=>void}){const [tab,setTab]=useState('Housekeeping');return <><div className="page-heading"><div><p className="eyebrow">HOTEL OPERATIONS</p><h1>{role === 'Housekeeper' ? 'My tasks' : tab === 'Housekeeping' ? 'Daily operations' : 'Staff & tasks'}</h1><p className="subheading">Coordinate the small details that make every stay special.</p></div><button className="button primary" onClick={() => notify('Task form is ready for manager assignment')}><Plus size={16} /> Assign task</button></div><div className="segment-tabs"><button className={tab === 'Housekeeping' ? 'selected' : ''} onClick={() => setTab('Housekeeping')}>Housekeeping <span>3</span></button><button className={tab === 'Guest requests' ? 'selected' : ''} onClick={() => setTab('Guest requests')}>Guest requests <span>2</span></button><button className={tab === 'Breakfast' ? 'selected' : ''} onClick={() => setTab('Breakfast')}>Breakfast <span>Today</span></button><button className={tab === 'Staff' ? 'selected' : ''} onClick={() => setTab('Staff')}>Team <span>5</span></button></div>{tab === 'Housekeeping' ? <div className="ops-layout"><div className="card task-board"><div className="card-heading"><div><h2>Housekeeping board</h2><p>Saturday, November 14 · 3 room tasks</p></div><button className="button secondary"><Filter size={14} /> Filter</button></div>{['Room 03 · Departure clean', 'Room 01 · Guest arrival prep', 'Room 02 · Evening turndown'].map((title, index) => <article className="task-row" key={title}><button className={`task-check ${tasks[index] === 'Completed' ? 'checked' : ''}`} aria-label={`Mark ${title} complete`} onClick={() => setTask(index, tasks[index] === 'Completed' ? 'Pending' : 'Completed')}>{tasks[index] === 'Completed' && <Check size={14} />}</button><div className="task-main"><strong>{title}</strong><span>{index === 0 ? 'Checkout clean · full checklist' : index === 1 ? 'Guest arrival at 2:00 PM' : 'Requested by guest · today'}</span><div className="task-meta"><span className={`priority ${index === 0 ? 'high' : 'normal'}`}>{index === 0 ? 'High priority' : 'Standard'}</span><span>Due {index === 0 ? '11:30 AM' : index === 1 ? '1:00 PM' : '4:00 PM'}</span></div></div><div className="task-assignee"><div className="tiny-avatar">{index === 1 ? 'LF' : 'SS'}</div><span>{index === 1 ? 'Lakmali' : 'Sewwandi'}</span></div><select value={tasks[index] ?? 'Pending'} onChange={event => setTask(index, event.target.value)} aria-label={`Status for ${title}`}><option>Pending</option><option>In progress</option><option>Inspection required</option><option>Completed</option></select></article>)}</div><aside className="card ops-side"><div className="card-heading"><div><h2>Today’s arrivals</h2><p>2 guests checking in</p></div></div><div className="arrival-person"><div className="guest-avatar">NP</div><div><strong>Nimal Perera</strong><span>Room 01 · 2 guests</span></div><span className="arrival-time">2:00 PM</span></div><div className="arrival-person"><div className="guest-avatar">SL</div><div><strong>Sophie Laurent</strong><span>Room 04 · 3 guests</span></div><span className="arrival-time">Tomorrow</span></div><div className="breakfast-note"><span className="breakfast-icon">☕</span><div><strong>Breakfast preparation</strong><span>5 guests · 2 dietary notes</span><button onClick={() => setTab('Breakfast')}>View breakfast plan →</button></div></div><div className="ops-alert"><strong>Maintenance update</strong><span>Room 04 · bathroom tap · Medium priority</span><button onClick={() => notify('Issue assigned to the manager')}>View issue →</button></div></aside></div> : <div className="ops-placeholder card">{tab === 'Guest requests' ? <><MessageCircle size={24} /><h2>Guest requests</h2><p>2 open requests · one extra blanket for Room 02 and an early breakfast for Room 04.</p><button className="button primary" onClick={() => notify('Guest request marked as complete')}>Mark first request complete</button></> : tab === 'Breakfast' ? <><div className="breakfast-big">☕</div><h2>Breakfast coordination</h2><p>Complimentary breakfast · 5 expected guests this morning.</p><p>Room 01 · 2 guests · Room 02 · 2 guests · Room 04 · 1 guest</p><button className="button primary" onClick={() => notify('Breakfast preparation marked as ready')}>Mark preparation ready</button></> : <><Users size={24} /><h2>Villa Tea Fields team</h2>{staff.map(person => <div className="staff-row" key={person.name}><div className="tiny-avatar">{person.initials}</div><strong>{person.name}</strong><span>{person.role}</span></div>)}</>}</div>}</>}
 function Housekeeper({tasks, setTask}:{tasks:string[];setTask:(index:number,state:string)=>void}){return <div className="housekeeper-view"><div className="housekeeper-banner"><div><span>YOUR SHIFT · 7:00 AM – 3:00 PM</span><strong>Ready to make someone&apos;s stay?</strong><p>You have 3 room preparations on your list today.</p></div><div className="task-progress"><div><strong>{tasks.filter(task => task === 'Completed').length}/3</strong><span>tasks complete</span></div><div className="progress-track"><i style={{ width: `${tasks.filter(task => task === 'Completed').length * 33.3}%` }} /></div></div></div><h2 className="mobile-section-title">Your room tasks</h2>{['Room 03 · Departure clean', 'Room 01 · Guest arrival prep', 'Room 02 · Evening turndown'].map((title, index) => <article className="card mobile-task" key={title}><div className="mobile-task-top"><span className={`priority ${index === 0 ? 'high' : 'normal'}`}>{index === 0 ? 'HIGH PRIORITY' : 'STANDARD'}</span><span>Due {index === 0 ? '11:30 AM' : index === 1 ? '1:00 PM' : '4:00 PM'}</span></div><h3>{title}</h3><p>{index === 0 ? 'Full room reset after guest departure' : index === 1 ? 'Prepare room before 2:00 PM check-in' : 'Refresh room amenities for current guest'}</p>{tasks[index] === 'Pending' ? <button className="button primary full-button" onClick={() => setTask(index, 'In progress')}>Start cleaning <ChevronRight size={15} /></button> : tasks[index] === 'In progress' ? <div className="checklist"><label><input type="checkbox" /> Change bed linen</label><label><input type="checkbox" /> Clean bathroom</label><label><input type="checkbox" /> Restock amenities</label><label><input type="checkbox" /> Final room check</label><button className="button primary full-button" onClick={() => setTask(index, 'Inspection required')}>Submit for inspection <Check size={15} /></button></div> : tasks[index] === 'Inspection required' ? <div className="inspection-msg"><ClipboardCheck size={15} /> Waiting for manager inspection</div> : <div className="completed-msg"><Check size={15} /> Room marked complete</div>}</article>)}</div>}

@@ -106,7 +106,7 @@ const compact = (amount: number) => amount >= 1000000 ? `${(amount / 1000000).to
 const shortDate = (value: string) => new Date(`${value}T12:00:00`).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
 const commissionRate = (source: string) => COMMISSION_RATES[source] ?? 0
 const isActive = (item: Reservation) => item.status !== 'Cancelled'
-const escapeHtml = (value: string) => value.replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[char] as string))
+const escapeHtml = (value?: string) => (value ?? '').replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[char] as string))
 
 function periodRange(period: Period, custom: { from: string; to: string }) {
   if (period === 'This month') return { from: '2026-11-01', to: '2026-11-30' }
@@ -192,7 +192,7 @@ export function PaymentsFinanceView({ reservations, onUpdateReservations, role, 
   const range = periodRange(period, customRange)
   const inRange = (date: string) => date >= range.from && date <= range.to
 
-  const transactions = useMemo<Transaction[]>(() => reservations.flatMap(item => item.payments.map(payment => {
+  const transactions = useMemo<Transaction[]>(() => reservations.flatMap(item => (item.payments ?? []).map(payment => {
     const needsVerification = payment.method === 'Bank Transfer' && !payment.isRefund
     const verification: VerificationStatus = !needsVerification || state.verifiedIds.includes(payment.id) ? 'Verified' : 'Pending verification'
     return { ...payment, reservationId: item.id, guest: item.guest, guestEmail: item.guestEmail, room: item.room, source: item.source, verification }
@@ -589,7 +589,7 @@ export function PaymentsFinanceView({ reservations, onUpdateReservations, role, 
         <div className="text-[10px]">
           {[
             ['Guest', invoice.guest],
-            ['Email', invoice.guestEmail],
+            ['Email', invoice.guestEmail || '—'],
             ['Reservation', `${invoice.reservationId} · ${invoice.room}`],
             ['Payment method', invoice.method],
             ['Reference', invoice.reference || '—'],

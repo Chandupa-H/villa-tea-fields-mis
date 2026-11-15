@@ -93,6 +93,9 @@ interface AIFeaturesViewProps {
 }
 
 const money = (amount: number) => `LKR ${amount.toLocaleString('en-LK')}`
+const reportMonths = Array.from({ length: 12 }, (_, month) =>
+  new Date(Date.UTC(2026, month, 1)).toLocaleDateString('en-US', { month: 'long', year: 'numeric', timeZone: 'UTC' })
+)
 
 export function AIFeaturesView({
   initialTab = 'chatbot',
@@ -313,71 +316,68 @@ export function AIFeaturesView({
   const [reportPeriod, setReportPeriod] = useState<'Daily' | 'Weekly' | 'Monthly' | 'Annual'>('Monthly')
   const [selectedMonth, setSelectedMonth] = useState('November 2026')
 
-  // Derive dynamic figures from active reservations data
   const dynamicFinancialData: Record<string, FinancialSummary> = useMemo(() => {
-    const baseCollected = reservations
-      .filter(r => r.status !== 'Cancelled')
-      .reduce((sum, r) => sum + r.paid, 0)
-
-    return {
-      Daily: {
-        period: 'Today (Saturday, Nov 14, 2026)',
-        label: 'Daily Summary',
-        grossIncome: 148200,
-        totalExpenses: 42300,
-        netProfit: 105900,
-        profitMargin: 71.4,
-        roomRevenue: 102600,
-        fnbRevenue: 31200,
-        toursRevenue: 14400,
-        otaCommissions: 15300,
-        utilitiesMaintenance: 14200,
-        staffCosts: 12800
-      },
-      Weekly: {
-        period: 'Week 46 (Nov 08 – Nov 14, 2026)',
-        label: 'Weekly Summary',
-        grossIncome: 642800,
-        totalExpenses: 218400,
-        netProfit: 424400,
-        profitMargin: 66.0,
-        roomRevenue: 478000,
-        fnbRevenue: 108400,
-        toursRevenue: 56400,
-        otaCommissions: 72100,
-        utilitiesMaintenance: 64500,
-        staffCosts: 81800
-      },
-      Monthly: {
-        period: 'November 2026 (Month-to-date)',
-        label: 'Monthly Summary',
-        grossIncome: Math.max(baseCollected, 1846000),
-        totalExpenses: 624800,
-        netProfit: Math.max(baseCollected, 1846000) - 624800,
-        profitMargin: 66.1,
-        roomRevenue: 1380000,
-        fnbRevenue: 284000,
-        toursRevenue: 182000,
-        otaCommissions: 184600,
-        utilitiesMaintenance: 195200,
-        staffCosts: 245000
-      },
-      Annual: {
-        period: 'Calendar Year 2026 (YTD)',
-        label: 'Annual Summary',
-        grossIncome: 18420000,
-        totalExpenses: 6890000,
-        netProfit: 11530000,
-        profitMargin: 62.6,
-        roomRevenue: 13950000,
-        fnbRevenue: 2740000,
-        toursRevenue: 1730000,
-        otaCommissions: 2210000,
-        utilitiesMaintenance: 2180000,
-        staffCosts: 2500000
-      }
+    const monthIndex = Math.max(0, reportMonths.indexOf(selectedMonth))
+    const monthStart = new Date(Date.UTC(2026, monthIndex, 1))
+    const monthEnd = new Date(Date.UTC(2026, monthIndex + 1, 0))
+    const ranges = {
+      Daily: { start: '2026-11-14', end: '2026-11-14', period: 'November 14, 2026' },
+      Weekly: { start: '2026-11-08', end: '2026-11-14', period: 'November 8–14, 2026' },
+      Monthly: { start: monthStart.toISOString().slice(0, 10), end: monthEnd.toISOString().slice(0, 10), period: selectedMonth },
+      Annual: { start: '2026-01-01', end: '2026-12-31', period: 'Calendar Year 2026' }
     }
-  }, [reservations])
+    const summaries: Record<string, FinancialSummary> = {}
+
+    Object.entries(ranges).forEach(([key, range]) => {
+      const periodReservations = reservations.filter(reservation =>
+        reservation.status !== 'Cancelled' && reservation.checkIn >= range.start && reservation.checkIn <= range.end
+      )
+      const roomRevenue = periodReservations.reduce((sum, reservation) => sum + reservation.paid, 0)
+      const grossIncome = Math.round(roomRevenue / 0.75)
+      const fnbRevenue = Math.round(grossIncome * 0.15)
+      const toursRevenue = grossIncome - roomRevenue - fnbRevenue
+      const otaCommissions = Math.round(periodReservations
+        .filter(reservation => ['Booking.com', 'Airbnb', 'Agoda'].includes(reservation.source))
+        .reduce((sum, reservation) => sum + reservation.paid, 0) * 0.15)
+      const utilitiesMaintenance = Math.round(grossIncome * 0.1)
+      const staffCosts = Math.round(grossIncome * 0.12)
+      const totalExpenses = otaCommissions + utilitiesMaintenance + staffCosts
+      const netProfit = grossIncome - totalExpenses
+
+      summaries[key] = {
+        period: range.period,
+        label: `${key} Summary`,
+        grossIncome,
+        totalExpenses,
+        netProfit,
+        profitMargin: grossIncome ? Number((netProfit / grossIncome * 100).toFixed(1)) : 0,
+        roomRevenue,
+        fnbRevenue,
+        toursRevenue,
+        otaCommissions,
+        utilitiesMaintenance,
+        staffCosts
+      }
+    })
+
+    return summaries
+  }, [reservations, reportMonths, selectedMonth])
+
+  const monthlyOccupancy = useMemo(() => Array.from({ length: 12 }, (_, month) => {
+    const start = Date.UTC(2026, month, 1)
+    const end = Date.UTC(2026, month + 1, 1)
+    const occupiedNights = reservations.reduce((sum, reservation) => {
+      if (reservation.status === 'Cancelled') return sum
+      const checkIn = Date.parse(`${reservation.checkIn}T00:00:00Z`)
+      const checkOut = Date.parse(`${reservation.checkOut}T00:00:00Z`)
+      return sum + Math.max(0, Math.round((Math.min(checkOut, end) - Math.max(checkIn, start)) / 86400000))
+    }, 0)
+    const days = new Date(Date.UTC(2026, month + 1, 0)).getUTCDate()
+    return {
+      label: new Date(Date.UTC(2026, month, 1)).toLocaleDateString('en-US', { month: 'short', timeZone: 'UTC' }),
+      percent: Math.min(100, Math.round(occupiedNights / (days * 4) * 100))
+    }
+  }), [reservations])
 
   const currentSummary = dynamicFinancialData[reportPeriod]
 
@@ -878,6 +878,16 @@ export function AIFeaturesView({
                     </button>
                   ))}
               </div>
+              {reportPeriod === 'Monthly' && (
+                <select
+                  aria-label="Financial report month"
+                  value={selectedMonth}
+                  onChange={event => setSelectedMonth(event.target.value)}
+                  className="border border-[#d7ddd4] rounded-lg bg-white px-2.5 py-1.5 text-xs text-[#31583d]"
+                >
+                  {reportMonths.map(month => <option key={month}>{month}</option>)}
+                </select>
+              )}
               <span className="text-xs text-[#707c72] pl-2 border-l border-[#dee3dc] font-medium">
                 {currentSummary.period}
               </span>
@@ -901,12 +911,37 @@ export function AIFeaturesView({
             </div>
           </div>
 
+          <p className="text-[11px] text-[#707c72]">Demo report: room revenue uses reservation payments; dining, tours, and operating costs are modeled estimates.</p>
+
+          {reportPeriod === 'Annual' && (
+            <section className="card p-5" aria-label="Monthly room occupancy for 2026">
+              <div className="card-heading pb-3 mb-4 border-b">
+                <div>
+                  <h2 className="text-sm font-bold text-[#202922]">Monthly room occupancy</h2>
+                  <p className="text-xs text-[#707c72]">Room nights booked ÷ room nights available · 4 rooms · demo reservations</p>
+                </div>
+                <strong className="text-xs text-[#31583d]">2026</strong>
+              </div>
+              <div className="grid grid-cols-6 md:grid-cols-12 gap-2 items-end h-36">
+                {monthlyOccupancy.map(month => (
+                  <div key={month.label} className="flex flex-col items-center justify-end gap-1.5 h-full" title={`${month.label}: ${month.percent}% occupancy`}>
+                    <span className="text-[10px] font-semibold text-[#31583d]">{month.percent}%</span>
+                    <div className="w-full max-w-8 bg-[#edf1e9] rounded-t overflow-hidden flex items-end h-20">
+                      <div className="w-full rounded-t bg-[#d1ab6b] transition-all" style={{ height: `${month.percent}%` }} />
+                    </div>
+                    <span className="text-[10px] text-[#707c72]">{month.label}</span>
+                  </div>
+                ))}
+              </div>
+            </section>
+          )}
+
           {/* 4 Financial KPI Cards */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             <article className="stat-card">
               <div className="stat-top">
                 <span className="stat-icon green"><Wallet size={18} /></span>
-                <span className="stat-change"><ArrowUpRight size={13} /> +12.4%</span>
+                <span className="stat-change">DEMO</span>
               </div>
               <p>TOTAL GROSS INCOME</p>
               <div className="stat-value">{money(currentSummary.grossIncome)}</div>
@@ -916,7 +951,7 @@ export function AIFeaturesView({
             <article className="stat-card">
               <div className="stat-top">
                 <span className="stat-icon sand"><CreditCard size={18} /></span>
-                <span className="stat-change"><ArrowUpRight size={13} /> 33.9% of Rev</span>
+                <span className="stat-change">DEMO</span>
               </div>
               <p>TOTAL OPERATING EXPENSES</p>
               <div className="stat-value">{money(currentSummary.totalExpenses)}</div>
@@ -926,7 +961,7 @@ export function AIFeaturesView({
             <article className="stat-card">
               <div className="stat-top">
                 <span className="stat-icon purple"><TrendingUp size={18} /></span>
-                <span className="stat-change"><ArrowUpRight size={13} /> +18.2%</span>
+                <span className="stat-change">DEMO</span>
               </div>
               <p>NET PROFIT</p>
               <div className="stat-value">{money(currentSummary.netProfit)}</div>
@@ -936,7 +971,7 @@ export function AIFeaturesView({
             <article className="stat-card">
               <div className="stat-top">
                 <span className="stat-icon blue"><ShieldCheck size={18} /></span>
-                <span className="stat-change text-emerald-700 font-bold">Healthy</span>
+                <span className="stat-change text-emerald-700 font-bold">Estimated</span>
               </div>
               <p>PROFIT MARGIN</p>
               <div className="stat-value">{currentSummary.profitMargin}%</div>
@@ -954,9 +989,9 @@ export function AIFeaturesView({
               </div>
               <div className="space-y-4">
                 {[
-                  { label: 'Room Stays & Suites', amount: currentSummary.roomRevenue, pct: 75, color: '#31583d' },
-                  { label: 'Tea Lounge & Dining (F&B)', amount: currentSummary.fnbRevenue, pct: 15, color: '#889f8d' },
-                  { label: 'Guided Tea Plantation Experiences', amount: currentSummary.toursRevenue, pct: 10, color: '#d1ab6b' }
+                  { label: 'Room Stays & Suites', amount: currentSummary.roomRevenue, pct: currentSummary.grossIncome ? Math.round(currentSummary.roomRevenue / currentSummary.grossIncome * 100) : 0, color: '#31583d' },
+                  { label: 'Tea Lounge & Dining (F&B)', amount: currentSummary.fnbRevenue, pct: currentSummary.grossIncome ? Math.round(currentSummary.fnbRevenue / currentSummary.grossIncome * 100) : 0, color: '#889f8d' },
+                  { label: 'Guided Tea Plantation Experiences', amount: currentSummary.toursRevenue, pct: currentSummary.grossIncome ? Math.round(currentSummary.toursRevenue / currentSummary.grossIncome * 100) : 0, color: '#d1ab6b' }
                 ].map(stream => (
                   <div key={stream.label} className="space-y-1.5">
                     <div className="flex justify-between text-xs">
@@ -982,9 +1017,9 @@ export function AIFeaturesView({
               </div>
               <div className="space-y-4">
                 {[
-                  { label: 'OTA Commission Deductions (Booking.com, Airbnb)', amount: currentSummary.otaCommissions, pct: 30, color: '#a65353' },
-                  { label: 'Estate Utilities, Fuel & Room Maintenance', amount: currentSummary.utilitiesMaintenance, pct: 31, color: '#c97a47' },
-                  { label: 'Staff Operations & Kitchen Supplies', amount: currentSummary.staffCosts, pct: 39, color: '#d89e52' }
+                  { label: 'OTA Commission Deductions (Booking.com, Airbnb)', amount: currentSummary.otaCommissions, pct: currentSummary.totalExpenses ? Math.round(currentSummary.otaCommissions / currentSummary.totalExpenses * 100) : 0, color: '#a65353' },
+                  { label: 'Estate Utilities, Fuel & Room Maintenance', amount: currentSummary.utilitiesMaintenance, pct: currentSummary.totalExpenses ? Math.round(currentSummary.utilitiesMaintenance / currentSummary.totalExpenses * 100) : 0, color: '#c97a47' },
+                  { label: 'Staff Operations & Kitchen Supplies', amount: currentSummary.staffCosts, pct: currentSummary.totalExpenses ? Math.round(currentSummary.staffCosts / currentSummary.totalExpenses * 100) : 0, color: '#d89e52' }
                 ].map(exp => (
                   <div key={exp.label} className="space-y-1.5">
                     <div className="flex justify-between text-xs">
@@ -1033,7 +1068,7 @@ export function AIFeaturesView({
                     <td className="text-emerald-700 font-semibold">+{money(currentSummary.roomRevenue)}</td>
                     <td>—</td>
                     <td>+{money(currentSummary.roomRevenue)}</td>
-                    <td><span className="payment-label paid">Reconciled</span></td>
+                    <td><span className="payment-label partial">Demo data</span></td>
                   </tr>
                   <tr>
                     <td><strong>F&B Services</strong></td>
@@ -1041,7 +1076,7 @@ export function AIFeaturesView({
                     <td className="text-emerald-700 font-semibold">+{money(currentSummary.fnbRevenue)}</td>
                     <td>—</td>
                     <td>+{money(currentSummary.fnbRevenue)}</td>
-                    <td><span className="payment-label paid">Reconciled</span></td>
+                    <td><span className="payment-label partial">Estimate</span></td>
                   </tr>
                   <tr>
                     <td><strong>Highland Excursions</strong></td>
@@ -1049,7 +1084,7 @@ export function AIFeaturesView({
                     <td className="text-emerald-700 font-semibold">+{money(currentSummary.toursRevenue)}</td>
                     <td>—</td>
                     <td>+{money(currentSummary.toursRevenue)}</td>
-                    <td><span className="payment-label paid">Reconciled</span></td>
+                    <td><span className="payment-label partial">Estimate</span></td>
                   </tr>
                   <tr>
                     <td><strong>Distribution Fees</strong></td>
@@ -1057,7 +1092,7 @@ export function AIFeaturesView({
                     <td>—</td>
                     <td className="text-rose-700 font-semibold">-{money(currentSummary.otaCommissions)}</td>
                     <td>-{money(currentSummary.otaCommissions)}</td>
-                    <td><span className="payment-label partial">Audited</span></td>
+                    <td><span className="payment-label partial">Estimate</span></td>
                   </tr>
                   <tr>
                     <td><strong>Property Operations</strong></td>
@@ -1065,7 +1100,15 @@ export function AIFeaturesView({
                     <td>—</td>
                     <td className="text-rose-700 font-semibold">-{money(currentSummary.utilitiesMaintenance)}</td>
                     <td>-{money(currentSummary.utilitiesMaintenance)}</td>
-                    <td><span className="payment-label paid">Verified</span></td>
+                    <td><span className="payment-label partial">Estimate</span></td>
+                  </tr>
+                  <tr>
+                    <td><strong>Staff Operations</strong></td>
+                    <td>Staff & Kitchen Operations</td>
+                    <td>—</td>
+                    <td className="text-rose-700 font-semibold">-{money(currentSummary.staffCosts)}</td>
+                    <td>-{money(currentSummary.staffCosts)}</td>
+                    <td><span className="payment-label partial">Estimate</span></td>
                   </tr>
                   <tr className="bg-[#f7f9f6] font-bold">
                     <td>TOTAL SUMMARY</td>
@@ -1073,7 +1116,7 @@ export function AIFeaturesView({
                     <td className="text-emerald-800">+{money(currentSummary.grossIncome)}</td>
                     <td className="text-rose-800">-{money(currentSummary.totalExpenses)}</td>
                     <td className="text-[#31583d] text-sm">+{money(currentSummary.netProfit)}</td>
-                    <td><span className="text-xs text-[#31583d]">Certified</span></td>
+                    <td><span className="text-xs text-[#31583d]">Demo estimate</span></td>
                   </tr>
                 </tbody>
               </table>
@@ -1325,4 +1368,3 @@ export function AIFeaturesView({
     </div>
   )
 }
-

@@ -5,7 +5,6 @@ import { Activity, ArrowDownRight, ArrowUpRight, Bell, CalendarDays, Check, Chev
 import { ReservationsView, Reservation, BookingStatus, Role, ReservationAuditLog } from './reservations-view'
 import { AIFeaturesView } from './ai-features-view'
 import { PaymentsFinanceView } from './payments-finance-view'
-import { PricingPromotionsView } from './pricing-promotions-view'
 
 const currentReservations: Reservation[] = [
   {
@@ -271,7 +270,7 @@ const initialReservations: Reservation[] = [...historicalDemoReservations, ...cu
 const navGroups = [
   { label: 'OVERVIEW', items: [{ name: 'Dashboard', icon: LayoutDashboard, roles: ['Owner', 'Manager', 'Deputy Manager', 'Housekeeper'] }] },
   { label: 'HOTEL OPERATIONS', items: [{ name: 'Reservations', icon: CalendarDays, roles: ['Owner', 'Manager', 'Deputy Manager'] }, { name: 'Rooms', icon: Hotel, roles: ['Owner', 'Manager', 'Deputy Manager', 'Housekeeper'] }, { name: 'Guests', icon: Users, roles: ['Owner', 'Manager', 'Deputy Manager'] }, { name: 'Daily Operations', icon: ClipboardCheck, roles: ['Owner', 'Manager', 'Deputy Manager', 'Housekeeper'] }, { name: 'Staff & Tasks', icon: Activity, roles: ['Owner', 'Manager', 'Deputy Manager', 'Housekeeper'] }] },
-  { label: 'BUSINESS MANAGEMENT', items: [{ name: 'Payments & Finance', icon: Wallet, roles: ['Owner'] }, { name: 'Pricing & Promotions', icon: TrendingUp, roles: ['Owner'] }, { name: 'Marketing & CRM', icon: MessageCircle, roles: ['Owner', 'Manager'] }] },
+  { label: 'BUSINESS MANAGEMENT', items: [{ name: 'Payments & Finance', icon: Wallet, roles: ['Owner'] }, { name: 'Marketing & CRM', icon: MessageCircle, roles: ['Owner', 'Manager'] }] },
   { label: 'INTELLIGENCE', items: [{ name: 'Reports & Analytics', icon: FileText, roles: ['Owner', 'Manager'] }, { name: 'AI Business Assistant', icon: Sparkles, roles: ['Owner', 'Manager'] }] },
   { label: 'ADMINISTRATION', items: [{ name: 'Audit Logs', icon: ShieldCheck, roles: ['Owner'] }, { name: 'Settings', icon: Settings, roles: ['Owner'] }] },
 ] as const
@@ -387,8 +386,7 @@ export function HotelManagementApp() {
       {page === 'Guests' && allowedPages.includes('Guests') && <Guests reservations={reservations} />}
       {(page === 'Daily Operations' || page === 'Staff & Tasks') && allowedPages.includes(page) && <Operations role={role} tasks={taskStates} setTask={setTask} notify={notify} />}
       {page === 'Payments & Finance' && allowedPages.includes('Payments & Finance') && <PaymentsFinanceView reservations={reservations} onUpdateReservations={setReservations} role={role} notify={notify} />}
-      {page === 'Pricing & Promotions' && allowedPages.includes('Pricing & Promotions') && <PricingPromotionsView role={role} notify={notify} />}
-      {page === 'Marketing & CRM' && allowedPages.includes('Marketing & CRM') && <Marketing page={page} notify={notify} />}
+      {(page === 'Pricing & Promotions' || page === 'Marketing & CRM') && allowedPages.includes(page) && <Marketing page={page} notify={notify} />}
       {page === 'AI Business Assistant' && allowedPages.includes('AI Business Assistant') && (
         <AIFeaturesView
           initialTab="chatbot"

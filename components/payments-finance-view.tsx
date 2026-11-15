@@ -1,7 +1,7 @@
 'use client'
 
-import { useEffect, useMemo, useState } from 'react'
-import { ArrowUpRight, Bell, Check, ChevronRight, CreditCard, Download, Paperclip, Pencil, Plus, Printer, Receipt, RotateCcw, Search, TrendingDown, TrendingUp, Wallet, X } from 'lucide-react'
+import { useEffect, useMemo, useRef, useState } from 'react'
+import { ArrowUpRight, Bell, Check, ChevronDown, ChevronRight, CreditCard, Download, Paperclip, Pencil, Plus, Printer, Receipt, RotateCcw, Search, TrendingDown, TrendingUp, Wallet, X } from 'lucide-react'
 import { PaymentRecord, Reservation, ReservationAuditLog, Role } from './reservations-view'
 
 type ExpenseCategory = 'Utilities' | 'Staff salaries' | 'Supplies' | 'Maintenance' | 'Food & breakfast' | 'Marketing' | 'Other'
@@ -154,6 +154,76 @@ function RevenueExpenseChart({ data }: { data: { month: string; revenue: number;
       <div className="flex flex-1 justify-around text-center">{data.map(item => <div key={item.month} style={{ flex: 1 }}><span className="block text-[8px] font-semibold text-[#687169]">{item.month.toUpperCase()}</span><span className="block text-[8px] text-[#939b94]">net {compact(item.revenue - item.expenses)}</span></div>)}</div>
     </div>
   </div>
+}
+
+type ChannelPeriod = 'This week' | 'This month' | 'Last month' | 'This year'
+
+const CHANNEL_PERIODS: ChannelPeriod[] = ['This week', 'This month', 'Last month', 'This year']
+const CHANNEL_DATA: Record<ChannelPeriod, { channel: string; bookings: number; gross: number; commission: number }[]> = {
+  'This week': [
+    { channel: 'Direct · Website', bookings: 3, gross: 118000, commission: 0 },
+    { channel: 'WhatsApp & phone', bookings: 2, gross: 76000, commission: 0 },
+    { channel: 'Booking.com', bookings: 2, gross: 98000, commission: 14700 },
+    { channel: 'Airbnb', bookings: 1, gross: 45600, commission: 6840 },
+    { channel: 'Agoda & other', bookings: 1, gross: 39000, commission: 5850 }
+  ],
+  'This month': [
+    { channel: 'Direct · Website', bookings: 12, gross: 486000, commission: 0 },
+    { channel: 'WhatsApp & phone', bookings: 9, gross: 342000, commission: 0 },
+    { channel: 'Booking.com', bookings: 8, gross: 392000, commission: 58800 },
+    { channel: 'Airbnb', bookings: 5, gross: 224000, commission: 33600 },
+    { channel: 'Agoda & other', bookings: 4, gross: 182000, commission: 27300 }
+  ],
+  'Last month': [
+    { channel: 'Direct · Website', bookings: 10, gross: 402000, commission: 0 },
+    { channel: 'WhatsApp & phone', bookings: 7, gross: 268000, commission: 0 },
+    { channel: 'Booking.com', bookings: 10, gross: 476000, commission: 71400 },
+    { channel: 'Airbnb', bookings: 6, gross: 262000, commission: 39300 },
+    { channel: 'Agoda & other', bookings: 5, gross: 214000, commission: 32100 }
+  ],
+  'This year': [
+    { channel: 'Direct · Website', bookings: 118, gross: 4820000, commission: 0 },
+    { channel: 'WhatsApp & phone', bookings: 84, gross: 3290000, commission: 0 },
+    { channel: 'Booking.com', bookings: 102, gross: 4950000, commission: 742500 },
+    { channel: 'Airbnb', bookings: 61, gross: 2710000, commission: 406500 },
+    { channel: 'Agoda & other', bookings: 43, gross: 1880000, commission: 282000 }
+  ]
+}
+
+function ChannelPerformance() {
+  const [period, setPeriod] = useState<ChannelPeriod>('This month')
+  const [open, setOpen] = useState(false)
+  const menuRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (!open) return
+    const close = (event: MouseEvent) => { if (menuRef.current && !menuRef.current.contains(event.target as Node)) setOpen(false) }
+    document.addEventListener('mousedown', close)
+    return () => document.removeEventListener('mousedown', close)
+  }, [open])
+
+  const rows = CHANNEL_DATA[period]
+  const maxGross = Math.max(1, ...rows.map(row => row.gross))
+
+  return <section className="card channel-analysis">
+    <div className="card-heading">
+      <div><h2>Channel performance</h2><p>Compare bookings, gross revenue and commission</p></div>
+      <div className="relative" ref={menuRef}>
+        <button className="button secondary" onClick={() => setOpen(!open)} aria-haspopup="listbox" aria-expanded={open}>{period} <ChevronDown size={14} /></button>
+        {open && <div className="absolute right-0 top-full mt-1 z-20 w-36 rounded-lg border border-[#e9ece7] bg-white py-1 shadow-lg" role="listbox">
+          {CHANNEL_PERIODS.map(item => <button key={item} role="option" aria-selected={item === period} className="flex w-full items-center justify-between px-3 py-2 text-left text-[10px] text-[#465048] hover:bg-[#f7f8f5]" onClick={() => { setPeriod(item); setOpen(false) }}>{item}{item === period && <Check size={12} className="text-[#355d40]" />}</button>)}
+        </div>}
+      </div>
+    </div>
+    {rows.map((row, index) => <div className="channel-row" key={row.channel}>
+      <span className="channel-rank">0{index + 1}</span>
+      <strong>{row.channel}</strong>
+      <div className="channel-bar"><i style={{ width: `${Math.round(row.gross / maxGross * 84)}%` }} /></div>
+      <span>{row.bookings} bookings</span>
+      <strong>{money(row.gross)}</strong>
+      <span className="commission-value">{money(row.commission)}</span>
+    </div>)}
+  </section>
 }
 
 export function PaymentsFinanceView({ reservations, onUpdateReservations, role, notify }: { reservations: Reservation[]; onUpdateReservations: (updater: (prev: Reservation[]) => Reservation[]) => void; role: Role; notify: (message: string) => void }) {
@@ -506,6 +576,8 @@ export function PaymentsFinanceView({ reservations, onUpdateReservations, role, 
           <div className="card-heading"><div><h2>Revenue vs. expenses</h2><p>Last 6 months · November is month to date</p></div></div>
           <RevenueExpenseChart data={chartData} />
         </section>
+
+        <ChannelPerformance />
       </div>
 
       <aside className="flex flex-col gap-4 min-w-0">

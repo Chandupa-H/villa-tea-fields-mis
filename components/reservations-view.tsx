@@ -101,7 +101,7 @@ export function ReservationsView({
   const [modalMode, setModalMode] = useState<'details' | 'edit' | 'cancel' | 'payment' | 'voucher' | 'receipt' | null>(null)
   const [activeReceipt, setActiveReceipt] = useState<PaymentRecord | null>(null)
 
-  // Block room state (FR-02)
+  // Block room state
   const [blockedRooms, setBlockedRooms] = useState<Array<{ room: string; startDate: string; endDate: string; reason: string }>>([
     { room: 'Room 03', startDate: '2026-11-28', endDate: '2026-11-30', reason: 'Annual Tea Terrace Renovation' }
   ])
@@ -131,13 +131,30 @@ export function ReservationsView({
   // Cancellation form state
   const [cancellationReason, setCancellationReason] = useState('Change of travel plans')
 
-  // Permission checks (FR-01)
-  const canApprove = role === 'Owner' || role === 'Manager'
-  const canModify = role === 'Owner' || role === 'Manager' || role === 'Deputy Manager'
-  const canDeleteOrRefund = role === 'Owner' || role === 'Manager'
-  const canRecordPayment = role !== 'Housekeeper'
+  // Permission checks
+  const isOwner = role === 'Owner'
+  const isManager = role === 'Manager'
+  const isDeputyManager = role === 'Deputy Manager'
+  const isHousekeeper = role === 'Housekeeper'
 
-  // Availability conflict checker (FR-02)
+  const canApprove = isOwner || isManager
+  const canModify = isOwner || isManager || isDeputyManager
+  const canCancel = isOwner || isManager
+  const canRecordPayment = !isHousekeeper
+  const canCreateReservation = !isHousekeeper
+  const canBlockRooms = isOwner || isManager
+  const canViewFinancials = !isHousekeeper
+  const canViewReports = isOwner || isManager
+  const canExport = !isHousekeeper
+
+  // Switch tab back if role does not have report access
+  React.useEffect(() => {
+    if (!canViewReports && activeTab === 'reports') {
+      setActiveTab('table')
+    }
+  }, [canViewReports, activeTab])
+
+  // Availability conflict checker
   const checkConflict = (targetRoom: string, checkIn: string, checkOut: string, excludeId?: string) => {
     // Check against other reservations
     const hasReservationConflict = reservations.some(item => {
@@ -177,7 +194,7 @@ export function ReservationsView({
     })
   }, [reservations, searchQuery, statusFilter, roomFilter, dateFilter])
 
-  // Statistics (FR-10)
+  // Statistics
   const stats = useMemo(() => {
     const total = reservations.length
     const pending = reservations.filter(r => r.status === 'Pending Approval').length
@@ -214,7 +231,7 @@ export function ReservationsView({
     notify(`Reservation ${id} has been ${newStatus === 'Confirmed' ? 'confirmed · confirmation alert sent to guest' : 'declined'}`)
   }
 
-  // Create new reservation (FR-02, FR-03, FR-07, FR-08)
+  // Create new reservation
   const handleCreateSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     if (!formData.guest.trim()) {
@@ -298,7 +315,7 @@ export function ReservationsView({
     notify(`Reservation ${newId} created · Pending Owner approval`)
   }
 
-  // Edit reservation (FR-05)
+  // Edit reservation
   const handleEditSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     if (!selectedReservation) return
@@ -353,7 +370,7 @@ export function ReservationsView({
     notify(`Reservation ${updated.id} modified successfully · customer alert triggered`)
   }
 
-  // Cancellation (FR-06)
+  // Cancellation
   const handleCancelSubmit = () => {
     if (!selectedReservation) return
 
@@ -399,7 +416,7 @@ export function ReservationsView({
     notify(`Reservation ${updated.id} cancelled. Room slot ${updated.room} is now available!`)
   }
 
-  // Record payment (FR-07)
+  // Record payment
   const handlePaymentSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     if (!selectedReservation || paymentAmount <= 0) {
@@ -444,7 +461,7 @@ export function ReservationsView({
     notify(`Payment of ${money(newPayment.amount)} recorded · Receipt generated`)
   }
 
-  // Send Reminder (FR-08)
+  // Send Reminder
   const handleSendReminder = (res: Reservation) => {
     const reminderLog: ReservationAuditLog = {
       id: `LOG-${Date.now()}`,
@@ -466,7 +483,7 @@ export function ReservationsView({
     notify(`Check-in reminder dispatched to ${res.guest} via Email & WhatsApp!`)
   }
 
-  // Export CSV (FR-10)
+  // Export CSV
   const handleExportCSV = () => {
     const headers = ['Reservation ID', 'Guest Name', 'Email', 'Phone', 'Room', 'Check-In', 'Check-Out', 'Guests', 'Source', 'Total (LKR)', 'Paid (LKR)', 'Status', 'Payment Status']
     const rows = filteredReservations.map(r => [
@@ -516,50 +533,36 @@ export function ReservationsView({
 
   return (
     <div className="reservations-module space-y-5">
-      {/* Role Context & MIS Level Notice (FR-01, FR-09) */}
-      <div className="bg-emerald-950/5 border border-emerald-800/15 rounded-xl p-3.5 flex flex-wrap items-center justify-between gap-3 text-xs">
-        <div className="flex items-center gap-2.5">
-          <div className="w-7 h-7 rounded-lg bg-[#31583d] text-white flex items-center justify-center font-bold text-[11px]">
-            {role === 'Owner' ? 'AS' : role === 'Manager' ? 'MJ' : role === 'Deputy Manager' ? 'RP' : 'SS'}
-          </div>
-          <div>
-            <div className="flex items-center gap-1.5 font-semibold text-[#202922]">
-              <span>Active Role: <strong className="text-[#31583d]">{role}</strong></span>
-              <span className="text-[10px] bg-[#eef2ec] text-[#31583d] px-2 py-0.5 rounded-full font-medium">
-                {role === 'Owner' ? 'Strategic Decision Level' : role === 'Manager' ? 'Tactical Operations Level' : 'Operational Level'}
-              </span>
-            </div>
-            <span className="text-[#818982] text-[11px]">
-              {role === 'Owner' && 'Full authority: Booking approval, financial overrides, cancellations, refunds and revenue audits.'}
-              {role === 'Manager' && 'Managerial control: Availability management, reservation modifications, and rate verifications.'}
-              {role === 'Deputy Manager' && 'Operational control: Create bookings, record payments, and send customer reminders.'}
-              {role === 'Housekeeper' && 'Service view: Read-only access to stay dates and room turnaround schedules.'}
+      {/* Pending Approval Alert */}
+      {canApprove && stats.pending > 0 && (
+        <div className="bg-amber-50 border border-amber-200 rounded-xl p-3 flex flex-wrap items-center justify-between gap-3 text-xs text-amber-900">
+          <div className="flex items-center gap-2">
+            <AlertCircle size={16} className="text-amber-600 shrink-0" />
+            <span>
+              <strong>{stats.pending} booking {stats.pending === 1 ? 'request requires' : 'requests require'} approval.</strong> Review pending inquiries to confirm or release room dates.
             </span>
           </div>
+          <button
+            onClick={() => setStatusFilter('Pending Approval')}
+            className="px-2.5 py-1 rounded bg-amber-600 text-white font-medium hover:bg-amber-700 transition shrink-0"
+          >
+            Review Pending
+          </button>
         </div>
-
-        <div className="flex items-center gap-2">
-          {canApprove && stats.pending > 0 && (
-            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-amber-100/80 text-amber-900 font-semibold text-[11px] animate-pulse">
-              <AlertCircle size={13} /> {stats.pending} Need Approval
-            </span>
-          )}
-          <span className="text-[11px] text-[#818982]">MIS Batch 23 • Module: Reservations</span>
-        </div>
-      </div>
+      )}
 
       {/* Main Page Heading */}
       <div className="page-heading flex flex-wrap items-center justify-between gap-3">
         <div>
-          <p className="eyebrow text-xs uppercase tracking-wider text-[#818982] font-semibold">HOTEL OPERATIONS & GUEST STAYS</p>
+          <p className="eyebrow text-xs uppercase tracking-wider text-[#818982] font-semibold">HOTEL OPERATIONS</p>
           <h1 className="text-2xl font-bold text-[#202922]">Reservations & Bookings</h1>
           <p className="subheading text-xs text-[#818982]">
-            Comprehensive reservation lifecycle, collision-free availability matrix, payment receipts, and guest confirmations.
+            Manage bookings, room availability, and guest stays.
           </p>
         </div>
 
         <div className="flex items-center gap-2">
-          {canModify && (
+          {canBlockRooms && (
             <button
               className="button secondary flex items-center gap-1.5 text-xs px-3 py-2 border rounded-lg hover:bg-neutral-100 transition"
               onClick={() => setShowBlockModal(true)}
@@ -568,7 +571,7 @@ export function ReservationsView({
             </button>
           )}
 
-          {canModify && (
+          {canCreateReservation && (
             <button
               className="button primary flex items-center gap-1.5 text-xs bg-[#31583d] text-white px-3.5 py-2 rounded-lg font-medium shadow-sm hover:bg-[#274731] transition"
               onClick={() => {
@@ -594,8 +597,8 @@ export function ReservationsView({
         </div>
       </div>
 
-      {/* Statistics Banner (FR-10) */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+      {/* Statistics Banner */}
+      <div className={`grid ${canViewFinancials ? 'grid-cols-2 md:grid-cols-4' : 'grid-cols-3'} gap-3`}>
         <div className="bg-white border border-[#e9ece7] rounded-xl p-3 shadow-xs">
           <span className="text-[11px] text-[#818982] block font-medium">TOTAL RESERVATIONS</span>
           <strong className="text-xl font-bold text-[#202922]">{stats.total}</strong>
@@ -607,7 +610,7 @@ export function ReservationsView({
           <strong className={`text-xl font-bold ${stats.pending > 0 ? 'text-amber-600' : 'text-[#202922]'}`}>
             {String(stats.pending).padStart(2, '0')}
           </strong>
-          <span className="text-[10px] text-[#818982] block mt-0.5">Pending owner review</span>
+          <span className="text-[10px] text-[#818982] block mt-0.5">Pending review</span>
         </div>
 
         <div className="bg-white border border-[#e9ece7] rounded-xl p-3 shadow-xs">
@@ -616,14 +619,16 @@ export function ReservationsView({
           <span className="text-[10px] text-blue-700 block mt-0.5">Nov 14, 2026</span>
         </div>
 
-        <div className="bg-white border border-[#e9ece7] rounded-xl p-3 shadow-xs">
-          <span className="text-[11px] text-[#818982] block font-medium">REVENUE COLLECTED</span>
-          <strong className="text-xl font-bold text-[#31583d]">{money(stats.totalRevenue)}</strong>
-          <span className="text-[10px] text-[#818982] block mt-0.5">Outstanding: {money(stats.outstanding)}</span>
-        </div>
+        {canViewFinancials && (
+          <div className="bg-white border border-[#e9ece7] rounded-xl p-3 shadow-xs">
+            <span className="text-[11px] text-[#818982] block font-medium">REVENUE COLLECTED</span>
+            <strong className="text-xl font-bold text-[#31583d]">{money(stats.totalRevenue)}</strong>
+            <span className="text-[10px] text-[#818982] block mt-0.5">Outstanding: {money(stats.outstanding)}</span>
+          </div>
+        )}
       </div>
 
-      {/* Module Sub-tabs (FR-02, FR-03, FR-10) */}
+      {/* Module Sub-tabs */}
       <div className="flex border-b border-[#e9ece7] gap-4 text-xs font-medium">
         <button
           onClick={() => setActiveTab('table')}
@@ -644,22 +649,24 @@ export function ReservationsView({
               : 'text-[#818982] hover:text-[#202922]'
           }`}
         >
-          <CalendarDays size={15} /> Room Availability Matrix (FR-02)
+          <CalendarDays size={15} /> Room Availability Matrix
         </button>
 
-        <button
-          onClick={() => setActiveTab('reports')}
-          className={`pb-2.5 flex items-center gap-1.5 transition ${
-            activeTab === 'reports'
-              ? 'border-b-2 border-[#31583d] text-[#31583d] font-semibold'
-              : 'text-[#818982] hover:text-[#202922]'
-          }`}
-        >
-          <ArrowUpRight size={15} /> Analytics & Reporting (FR-10)
-        </button>
+        {canViewReports && (
+          <button
+            onClick={() => setActiveTab('reports')}
+            className={`pb-2.5 flex items-center gap-1.5 transition ${
+              activeTab === 'reports'
+                ? 'border-b-2 border-[#31583d] text-[#31583d] font-semibold'
+                : 'text-[#818982] hover:text-[#202922]'
+            }`}
+          >
+            <ArrowUpRight size={15} /> Analytics & Reporting
+          </button>
+        )}
       </div>
 
-      {/* TAB 1: ALL RESERVATIONS TABLE (FR-03, FR-04, FR-09) */}
+      {/* TAB 1: ALL RESERVATIONS TABLE */}
       {activeTab === 'table' && (
         <section className="bg-white border border-[#e9ece7] rounded-xl shadow-xs overflow-hidden">
           {/* Filter Bar */}
@@ -744,12 +751,14 @@ export function ReservationsView({
               >
                 Reset
               </button>
-              <button
-                onClick={handleExportCSV}
-                className="flex items-center gap-1.5 text-xs bg-white border border-[#e9ece7] px-3 py-1.5 rounded-lg text-[#202922] hover:bg-neutral-50 transition"
-              >
-                <Download size={14} /> Export CSV
-              </button>
+              {canExport && (
+                <button
+                  onClick={handleExportCSV}
+                  className="flex items-center gap-1.5 text-xs bg-white border border-[#e9ece7] px-3 py-1.5 rounded-lg text-[#202922] hover:bg-neutral-50 transition"
+                >
+                  <Download size={14} /> Export CSV
+                </button>
+              )}
             </div>
           </div>
 
@@ -763,8 +772,8 @@ export function ReservationsView({
                   <th className="py-3 px-3.5 font-semibold">STAY DATES</th>
                   <th className="py-3 px-3.5 font-semibold">ROOM & GUESTS</th>
                   <th className="py-3 px-3.5 font-semibold">SOURCE</th>
-                  <th className="py-3 px-3.5 font-semibold">FINANCIALS</th>
-                  <th className="py-3 px-3.5 font-semibold">PAYMENT</th>
+                  {canViewFinancials && <th className="py-3 px-3.5 font-semibold">FINANCIALS</th>}
+                  {canViewFinancials && <th className="py-3 px-3.5 font-semibold">PAYMENT</th>}
                   <th className="py-3 px-3.5 font-semibold">STATUS</th>
                   <th className="py-3 px-3.5 font-semibold text-right">ACTIONS</th>
                 </tr>
@@ -817,24 +826,28 @@ export function ReservationsView({
                         <span className="text-[#202922]">{res.source.replace('Direct · ', '')}</span>
                       </td>
 
-                      <td className="py-3 px-3.5 whitespace-nowrap">
-                        <strong className="block text-[#202922]">{money(res.total)}</strong>
-                        <small className="text-[#818982] text-[10px]">Paid: {money(res.paid)}</small>
-                      </td>
+                      {canViewFinancials && (
+                        <td className="py-3 px-3.5 whitespace-nowrap">
+                          <strong className="block text-[#202922]">{money(res.total)}</strong>
+                          <small className="text-[#818982] text-[10px]">Paid: {money(res.paid)}</small>
+                        </td>
+                      )}
 
-                      <td className="py-3 px-3.5">
-                        <span className={`inline-block px-2 py-0.5 rounded text-[10px] font-semibold ${
-                          res.paymentStatus === 'Paid'
-                            ? 'bg-emerald-100 text-emerald-800'
-                            : res.paymentStatus === 'Partially Paid'
-                            ? 'bg-amber-100 text-amber-800'
-                            : res.paymentStatus === 'Refunded'
-                            ? 'bg-purple-100 text-purple-800'
-                            : 'bg-rose-100 text-rose-800'
-                        }`}>
-                          {res.paymentStatus}
-                        </span>
-                      </td>
+                      {canViewFinancials && (
+                        <td className="py-3 px-3.5">
+                          <span className={`inline-block px-2 py-0.5 rounded text-[10px] font-semibold ${
+                            res.paymentStatus === 'Paid'
+                              ? 'bg-emerald-100 text-emerald-800'
+                              : res.paymentStatus === 'Partially Paid'
+                              ? 'bg-amber-100 text-amber-800'
+                              : res.paymentStatus === 'Refunded'
+                              ? 'bg-purple-100 text-purple-800'
+                              : 'bg-rose-100 text-rose-800'
+                          }`}>
+                            {res.paymentStatus}
+                          </span>
+                        </td>
+                      )}
 
                       <td className="py-3 px-3.5">
                         <span className={`inline-block px-2 py-0.5 rounded text-[10px] font-semibold ${
@@ -877,7 +890,7 @@ export function ReservationsView({
                                   setModalMode('details')
                                 }}
                                 className="p-1.5 rounded hover:bg-neutral-100 text-[#818982] hover:text-[#202922]"
-                                title="View Details & Audit Trail"
+                                title="View Details"
                               >
                                 <Eye size={15} />
                               </button>
@@ -892,16 +905,18 @@ export function ReservationsView({
                                 </button>
                               )}
 
-                              <button
-                                onClick={() => {
-                                  setSelectedReservation(res)
-                                  setModalMode('voucher')
-                                }}
-                                className="p-1.5 rounded hover:bg-neutral-100 text-[#818982] hover:text-[#202922]"
-                                title="Print / Download Voucher"
-                              >
-                                <Printer size={15} />
-                              </button>
+                              {canViewFinancials && (
+                                <button
+                                  onClick={() => {
+                                    setSelectedReservation(res)
+                                    setModalMode('voucher')
+                                  }}
+                                  className="p-1.5 rounded hover:bg-neutral-100 text-[#818982] hover:text-[#202922]"
+                                  title="Print / Download Voucher"
+                                >
+                                  <Printer size={15} />
+                                </button>
+                              )}
                             </>
                           )}
                         </div>
@@ -923,14 +938,14 @@ export function ReservationsView({
         </section>
       )}
 
-      {/* TAB 2: ROOM AVAILABILITY MATRIX & COLLISION PREVENTION (FR-02) */}
+      {/* TAB 2: ROOM AVAILABILITY MATRIX */}
       {activeTab === 'availability' && (
         <section className="bg-white border border-[#e9ece7] rounded-xl p-4 shadow-xs space-y-4">
           <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[#e9ece7] pb-3">
             <div>
-              <h2 className="text-base font-bold text-[#202922]">Room Availability Matrix & Double-Booking Guard</h2>
+              <h2 className="text-base font-bold text-[#202922]">Room Availability Matrix</h2>
               <p className="text-xs text-[#818982]">
-                Visualizes daily room occupation, blocks maintenance slots, and prevents conflicting overlapping reservations.
+                Daily room occupancy, arrivals, and maintenance schedule.
               </p>
             </div>
             <div className="flex items-center gap-3 text-xs">
@@ -964,7 +979,9 @@ export function ReservationsView({
                     <td className="p-2.5 border border-[#e9ece7] text-left font-semibold bg-[#fafbf9]">
                       <div className="text-[#202922]">{room.name}</div>
                       <div className="text-[10px] text-[#818982] font-normal">{room.type}</div>
-                      <div className="text-[10px] text-[#31583d] font-semibold">{money(room.rate)}/night</div>
+                      {canViewFinancials && (
+                        <div className="text-[10px] text-[#31583d] font-semibold">{money(room.rate)}/night</div>
+                      )}
                     </td>
 
                     {Array.from({ length: 14 }).map((_, idx) => {
@@ -1047,7 +1064,7 @@ export function ReservationsView({
                     <div>
                       <strong className="text-[#202922]">{b.room}</strong>: {b.startDate} to {b.endDate} — <span className="text-[#818982]">{b.reason}</span>
                     </div>
-                    {canModify && (
+                    {canBlockRooms && (
                       <button
                         onClick={() => {
                           setBlockedRooms(prev => prev.filter((_, idx) => idx !== i))
@@ -1066,8 +1083,8 @@ export function ReservationsView({
         </section>
       )}
 
-      {/* TAB 3: RESERVATION ANALYTICS & REPORTING (FR-10) */}
-      {activeTab === 'reports' && (
+      {/* TAB 3: RESERVATION ANALYTICS & REPORTING */}
+      {canViewReports && activeTab === 'reports' && (
         <section className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
             {/* Status breakdown card */}
@@ -1140,14 +1157,14 @@ export function ReservationsView({
 
           <div className="bg-white border border-[#e9ece7] rounded-xl p-4 shadow-xs flex items-center justify-between">
             <div>
-              <h4 className="font-bold text-[#202922] text-sm">Download Full MIS Report</h4>
-              <p className="text-xs text-[#818982]">Generate full operational spreadsheet containing audit logs, receipts, and stay statuses.</p>
+              <h4 className="font-bold text-[#202922] text-sm">Export Reservation Report</h4>
+              <p className="text-xs text-[#818982]">Generate operational CSV spreadsheet with reservation and payment details.</p>
             </div>
             <button
               onClick={handleExportCSV}
               className="flex items-center gap-1.5 text-xs bg-[#31583d] text-white px-3.5 py-2 rounded-lg font-medium hover:bg-[#274731] transition"
             >
-              <Download size={15} /> Export Audit Log CSV
+              <Download size={15} /> Export CSV
             </button>
           </div>
         </section>
@@ -1157,7 +1174,7 @@ export function ReservationsView({
       {/* MODALS SECTION */}
       {/* ========================================================================= */}
 
-      {/* MODAL 1: CREATE NEW RESERVATION (FR-02, FR-03, FR-07) */}
+      {/* MODAL 1: CREATE NEW RESERVATION */}
       {showCreateModal && (
         <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto">
           <div className="bg-white rounded-2xl max-w-xl w-full p-6 shadow-2xl border border-[#e9ece7] my-8 animate-in fade-in zoom-in-95 duration-150">
@@ -1278,7 +1295,7 @@ export function ReservationsView({
                 </div>
               </div>
 
-              {/* Conflict indicator (FR-02) */}
+              {/* Conflict indicator */}
               {checkConflict(formData.room, formData.checkIn, formData.checkOut) && (
                 <div className="bg-rose-50 border border-rose-200 text-rose-800 p-2.5 rounded-lg flex items-center gap-2">
                   <AlertCircle size={15} className="shrink-0 text-rose-600" />
@@ -1304,29 +1321,31 @@ export function ReservationsView({
                 </strong>
               </div>
 
-              <div>
-                <label className="block text-[#818982] font-medium mb-1">Initial Deposit / Advance Payment (Optional)</label>
-                <div className="grid grid-cols-2 gap-2">
-                  <input
-                    type="number"
-                    min="0"
-                    placeholder="LKR amount"
-                    value={formData.initialPaid || ''}
-                    onChange={e => setFormData({ ...formData, initialPaid: Number(e.target.value) })}
-                    className="border border-[#e9ece7] rounded-lg px-3 py-2 text-xs outline-none focus:border-[#31583d]"
-                  />
-                  <select
-                    value={formData.paymentMethod}
-                    onChange={e => setFormData({ ...formData, paymentMethod: e.target.value as PaymentMethod })}
-                    className="border border-[#e9ece7] rounded-lg px-3 py-2 text-xs outline-none focus:border-[#31583d]"
-                  >
-                    <option>Credit Card</option>
-                    <option>Bank Transfer</option>
-                    <option>Cash</option>
-                    <option>Online Gateway</option>
-                  </select>
+              {canViewFinancials && (
+                <div>
+                  <label className="block text-[#818982] font-medium mb-1">Initial Deposit / Advance Payment (Optional)</label>
+                  <div className="grid grid-cols-2 gap-2">
+                    <input
+                      type="number"
+                      min="0"
+                      placeholder="LKR amount"
+                      value={formData.initialPaid || ''}
+                      onChange={e => setFormData({ ...formData, initialPaid: Number(e.target.value) })}
+                      className="border border-[#e9ece7] rounded-lg px-3 py-2 text-xs outline-none focus:border-[#31583d]"
+                    />
+                    <select
+                      value={formData.paymentMethod}
+                      onChange={e => setFormData({ ...formData, paymentMethod: e.target.value as PaymentMethod })}
+                      className="border border-[#e9ece7] rounded-lg px-3 py-2 text-xs outline-none focus:border-[#31583d]"
+                    >
+                      <option>Credit Card</option>
+                      <option>Bank Transfer</option>
+                      <option>Cash</option>
+                      <option>Online Gateway</option>
+                    </select>
+                  </div>
                 </div>
-              </div>
+              )}
 
               <div>
                 <label className="block text-[#818982] font-medium mb-1">Special Requests / Dietary Requirements</label>
@@ -1360,7 +1379,7 @@ export function ReservationsView({
         </div>
       )}
 
-      {/* MODAL 2: RESERVATION DETAILS & AUDIT TRAIL (FR-03, FR-04, FR-08) */}
+      {/* MODAL 2: RESERVATION DETAILS & AUDIT TRAIL */}
       {modalMode === 'details' && selectedReservation && (
         <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto">
           <div className="bg-white rounded-2xl max-w-2xl w-full p-6 shadow-2xl border border-[#e9ece7] my-8 animate-in fade-in zoom-in-95 duration-150 space-y-4">
@@ -1388,12 +1407,14 @@ export function ReservationsView({
 
             {/* Quick Action Ribbon */}
             <div className="flex flex-wrap items-center gap-2 pb-2 border-b border-[#e9ece7]">
-              <button
-                onClick={() => setModalMode('voucher')}
-                className="flex items-center gap-1.5 text-xs bg-[#eef2ec] text-[#31583d] px-3 py-1.5 rounded-lg hover:bg-[#dfe8dd] font-medium"
-              >
-                <Printer size={14} /> Booking Voucher (FR-04)
-              </button>
+              {canViewFinancials && (
+                <button
+                  onClick={() => setModalMode('voucher')}
+                  className="flex items-center gap-1.5 text-xs bg-[#eef2ec] text-[#31583d] px-3 py-1.5 rounded-lg hover:bg-[#dfe8dd] font-medium"
+                >
+                  <Printer size={14} /> Booking Voucher
+                </button>
+              )}
 
               {canRecordPayment && selectedReservation.status !== 'Cancelled' && (
                 <button
@@ -1403,7 +1424,7 @@ export function ReservationsView({
                   }}
                   className="flex items-center gap-1.5 text-xs bg-[#31583d] text-white px-3 py-1.5 rounded-lg hover:bg-[#25442e] font-medium"
                 >
-                  <DollarSign size={14} /> Record Payment (FR-07)
+                  <DollarSign size={14} /> Record Payment
                 </button>
               )}
 
@@ -1412,25 +1433,27 @@ export function ReservationsView({
                   onClick={() => openEditModal(selectedReservation)}
                   className="flex items-center gap-1.5 text-xs border border-[#e9ece7] px-3 py-1.5 rounded-lg text-[#202922] hover:bg-neutral-50"
                 >
-                  <Edit3 size={14} /> Modify Stay (FR-05)
+                  <Edit3 size={14} /> Modify Stay
                 </button>
               )}
 
-              {canDeleteOrRefund && selectedReservation.status !== 'Cancelled' && (
+              {canCancel && selectedReservation.status !== 'Cancelled' && (
                 <button
                   onClick={() => setModalMode('cancel')}
                   className="flex items-center gap-1.5 text-xs border border-rose-200 text-rose-700 px-3 py-1.5 rounded-lg hover:bg-rose-50"
                 >
-                  <Trash2 size={14} /> Cancel Booking (FR-06)
+                  <Trash2 size={14} /> Cancel Booking
                 </button>
               )}
 
-              <button
-                onClick={() => handleSendReminder(selectedReservation)}
-                className="flex items-center gap-1.5 text-xs border border-[#e9ece7] px-3 py-1.5 rounded-lg text-[#202922] hover:bg-neutral-50"
-              >
-                <Send size={14} /> {selectedReservation.reminderSent ? 'Resend Reminder' : 'Send Reminder (FR-08)'}
-              </button>
+              {!isHousekeeper && (
+                <button
+                  onClick={() => handleSendReminder(selectedReservation)}
+                  className="flex items-center gap-1.5 text-xs border border-[#e9ece7] px-3 py-1.5 rounded-lg text-[#202922] hover:bg-neutral-50"
+                >
+                  <Send size={14} /> {selectedReservation.reminderSent ? 'Resend Reminder' : 'Send Reminder'}
+                </button>
+              )}
             </div>
 
             {/* Info Grid */}
@@ -1453,61 +1476,71 @@ export function ReservationsView({
               </div>
             </div>
 
-            {/* Financial Overview */}
-            <div className="bg-white border border-[#e9ece7] p-3.5 rounded-xl text-xs space-y-2">
-              <div className="flex items-center justify-between font-semibold">
-                <span className="text-[#202922]">Total Reservation Value</span>
-                <span className="text-base text-[#31583d]">{money(selectedReservation.total)}</span>
+            {/* Special Requests */}
+            {selectedReservation.specialRequests && (
+              <div className="bg-[#fafbf9] border border-[#e9ece7] p-3 rounded-xl text-xs">
+                <span className="text-[#818982] block font-medium mb-0.5">Special Requests & Preferences</span>
+                <p className="text-[#202922] font-medium">{selectedReservation.specialRequests}</p>
               </div>
-              <div className="flex items-center justify-between text-[#818982]">
-                <span>Amount Paid</span>
-                <span className="text-emerald-700 font-medium">{money(selectedReservation.paid)}</span>
-              </div>
-              <div className="flex items-center justify-between text-[#818982]">
-                <span>Outstanding Balance</span>
-                <span className="text-rose-700 font-medium">{money(Math.max(0, selectedReservation.total - selectedReservation.paid))}</span>
-              </div>
+            )}
 
-              {/* Payment Progress Bar */}
-              <div className="w-full bg-neutral-100 rounded-full h-2 overflow-hidden mt-1">
-                <div
-                  className="bg-[#31583d] h-2 rounded-full"
-                  style={{ width: `${Math.min(100, (selectedReservation.paid / (selectedReservation.total || 1)) * 100)}%` }}
-                />
-              </div>
-
-              {selectedReservation.payments && selectedReservation.payments.length > 0 && (
-                <div className="pt-2 border-t border-[#f1f3ef] mt-2">
-                  <span className="text-[11px] font-bold text-[#818982] block mb-1">Payment Transactions</span>
-                  <div className="space-y-1">
-                    {selectedReservation.payments.map(p => (
-                      <div key={p.id} className="flex items-center justify-between text-[11px] py-0.5">
-                        <span className="text-[#818982]">{p.date} • {p.method} ({p.receiptNumber})</span>
-                        <div className="flex items-center gap-2">
-                          <strong className={p.isRefund ? 'text-purple-700' : 'text-emerald-700'}>
-                            {p.isRefund ? `-${money(p.amount)} (Refund)` : `+${money(p.amount)}`}
-                          </strong>
-                          <button
-                            onClick={() => {
-                              setActiveReceipt(p)
-                              setModalMode('receipt')
-                            }}
-                            className="text-[#31583d] hover:underline"
-                          >
-                            Receipt
-                          </button>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
+            {/* Financial Overview (Hidden for Housekeeper) */}
+            {canViewFinancials && (
+              <div className="bg-white border border-[#e9ece7] p-3.5 rounded-xl text-xs space-y-2">
+                <div className="flex items-center justify-between font-semibold">
+                  <span className="text-[#202922]">Total Reservation Value</span>
+                  <span className="text-base text-[#31583d]">{money(selectedReservation.total)}</span>
                 </div>
-              )}
-            </div>
+                <div className="flex items-center justify-between text-[#818982]">
+                  <span>Amount Paid</span>
+                  <span className="text-emerald-700 font-medium">{money(selectedReservation.paid)}</span>
+                </div>
+                <div className="flex items-center justify-between text-[#818982]">
+                  <span>Outstanding Balance</span>
+                  <span className="text-rose-700 font-medium">{money(Math.max(0, selectedReservation.total - selectedReservation.paid))}</span>
+                </div>
 
-            {/* Audit History Trail (FR-03) */}
+                {/* Payment Progress Bar */}
+                <div className="w-full bg-neutral-100 rounded-full h-2 overflow-hidden mt-1">
+                  <div
+                    className="bg-[#31583d] h-2 rounded-full"
+                    style={{ width: `${Math.min(100, (selectedReservation.paid / (selectedReservation.total || 1)) * 100)}%` }}
+                  />
+                </div>
+
+                {selectedReservation.payments && selectedReservation.payments.length > 0 && (
+                  <div className="pt-2 border-t border-[#f1f3ef] mt-2">
+                    <span className="text-[11px] font-bold text-[#818982] block mb-1">Payment Transactions</span>
+                    <div className="space-y-1">
+                      {selectedReservation.payments.map(p => (
+                        <div key={p.id} className="flex items-center justify-between text-[11px] py-0.5">
+                          <span className="text-[#818982]">{p.date} • {p.method} ({p.receiptNumber})</span>
+                          <div className="flex items-center gap-2">
+                            <strong className={p.isRefund ? 'text-purple-700' : 'text-emerald-700'}>
+                              {p.isRefund ? `-${money(p.amount)} (Refund)` : `+${money(p.amount)}`}
+                            </strong>
+                            <button
+                              onClick={() => {
+                                setActiveReceipt(p)
+                                setModalMode('receipt')
+                              }}
+                              className="text-[#31583d] hover:underline"
+                            >
+                              Receipt
+                            </button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Audit History Trail */}
             <div className="space-y-2">
               <h3 className="font-bold text-xs text-[#202922] uppercase tracking-wider">
-                Reservation History & Audit Trail (FR-03)
+                Reservation History & Audit Trail
               </h3>
               <div className="max-h-44 overflow-y-auto border border-[#e9ece7] rounded-xl p-3 space-y-2 bg-[#fafbf9] text-xs">
                 {(selectedReservation.history || []).map((h, i) => (
@@ -1538,7 +1571,7 @@ export function ReservationsView({
         </div>
       )}
 
-      {/* MODAL 3: BOOKING CONFIRMATION VOUCHER (FR-04) */}
+      {/* MODAL 3: BOOKING CONFIRMATION VOUCHER */}
       {modalMode === 'voucher' && selectedReservation && (
         <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto">
           <div className="bg-white rounded-2xl max-w-xl w-full p-8 shadow-2xl border border-[#e9ece7] my-8 animate-in fade-in zoom-in-95">
@@ -1616,7 +1649,7 @@ export function ReservationsView({
         </div>
       )}
 
-      {/* MODAL 4: MODIFY RESERVATION (FR-05) */}
+      {/* MODAL 4: MODIFY RESERVATION */}
       {modalMode === 'edit' && selectedReservation && (
         <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto">
           <div className="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-[#e9ece7] my-8 animate-in fade-in zoom-in-95">
@@ -1735,7 +1768,7 @@ export function ReservationsView({
         </div>
       )}
 
-      {/* MODAL 5: CANCELLATION & POLICY (FR-06) */}
+      {/* MODAL 5: CANCELLATION & POLICY */}
       {modalMode === 'cancel' && selectedReservation && (
         <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto">
           <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-[#e9ece7] my-8 animate-in fade-in zoom-in-95">
@@ -1751,7 +1784,7 @@ export function ReservationsView({
 
             <div className="space-y-3 mt-4 text-xs">
               <div className="bg-rose-50 border border-rose-200 text-rose-900 p-3 rounded-lg text-xs space-y-1">
-                <strong>Cancellation Policy Terms (FR-06):</strong>
+                <strong>Cancellation Policy Terms:</strong>
                 <p>• Cancelling releases slot for <strong>{selectedReservation.room}</strong> immediately back to inventory.</p>
                 {selectedReservation.paid > 0 && (
                   <p>• Refund of <strong>{money(selectedReservation.paid)}</strong> will be credited to guest via original payment method.</p>
@@ -1793,7 +1826,7 @@ export function ReservationsView({
         </div>
       )}
 
-      {/* MODAL 6: RECORD PAYMENT (FR-07) */}
+      {/* MODAL 6: RECORD PAYMENT */}
       {modalMode === 'payment' && selectedReservation && (
         <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto">
           <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-[#e9ece7] my-8 animate-in fade-in zoom-in-95">
@@ -1872,7 +1905,7 @@ export function ReservationsView({
         </div>
       )}
 
-      {/* MODAL 7: PAYMENT RECEIPT (FR-07) */}
+      {/* MODAL 7: PAYMENT RECEIPT */}
       {modalMode === 'receipt' && selectedReservation && activeReceipt && (
         <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto">
           <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-[#e9ece7] my-8 animate-in fade-in zoom-in-95 space-y-4">
@@ -1936,7 +1969,7 @@ export function ReservationsView({
         </div>
       )}
 
-      {/* MODAL 8: ADMIN BLOCK ROOM DATES (FR-02, FR-09) */}
+      {/* MODAL 8: ADMIN BLOCK ROOM DATES */}
       {showBlockModal && (
         <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto">
           <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-[#e9ece7] my-8 animate-in fade-in zoom-in-95">

@@ -369,7 +369,13 @@ export function HotelManagementApp() {
     />
     <aside className={`sidebar ${mobileMenuOpen ? 'open' : ''}`}>
       <div className="brand">
-        <div className="brand-mark"><span>VT</span></div>
+        <img
+          src="/icon.svg"
+          alt="Villa Tea Fields Logo"
+          width={36}
+          height={36}
+          className="brand-mark"
+        />
         <div>
           <strong>Villa Tea Fields</strong>
           <small>HOTEL MANAGEMENT</small>

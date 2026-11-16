@@ -275,10 +275,10 @@ const navGroups = [
   { label: 'ADMINISTRATION', items: [{ name: 'Audit Logs', icon: ShieldCheck, roles: ['Owner'] }, { name: 'Settings', icon: Settings, roles: ['Owner'] }] },
 ] as const
 const rooms = [
-  { name: 'Room 01', state: 'Reserved', guest: 'Nimal Perera', detail: 'Arriving today · 2 nights', image: 'photo-1611892440504-42a792e24d32' },
-  { name: 'Room 02', state: 'Occupied', guest: 'Amelia Hart', detail: 'Departs Nov 17', image: 'photo-1616594039964-ae9021a400a0' },
-  { name: 'Room 03', state: 'Ready', guest: '—', detail: 'Next arrival Nov 15', image: 'photo-1618221195710-dd6b41faaea6' },
-  { name: 'Room 04', state: 'Reserved', guest: 'Sophie Laurent', detail: 'Arriving tomorrow · 4 nights', image: 'photo-1616486338812-3dadae4b4ace' },
+  { name: 'Room 01 · Single Tree Deluxe', state: 'Reserved', guest: 'Nimal Perera', detail: 'Arriving today · 2 nights', image: 'photo-1611892440504-42a792e24d32' },
+  { name: 'Room 02 · Planter\'s Vista', state: 'Occupied', guest: 'Amelia Hart', detail: 'Departs Nov 17', image: 'photo-1616594039964-ae9021a400a0' },
+  { name: 'Room 03 · Highland Heritage', state: 'Ready', guest: '—', detail: 'Next arrival Nov 15', image: 'photo-1618221195710-dd6b41faaea6' },
+  { name: 'Room 04 · Pedro Valley Suite', state: 'Reserved', guest: 'Sophie Laurent', detail: 'Arriving tomorrow · 4 nights', image: 'photo-1616486338812-3dadae4b4ace' },
 ]
 const staff = [{ name: 'Mira Jayasinghe', role: 'Manager', initials: 'MJ' }, { name: 'Ruwan Perera', role: 'Deputy Manager', initials: 'RP' }, { name: 'Sewwandi Silva', role: 'Housekeeper', initials: 'SS' }, { name: 'Lakmali Fernando', role: 'Housekeeper', initials: 'LF' }]
 const money = (amount: number) => `LKR ${amount.toLocaleString('en-LK')}`
@@ -295,6 +295,7 @@ export function HotelManagementApp() {
   const [period, setPeriod] = useState('This month')
   const [taskStates, setTaskStates] = useState(['In progress', 'Pending', 'Inspection required'])
   const [saved, setSaved] = useState(false)
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
   useEffect(() => {
     const stored = window.localStorage.getItem('villa-tea-fields-demo')
@@ -361,16 +362,179 @@ export function HotelManagementApp() {
   const setTask = (index: number, state: string) => setTaskStates(current => current.map((value, itemIndex) => itemIndex === index ? state : value))
 
   return <div className="app-shell">
-    <aside className="sidebar">
-      <div className="brand"><div className="brand-mark"><span>V</span></div><div><strong>villa tea fields</strong><small>HOTEL MANAGEMENT</small></div><button className="icon-button mobile-menu" aria-label="Menu"><Menu /></button></div>
-      <div className="property-switch"><div className="property-avatar">VT</div><div><strong>Villa Tea Fields</strong><span>Nuwara Eliya, Sri Lanka</span></div><ChevronDown size={15}/></div>
-      <nav className="side-nav" aria-label="Main navigation">{visibleNav.map(group => <section className="nav-group" key={group.label}><p>{group.label}</p>{group.items.map(item => <button key={item.name} onClick={() => setPage(item.name)} className={`nav-link ${page === item.name ? 'active' : ''}`}><item.icon size={17}/><span>{item.name}</span>{item.name === 'Reservations' && pending > 0 && <i>{pending}</i>}</button>)}</section>)}</nav>
-      <div className="sidebar-bottom"><div className="help-card"><div className="help-icon"><CircleHelp size={17}/></div><strong>Need a hand?</strong><span>Visit the knowledge center for guides and SOPs.</span><button onClick={() => setPage('Knowledge Center')}>Browse help <span>→</span></button></div><div className="sidebar-user"><div className="user-avatar">{role === 'Owner' ? 'AS' : role === 'Manager' ? 'MJ' : role === 'Deputy Manager' ? 'RP' : 'SS'}</div><div><strong>{role === 'Owner' ? 'Anushka Senanayake' : role === 'Manager' ? 'Mira Jayasinghe' : role === 'Deputy Manager' ? 'Ruwan Perera' : 'Sewwandi Silva'}</strong><span>{role}</span></div><MoreHorizontal size={18}/></div></div>
+    <div
+      className={`sidebar-backdrop ${mobileMenuOpen ? 'open' : ''}`}
+      onClick={() => setMobileMenuOpen(false)}
+      aria-hidden="true"
+    />
+    <aside className={`sidebar ${mobileMenuOpen ? 'open' : ''}`}>
+      <div className="brand">
+        <div className="brand-mark"><span>VT</span></div>
+        <div>
+          <strong>Villa Tea Fields</strong>
+          <small>HOTEL MANAGEMENT</small>
+        </div>
+        <button
+          className="mobile-menu-close"
+          onClick={() => setMobileMenuOpen(false)}
+          aria-label="Close menu"
+        >
+          <X size={18} />
+        </button>
+      </div>
+      <div className="property-switch">
+        <div className="property-avatar">VT</div>
+        <div>
+          <strong>Villa Tea Fields</strong>
+          <span>Nuwara Eliya, Sri Lanka</span>
+        </div>
+        <ChevronDown size={15} />
+      </div>
+      <nav className="side-nav" aria-label="Main navigation">
+        {visibleNav.map(group => (
+          <section className="nav-group" key={group.label}>
+            <p>{group.label}</p>
+            {group.items.map(item => (
+              <button
+                key={item.name}
+                onClick={() => {
+                  setPage(item.name)
+                  setMobileMenuOpen(false)
+                }}
+                className={`nav-link ${page === item.name ? 'active' : ''}`}
+              >
+                <item.icon size={18} />
+                <span>{item.name}</span>
+                {item.name === 'Reservations' && pending > 0 && <i>{pending}</i>}
+              </button>
+            ))}
+          </section>
+        ))}
+      </nav>
+      <div className="sidebar-bottom">
+        <div className="help-card">
+          <div className="help-icon"><CircleHelp size={17} /></div>
+          <strong>Operations Guide & SOPs</strong>
+          <span>Standard operating procedures & staff guides.</span>
+          <button onClick={() => { setPage('Knowledge Center'); setMobileMenuOpen(false) }}>
+            Browse SOPs <span>→</span>
+          </button>
+        </div>
+        <div className="sidebar-user">
+          <div className="user-avatar">
+            {role === 'Owner' ? 'AS' : role === 'Manager' ? 'MJ' : role === 'Deputy Manager' ? 'RP' : 'SS'}
+          </div>
+          <div>
+            <strong>
+              {role === 'Owner'
+                ? 'Anushka Senanayake'
+                : role === 'Manager'
+                ? 'Mira Jayasinghe'
+                : role === 'Deputy Manager'
+                ? 'Ruwan Perera'
+                : 'Sewwandi Silva'}
+            </strong>
+            <span>{role}</span>
+          </div>
+          <MoreHorizontal size={18} />
+        </div>
+      </div>
     </aside>
-    <main className="main-area"><header className="topbar"><div className="crumb"><span>Villa Tea Fields</span><ChevronRight size={14}/><strong>{page}</strong></div><div className="top-actions"><label className="global-search"><Search size={16}/><input value={query} onChange={event => setQuery(event.target.value)} placeholder="Search anything..."/><kbd>⌘ K</kbd></label><button className="icon-button notification-button" aria-label="Notifications" onClick={() => setShowNotifications(!showNotifications)}><Bell size={18}/><b/></button><div className="top-divider"/><div className="profile-select"><div className="user-avatar small">{role === 'Owner' ? 'AS' : role === 'Manager' ? 'MJ' : role === 'Deputy Manager' ? 'RP' : 'SS'}</div><select aria-label="Switch active role" value={role} onChange={event => setRole(event.target.value as Role)}><option>Owner</option><option>Manager</option><option>Deputy Manager</option><option>Housekeeper</option></select><ChevronDown size={14}/></div></div>
-      {showNotifications && <div className="notification-popover"><div className="popover-head"><strong>Notifications</strong><button onClick={() => { setShowNotifications(false); notify('All caught up') }}>Mark all read</button></div><div className="notice-row"><span className="notice-dot gold-dot"/><div><strong>{pending} booking requests need review</strong><small>New reservations · just now</small></div></div><div className="notice-row"><span className="notice-dot green-dot"/><div><strong>Room 03 is ready for inspection</strong><small>Housekeeping · 18 minutes ago</small></div></div><div className="notice-row"><span className="notice-dot blue-dot"/><div><strong>Guest arrival: Nimal Perera</strong><small>Today at 2:00 PM</small></div></div></div>}
-    </header>
-    <div className="page-content">
+    <main className="main-area">
+      <header className="topbar">
+        <div className="flex items-center gap-3">
+          <button
+            className="icon-button mobile-menu-btn"
+            onClick={() => setMobileMenuOpen(true)}
+            aria-label="Open menu"
+          >
+            <Menu size={20} />
+          </button>
+          <div className="crumb">
+            <span>Villa Tea Fields</span>
+            <ChevronRight size={14} />
+            <strong>{page}</strong>
+          </div>
+        </div>
+        <div className="top-actions">
+          <div className="hidden lg:flex items-center gap-2 px-3 py-1.5 rounded-md bg-[#F7F8FA] border border-[#E5E9EF] text-xs text-[#778196] font-medium">
+            <span>Nuwara Eliya, LK</span>
+            <span>·</span>
+            <span>18°C Misty</span>
+          </div>
+          <label className="global-search">
+            <Search size={16} />
+            <input
+              value={query}
+              onChange={event => setQuery(event.target.value)}
+              placeholder="Search anything..."
+            />
+            <kbd>⌘ K</kbd>
+          </label>
+          <button
+            className="icon-button notification-button"
+            aria-label="Notifications"
+            onClick={() => setShowNotifications(!showNotifications)}
+          >
+            <Bell size={18} />
+            <b />
+          </button>
+          <div className="top-divider" />
+          <div className="profile-select">
+            <div className="user-avatar small">
+              {role === 'Owner' ? 'AS' : role === 'Manager' ? 'MJ' : role === 'Deputy Manager' ? 'RP' : 'SS'}
+            </div>
+            <select
+              aria-label="Switch active role"
+              value={role}
+              onChange={event => setRole(event.target.value as Role)}
+            >
+              <option>Owner</option>
+              <option>Manager</option>
+              <option>Deputy Manager</option>
+              <option>Housekeeper</option>
+            </select>
+            <ChevronDown size={14} />
+          </div>
+        </div>
+        {showNotifications && (
+          <div className="notification-popover">
+            <div className="popover-head">
+              <strong>Notifications</strong>
+              <button
+                onClick={() => {
+                  setShowNotifications(false)
+                  notify('All caught up')
+                }}
+              >
+                Mark all read
+              </button>
+            </div>
+            <div className="notice-row">
+              <span className="notice-dot gold-dot" />
+              <div>
+                <strong>{pending} booking requests need review</strong>
+                <small>New reservations · just now</small>
+              </div>
+            </div>
+            <div className="notice-row">
+              <span className="notice-dot green-dot" />
+              <div>
+                <strong>Room 03 is ready for inspection</strong>
+                <small>Housekeeping · 18 minutes ago</small>
+              </div>
+            </div>
+            <div className="notice-row">
+              <span className="notice-dot blue-dot" />
+              <div>
+                <strong>Guest arrival: Nimal Perera</strong>
+                <small>Today at 2:00 PM</small>
+              </div>
+            </div>
+          </div>
+        )}
+      </header>
+    <div className="page-content w-full min-w-0 max-w-full">
       {page === 'Dashboard' && <Dashboard role={role} period={period} setPeriod={setPeriod} reservations={reservations} approve={approve} setPage={setPage} onNewReservation={openNewReservation} tasks={taskStates} setTask={setTask} />}
       {page === 'Reservations' && allowedPages.includes('Reservations') && (
         <ReservationsView
@@ -415,9 +579,9 @@ export function HotelManagementApp() {
       {page === 'Knowledge Center' && <Knowledge />}
       {!allowedPages.includes(page) && (
         <div className="card" style={{ padding: '3rem', textAlign: 'center' }}>
-          <ShieldCheck size={36} style={{ margin: '0 auto 1rem', color: '#c28e38' }} />
+          <ShieldCheck size={36} style={{ margin: '0 auto 1rem', color: '#D99A35' }} />
           <h2 style={{ fontSize: '1.25rem', fontWeight: 'bold', marginBottom: '0.5rem' }}>Access Restricted</h2>
-          <p style={{ color: '#737b74', fontSize: '0.875rem', marginBottom: '1.5rem' }}>
+          <p style={{ color: '#778196', fontSize: '0.875rem', marginBottom: '1.5rem' }}>
             Your active role ({role}) does not have permission to view {page}.
           </p>
           <button className="button primary" onClick={() => setPage('Dashboard')}>Return to Dashboard</button>
@@ -552,23 +716,23 @@ function PeriodRevenueChart({ values, occupancyValues, labels }: { values: numbe
     return `${x},${y}`
   }).join(' ')
 
-  return <div className="chart-area"><div className="chart-y"><span>{money(maximum)}</span><span>{money(maximum * .75)}</span><span>{money(maximum * .5)}</span><span>{money(maximum * .25)}</span><span>LKR 0</span></div><div className="chart-plot"><div className="chart-gridline" /><div className="chart-gridline" /><div className="chart-gridline" /><div className="chart-gridline" /><svg viewBox="0 0 640 190" preserveAspectRatio="none" role="img" aria-label={`Revenue and monthly occupancy for ${labels.join(', ')}`}><defs><linearGradient id="periodRevenueFill" x1="0" x2="0" y1="0" y2="1"><stop offset="0%" stopColor="#496f55" stopOpacity=".18" /><stop offset="100%" stopColor="#496f55" stopOpacity="0" /></linearGradient></defs><polygon points={areaPoints} fill="url(#periodRevenueFill)" /><polyline points={points} fill="none" stroke="#416849" strokeWidth="3" strokeLinejoin="round" strokeLinecap="round" /><polyline points={occupancyPoints} fill="none" stroke="#d1ab6b" strokeWidth="2.5" strokeDasharray="5 5" strokeLinejoin="round" strokeLinecap="round" /></svg><div className="chart-hover"><strong>{labels[labels.length - 1]}</strong><span>{money(values[values.length - 1] || 0)} revenue · {occupancyValues[occupancyValues.length - 1] || 0}% occupancy</span></div></div></div>
+  return <div className="chart-area"><div className="chart-y"><span>{money(maximum)}</span><span>{money(maximum * .75)}</span><span>{money(maximum * .5)}</span><span>{money(maximum * .25)}</span><span>LKR 0</span></div><div className="chart-plot"><div className="chart-gridline" /><div className="chart-gridline" /><div className="chart-gridline" /><div className="chart-gridline" /><svg viewBox="0 0 640 190" preserveAspectRatio="none" role="img" aria-label={`Revenue and monthly occupancy for ${labels.join(', ')}`}><defs><linearGradient id="periodRevenueFill" x1="0" x2="0" y1="0" y2="1"><stop offset="0%" stopColor="#172B4D" stopOpacity=".15" /><stop offset="100%" stopColor="#172B4D" stopOpacity="0.01" /></linearGradient></defs><polygon points={areaPoints} fill="url(#periodRevenueFill)" /><polyline points={points} fill="none" stroke="#172B4D" strokeWidth="2.5" strokeLinejoin="round" strokeLinecap="round" /><polyline points={occupancyPoints} fill="none" stroke="#27877D" strokeWidth="2" strokeDasharray="4 4" strokeLinejoin="round" strokeLinecap="round" /></svg><div className="chart-hover"><strong>{labels[labels.length - 1]}</strong><span>{money(values[values.length - 1] || 0)} revenue · {occupancyValues[occupancyValues.length - 1] || 0}% occupancy</span></div></div></div>
 }
 function PeriodChannelChart({ count, shares }: { count: number; shares: number[] }) {
-  const colors = ['#416849', '#d1ab6b', '#91a591', '#d8ddd5']
+  const colors = ['#172B4D', '#27877D', '#5B92E5', '#E5E9EF']
   let cumulative = 0
   const stops = shares.map((share, index) => {
     const start = cumulative
     cumulative += share
     return `${colors[index]} ${start}% ${cumulative}%`
   }).join(', ')
-  const style = { background: count ? `conic-gradient(${stops})` : '#e9ece7' }
+  const style = { background: count ? `conic-gradient(${stops})` : '#E5E9EF' }
   return <div className="donut-wrap"><div className="donut" style={style}><div className="donut-inner"><strong>{count}</strong><span>bookings</span></div></div><div className="donut-total"><small>SELECTED PERIOD</small><strong>{count}</strong><span>reservations</span></div></div>
 }
-function RevenueChart(){const vals=[42,58,48,68,62,80,67,75,56,88,73,96,68,83,72,91,76,88,64,97,79,92,72,84,66,90,74,98,83,92,70,86,76,96,84,100,73,88,76,94];return <div className="chart-area"><div className="chart-y"><span>120k</span><span>90k</span><span>60k</span><span>30k</span><span>0</span></div><div className="chart-plot"><div className="chart-gridline" /><div className="chart-gridline" /><div className="chart-gridline" /><div className="chart-gridline" /><svg viewBox="0 0 640 190" preserveAspectRatio="none" role="img" aria-label="Revenue and occupancy line chart for June to November"><defs><linearGradient id="revenueFill" x1="0" x2="0" y1="0" y2="1"><stop offset="0%" stopColor="#496f55" stopOpacity=".18" /><stop offset="100%" stopColor="#496f55" stopOpacity="0" /></linearGradient></defs><path d="M0 145 C25 140 28 110 50 118 S90 150 108 126 S140 85 160 100 S190 132 210 95 S240 72 258 84 S290 120 310 90 S340 35 360 52 S390 92 408 62 S440 40 458 55 S490 90 510 50 S540 25 558 43 S590 62 608 30 S630 14 640 22 L640 190 L0 190Z" fill="url(#revenueFill)" /><path d="M0 145 C25 140 28 110 50 118 S90 150 108 126 S140 85 160 100 S190 132 210 95 S240 72 258 84 S290 120 310 90 S340 35 360 52 S390 92 408 62 S440 40 458 55 S490 90 510 50 S540 25 558 43 S590 62 608 30 S630 14 640 22" fill="none" stroke="#416849" strokeWidth="3" /><path d="M0 158 C28 148 33 135 52 142 S90 153 108 140 S142 120 160 130 S194 148 210 132 S240 105 258 116 S290 141 310 123 S340 90 360 97 S390 122 408 106 S440 92 458 104 S490 124 510 96 S540 80 558 93 S590 105 608 84 S630 72 640 78" fill="none" stroke="#d1ab6b" strokeWidth="2.5" strokeDasharray="5 5" /></svg><div className="chart-hover"><strong>Nov 14</strong><span>LKR 94,200 · 78% occupancy</span></div></div></div>}
+function RevenueChart(){const vals=[42,58,48,68,62,80,67,75,56,88,73,96,68,83,72,91,76,88,64,97,79,92,72,84,66,90,74,98,83,92,70,86,76,96,84,100,73,88,76,94];return <div className="chart-area"><div className="chart-y"><span>120k</span><span>90k</span><span>60k</span><span>30k</span><span>0</span></div><div className="chart-plot"><div className="chart-gridline" /><div className="chart-gridline" /><div className="chart-gridline" /><div className="chart-gridline" /><svg viewBox="0 0 640 190" preserveAspectRatio="none" role="img" aria-label="Revenue and occupancy line chart for June to November"><defs><linearGradient id="revenueFill" x1="0" x2="0" y1="0" y2="1"><stop offset="0%" stopColor="#172B4D" stopOpacity=".15" /><stop offset="100%" stopColor="#172B4D" stopOpacity="0" /></linearGradient></defs><path d="M0 145 C25 140 28 110 50 118 S90 150 108 126 S140 85 160 100 S190 132 210 95 S240 72 258 84 S290 120 310 90 S340 35 360 52 S390 92 408 62 S440 40 458 55 S490 90 510 50 S540 25 558 43 S590 62 608 30 S630 14 640 22 L640 190 L0 190Z" fill="url(#revenueFill)" /><path d="M0 145 C25 140 28 110 50 118 S90 150 108 126 S140 85 160 100 S190 132 210 95 S240 72 258 84 S290 120 310 90 S340 35 360 52 S390 92 408 62 S440 40 458 55 S490 90 510 50 S540 25 558 43 S590 62 608 30 S630 14 640 22" fill="none" stroke="#172B4D" strokeWidth="2.5" strokeLinejoin="round" /><path d="M0 158 C28 148 33 135 52 142 S90 153 108 140 S142 120 160 130 S194 148 210 132 S240 105 258 116 S290 141 310 123 S340 90 360 97 S390 122 408 106 S440 92 458 104 S490 124 510 96 S540 80 558 93 S590 105 608 84 S630 72 640 78" fill="none" stroke="#27877D" strokeWidth="2" strokeDasharray="4 4" strokeLinejoin="round" /></svg><div className="chart-hover"><strong>Nov 14</strong><span>LKR 94,200 · 78% occupancy</span></div></div></div>}
 function ChannelChart(){return <div className="donut-wrap"><div className="donut"><div className="donut-inner"><strong>28</strong><span>bookings</span></div></div><div className="donut-total"><small>THIS MONTH</small><strong>28</strong><span>reservations</span></div></div>}
 
-function Rooms(){return <><div className="page-heading"><div><p className="eyebrow">HOTEL OPERATIONS</p><h1>Rooms & property</h1><p className="subheading">A clear view of availability and room readiness.</p></div><button className="button secondary"><CalendarDays size={16} /> Room calendar</button></div><div className="room-summary"><span><i className="room-dot occupied-dot" />Occupied <strong>1</strong></span><span><i className="room-dot ready-dot" />Ready <strong>1</strong></span><span><i className="room-dot reserved-dot" />Reserved <strong>2</strong></span><span className="room-summary-total">4 rooms total</span></div><div className="room-grid">{rooms.map((room, index) => <article className="card room-card" key={room.name}><div className="room-photo" style={{ backgroundImage: `url(https://images.unsplash.com/${room.image}?auto=format&fit=crop&w=900&q=80)` }}><span className={`room-state ${room.state.toLowerCase().replaceAll(' ', '-')}`}><i />{room.state}</span><button className="room-more" aria-label={`${room.name} options`}><MoreHorizontal size={18} /></button></div><div className="room-content"><div className="room-title"><h2>{room.name}</h2><span>2 guests</span></div><p className="room-guest"><Users size={14} />{room.guest}</p><p className="room-detail"><CalendarDays size={14} />{room.detail}</p><div className="room-footer"><div><span>BASE RATE</span><strong>{money(index === 2 ? 26000 : 22800)} <small>/ night</small></strong></div><button className="text-button">Room details <ChevronRight size={14} /></button></div></div></article>)}</div><div className="card room-note"><div className="attention-icon amber"><ClipboardCheck size={17} /></div><div><strong>Room combinations</strong><span>Combination bookings block all component rooms to prevent double bookings.</span></div><button className="text-button">Configure <ChevronRight size={14} /></button></div></>}
+function Rooms(){return <><div className="page-heading"><div><p className="eyebrow">HOTEL OPERATIONS · 4 SUITES</p><h1>Rooms & inventory</h1><p className="subheading">Availability, housekeeping readiness, and guest allocations.</p></div><button className="button secondary"><CalendarDays size={16} /> Room calendar</button></div><div className="room-summary"><span><i className="room-dot occupied-dot" />Occupied <strong>1</strong></span><span><i className="room-dot ready-dot" />Ready <strong>1</strong></span><span><i className="room-dot reserved-dot" />Reserved <strong>2</strong></span><span className="room-summary-total">4 suites total</span></div><div className="room-grid">{rooms.map((room, index) => <article className="card room-card" key={room.name}><div className="room-photo" style={{ backgroundImage: `url(https://images.unsplash.com/${room.image}?auto=format&fit=crop&w=900&q=80)` }}><span className={`room-state ${room.state.toLowerCase().replaceAll(' ', '-')}`}><i />{room.state}</span><button className="room-more" aria-label={`${room.name} options`}><MoreHorizontal size={18} /></button></div><div className="room-content"><div className="room-title"><h2>{room.name}</h2><span>2–4 guests</span></div><p className="room-guest"><Users size={14} />{room.guest}</p><p className="room-detail"><CalendarDays size={14} />{room.detail}</p><div className="room-footer"><div><span>BASE RATE</span><strong>{money(index === 2 ? 26000 : index === 3 ? 28000 : 22800)} <small>/ night</small></strong></div><button className="text-button">Suite details <ChevronRight size={14} /></button></div></div></article>)}</div><div className="card room-note"><div className="attention-icon amber"><ClipboardCheck size={17} /></div><div><strong>Full-property reservation rule</strong><span>Full estate bookings block all component suites automatically to prevent overbooking.</span></div><button className="text-button">Configure <ChevronRight size={14} /></button></div></>}
 
 type GuestProfile = {
   name: string
@@ -667,15 +831,15 @@ function Guests({ reservations }: { reservations: Reservation[] }) {
         <table>
           <thead><tr><th>GUEST</th><th>LOCATION</th><th>STAYS</th><th>LIFETIME VALUE</th><th>LAST VISIT</th><th>GUEST TYPE</th><th>MARKETING</th></tr></thead>
           <tbody>{matchingGuests.map(guest => <tr key={guest.name}>
-            <td><div className="guest-cell"><div className="guest-avatar">{guest.name.split(' ').map(part => part[0]).slice(0, 2).join('')}</div><div><button type="button" className="text-left font-semibold text-[#202922] hover:text-[#31583d]" onClick={() => setSelectedGuest(guest)}>{guest.name}</button><small>{guest.email}</small></div></div></td>
+            <td><div className="guest-cell"><div className="guest-avatar">{guest.name.split(' ').map(part => part[0]).slice(0, 2).join('')}</div><div><button type="button" className="text-left font-semibold text-[#202939] hover:text-[#27877D]" onClick={() => setSelectedGuest(guest)}>{guest.name}</button><small>{guest.email}</small></div></div></td>
             <td>{guest.country}</td><td>{guest.stays}</td><td>{money(guest.lifetimeValue)}</td><td>{guest.last}</td>
             <td><span className="segment-pill">{guest.segment}</span></td>
             <td><span className={`consent ${guest.consent ? 'yes' : 'no'}`}>{guest.consent ? 'Subscribed' : 'Not opted in'}</span></td>
           </tr>)}</tbody>
         </table>
-        {matchingGuests.length === 0 && <div className="p-8 text-center text-[#818982]"><Search size={24} className="mx-auto mb-2" /><strong className="block text-[#202922]">No guests match these filters</strong><span className="text-xs">Try another name, guest type, or marketing preference.</span></div>}
+        {matchingGuests.length === 0 && <div className="p-8 text-center text-[#778196]"><Search size={24} className="mx-auto mb-2" /><strong className="block text-[#202939]">No guests match these filters</strong><span className="text-xs">Try another name, guest type, or marketing preference.</span></div>}
       </div>
-      <div className="table-footer"><span>Showing <strong>{matchingGuests.length}</strong> of {demoGuests.length} demo guest profiles</span><span className="text-[10px] text-[#818982]">Select a guest to view profile details</span></div>
+      <div className="table-footer"><span>Showing <strong>{matchingGuests.length}</strong> of {demoGuests.length} demo guest profiles</span><span className="text-xs text-[#778196]">Select a guest to view profile details</span></div>
     </section>
     <p className="privacy-note"><ShieldCheck size={14} /> Contact details and marketing preferences are shown for authorized staff only. All displayed profiles are sample demonstration data.</p>
     {selectedGuest && <div className="fixed inset-0 z-50 bg-black/40 flex items-center justify-center p-4" role="presentation" onClick={event => { if (event.target === event.currentTarget) setSelectedGuest(null) }}>

@@ -3,9 +3,9 @@ import type { Metadata, Viewport } from 'next'
 import './globals.css'
 
 export const metadata: Metadata = {
-  title: 'Villa Tea Fields | Hotel Management',
-  description: 'An integrated hotel management workspace for Villa Tea Fields in Nuwara Eliya, Sri Lanka.',
-  generator: 'v0.app',
+  title: 'Villa Tea Fields | Hotel Management System',
+  description: 'Enterprise Hotel Management System (HMS) for Villa Tea Fields.',
+  generator: 'Hotel Management System',
   icons: {
     icon: [
       {
@@ -26,11 +26,10 @@ export const metadata: Metadata = {
 }
 
 export const viewport: Viewport = {
-  colorScheme: 'light dark',
-  themeColor: [
-    { media: '(prefers-color-scheme: light)', color: 'white' },
-    { media: '(prefers-color-scheme: dark)', color: 'black' },
-  ],
+  colorScheme: 'light',
+  themeColor: '#172B4D',
+  width: 'device-width',
+  initialScale: 1,
 }
 
 export default function RootLayout({
@@ -40,7 +39,15 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className="antialiased">
+      <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+          rel="stylesheet"
+        />
+      </head>
+      <body className="antialiased bg-[#F7F8FA] text-[#202939]">
         {children}
         {process.env.NODE_ENV === 'production' && <Analytics />}
       </body>

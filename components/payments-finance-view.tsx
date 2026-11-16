@@ -64,8 +64,8 @@ const TODAY = '2026-11-14'
 const EXPENSE_CATEGORIES: ExpenseCategory[] = ['Utilities', 'Staff salaries', 'Supplies', 'Maintenance', 'Food & breakfast', 'Marketing', 'Other']
 const PAYMENT_METHODS = ['Bank Transfer', 'Credit Card', 'Cash', 'Online Gateway'] as const
 const COMMISSION_RATES: Record<string, number> = { 'Booking.com': 0.15, Airbnb: 0.15, Agoda: 0.15, 'Trip.com': 0.15 }
-const REVENUE_COLOR = '#3d7f47'
-const EXPENSE_COLOR = '#b8862a'
+const REVENUE_COLOR = '#26966F'
+const EXPENSE_COLOR = '#D99A35'
 const MONTH_HISTORY = [
   { month: 'Jun', revenue: 820000, expenses: 265000 },
   { month: 'Jul', revenue: 905000, expenses: 281000 },
@@ -126,32 +126,32 @@ function RevenueExpenseChart({ data }: { data: { month: string; revenue: number;
   const top = Math.ceil(max / 250000) * 250000
   const ticks = [top, top * 0.5, 0]
   return <div>
-    <div className="flex gap-4 text-[9px] text-[#687169] mb-3">
+    <div className="flex gap-5 text-xs text-[#778196] mb-3 font-medium">
       <span className="inline-flex items-center gap-1.5"><i className="inline-block w-2.5 h-2.5 rounded-sm" style={{ background: REVENUE_COLOR }} />Revenue collected</span>
       <span className="inline-flex items-center gap-1.5"><i className="inline-block w-2.5 h-2.5 rounded-sm" style={{ background: EXPENSE_COLOR }} />Operating expenses</span>
     </div>
     <div className="flex gap-2">
-      <div className="flex flex-col justify-between h-40 text-[8px] text-[#939b94] text-right w-8 shrink-0">{ticks.map(tick => <span key={tick}>{compact(tick)}</span>)}</div>
+      <div className="flex flex-col justify-between h-40 text-xs text-[#778196] text-right w-10 shrink-0 font-medium">{ticks.map(tick => <span key={tick}>{compact(tick)}</span>)}</div>
       <div className="relative flex-1 h-40">
-        {ticks.map((tick, index) => <div key={tick} className="absolute left-0 right-0 border-t border-[#eef1ec]" style={{ top: `${index * 50}%` }} />)}
+        {ticks.map((tick, index) => <div key={tick} className="absolute left-0 right-0 border-t border-[#E5E9EF]" style={{ top: `${index * 50}%` }} />)}
         <div className="absolute inset-0 flex items-end justify-around">
-          {data.map((item, index) => <div key={item.month} className="relative h-full flex items-end justify-center gap-[2px] px-2 cursor-default" style={{ flex: 1 }} onMouseEnter={() => setHover(index)} onMouseLeave={() => setHover(null)}>
-            {hover === index && <div className="absolute inset-x-1 inset-y-0 rounded-md bg-[#f3f6f2]" />}
-            <i className="relative block w-3.5 rounded-t-[4px]" style={{ height: `${item.revenue / top * 100}%`, background: REVENUE_COLOR }} />
-            <i className="relative block w-3.5 rounded-t-[4px]" style={{ height: `${item.expenses / top * 100}%`, background: EXPENSE_COLOR }} />
-            {hover === index && <div className="absolute z-10 bottom-full mb-1 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-md border border-[#e9ece7] bg-white px-2.5 py-2 text-[9px] shadow-lg">
-              <strong className="block text-[#202922] mb-1">{item.month} 2026</strong>
-              <span className="flex items-center gap-1.5 text-[#687169]"><i className="inline-block w-2 h-2 rounded-sm" style={{ background: REVENUE_COLOR }} />Revenue <strong className="ml-auto pl-3 text-[#202922]">{money(item.revenue)}</strong></span>
-              <span className="flex items-center gap-1.5 text-[#687169]"><i className="inline-block w-2 h-2 rounded-sm" style={{ background: EXPENSE_COLOR }} />Expenses <strong className="ml-auto pl-3 text-[#202922]">{money(item.expenses)}</strong></span>
-              <span className="flex text-[#687169] mt-1 pt-1 border-t border-[#f0f2ee]">Net <strong className="ml-auto pl-3 text-[#202922]">{money(item.revenue - item.expenses)}</strong></span>
+          {data.map((item, index) => <div key={item.month} className="relative h-full flex items-end justify-center gap-[3px] px-2 cursor-default" style={{ flex: 1 }} onMouseEnter={() => setHover(index)} onMouseLeave={() => setHover(null)}>
+            {hover === index && <div className="absolute inset-x-1 inset-y-0 rounded-md bg-[#F0F3F7]" />}
+            <i className="relative block w-4 rounded-t-sm" style={{ height: `${item.revenue / top * 100}%`, background: REVENUE_COLOR }} />
+            <i className="relative block w-4 rounded-t-sm" style={{ height: `${item.expenses / top * 100}%`, background: EXPENSE_COLOR }} />
+            {hover === index && <div className="absolute z-10 bottom-full mb-1 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-lg border border-[#E5E9EF] bg-white px-3 py-2 text-xs shadow-xl">
+              <strong className="block text-[#202939] mb-1 font-semibold">{item.month} 2026</strong>
+              <span className="flex items-center gap-1.5 text-[#778196]"><i className="inline-block w-2 h-2 rounded-sm" style={{ background: REVENUE_COLOR }} />Revenue <strong className="ml-auto pl-3 text-[#202939]">{money(item.revenue)}</strong></span>
+              <span className="flex items-center gap-1.5 text-[#778196]"><i className="inline-block w-2 h-2 rounded-sm" style={{ background: EXPENSE_COLOR }} />Expenses <strong className="ml-auto pl-3 text-[#202939]">{money(item.expenses)}</strong></span>
+              <span className="flex text-[#778196] mt-1 pt-1 border-t border-[#F0ECE4]">Net <strong className="ml-auto pl-3 text-[#202939]">{money(item.revenue - item.expenses)}</strong></span>
             </div>}
           </div>)}
         </div>
       </div>
     </div>
     <div className="flex gap-2 mt-2">
-      <div className="w-8 shrink-0" />
-      <div className="flex flex-1 justify-around text-center">{data.map(item => <div key={item.month} style={{ flex: 1 }}><span className="block text-[8px] font-semibold text-[#687169]">{item.month.toUpperCase()}</span><span className="block text-[8px] text-[#939b94]">net {compact(item.revenue - item.expenses)}</span></div>)}</div>
+      <div className="w-10 shrink-0" />
+      <div className="flex flex-1 justify-around text-center">{data.map(item => <div key={item.month} style={{ flex: 1 }}><span className="block text-xs font-semibold text-[#778196]">{item.month.toUpperCase()}</span><span className="block text-[11px] text-[#778196]">net {compact(item.revenue - item.expenses)}</span></div>)}</div>
     </div>
   </div>
 }
@@ -210,8 +210,8 @@ function ChannelPerformance() {
       <div><h2>Channel performance</h2><p>Compare bookings, gross revenue and commission</p></div>
       <div className="relative" ref={menuRef}>
         <button className="button secondary" onClick={() => setOpen(!open)} aria-haspopup="listbox" aria-expanded={open}>{period} <ChevronDown size={14} /></button>
-        {open && <div className="absolute right-0 top-full mt-1 z-20 w-36 rounded-lg border border-[#e9ece7] bg-white py-1 shadow-lg" role="listbox">
-          {CHANNEL_PERIODS.map(item => <button key={item} role="option" aria-selected={item === period} className="flex w-full items-center justify-between px-3 py-2 text-left text-[10px] text-[#465048] hover:bg-[#f7f8f5]" onClick={() => { setPeriod(item); setOpen(false) }}>{item}{item === period && <Check size={12} className="text-[#355d40]" />}</button>)}
+        {open && <div className="absolute right-0 top-full mt-1 z-20 w-36 rounded-lg border border-[#E5E9EF] bg-white py-1 shadow-lg" role="listbox">
+          {CHANNEL_PERIODS.map(item => <button key={item} role="option" aria-selected={item === period} className="flex w-full items-center justify-between px-3 py-2 text-left text-[10px] text-[#465048] hover:bg-[#F7F8FA]" onClick={() => { setPeriod(item); setOpen(false) }}>{item}{item === period && <Check size={12} className="text-[#172B4D]" />}</button>)}
         </div>}
       </div>
     </div>
@@ -384,17 +384,17 @@ export function PaymentsFinanceView({ reservations, onUpdateReservations, role, 
   const printInvoice = (row: Transaction) => {
     const win = window.open('', '_blank', 'width=720,height=900')
     if (!win) { notify('Allow pop-ups to print the invoice'); return }
-    const line = (label: string, value: string) => `<tr><td style="padding:6px 0;color:#687169">${label}</td><td style="padding:6px 0;text-align:right">${escapeHtml(value)}</td></tr>`
-    win.document.write(`<!doctype html><html><head><meta charset="utf-8"><title>${escapeHtml(row.receiptNumber)}</title></head><body style="font-family:Georgia,serif;color:#202922;max-width:560px;margin:40px auto;padding:0 24px">
+    const line = (label: string, value: string) => `<tr><td style="padding:6px 0;color:#778196">${label}</td><td style="padding:6px 0;text-align:right">${escapeHtml(value)}</td></tr>`
+    win.document.write(`<!doctype html><html><head><meta charset="utf-8"><title>${escapeHtml(row.receiptNumber)}</title></head><body style="font-family:Georgia,serif;color:#202939;max-width:560px;margin:40px auto;padding:0 24px">
       <h1 style="font-weight:500;margin:0">Villa Tea Fields</h1>
-      <p style="font-family:system-ui;font-size:12px;color:#687169;margin:4px 0 28px">Nuwara Eliya, Sri Lanka</p>
+      <p style="font-family:system-ui;font-size:12px;color:#778196;margin:4px 0 28px">Nuwara Eliya, Sri Lanka</p>
       <h2 style="font-family:system-ui;font-size:14px;letter-spacing:.08em;margin:0 0 4px">${row.isRefund ? 'REFUND RECEIPT' : 'PAYMENT RECEIPT'}</h2>
-      <p style="font-family:system-ui;font-size:12px;color:#687169;margin:0 0 20px">${escapeHtml(row.receiptNumber)} · ${shortDate(row.date)}</p>
+      <p style="font-family:system-ui;font-size:12px;color:#778196;margin:0 0 20px">${escapeHtml(row.receiptNumber)} · ${shortDate(row.date)}</p>
       <table style="width:100%;border-collapse:collapse;font-family:system-ui;font-size:13px">
         ${line('Guest', row.guest)}${line('Email', row.guestEmail)}${line('Reservation', `${row.reservationId} · ${row.room}`)}${line('Payment method', row.method)}${row.reference ? line('Reference', row.reference) : ''}${line('Payment ID', row.id)}
-        <tr><td style="padding:14px 0 0;border-top:1px solid #e9ece7;font-weight:600">${row.isRefund ? 'Amount refunded' : 'Amount received'}</td><td style="padding:14px 0 0;border-top:1px solid #e9ece7;text-align:right;font-weight:600;font-size:16px">${money(row.amount)}</td></tr>
+        <tr><td style="padding:14px 0 0;border-top:1px solid #E5E9EF;font-weight:600">${row.isRefund ? 'Amount refunded' : 'Amount received'}</td><td style="padding:14px 0 0;border-top:1px solid #E5E9EF;text-align:right;font-weight:600;font-size:16px">${money(row.amount)}</td></tr>
       </table>
-      <p style="font-family:system-ui;font-size:11px;color:#939b94;margin-top:40px">Thank you for staying with Villa Tea Fields.</p>
+      <p style="font-family:system-ui;font-size:11px;color:#778196;margin-top:40px">Thank you for staying with Villa Tea Fields.</p>
       <script>window.onload=function(){window.print()}</script></body></html>`)
     win.document.close()
   }
@@ -478,10 +478,10 @@ export function PaymentsFinanceView({ reservations, onUpdateReservations, role, 
                     <td>{row.guest}<small className="table-sub">{row.reference || row.source}</small></td>
                     <td>{shortDate(row.date)}</td>
                     <td>{row.method}</td>
-                    <td className={row.isRefund ? '' : 'money-in'} style={row.isRefund ? { color: '#9a6258', fontWeight: 600 } : undefined}>{row.isRefund ? '−' : '+'}{money(row.amount)}</td>
+                    <td className={row.isRefund ? '' : 'money-in'} style={row.isRefund ? { color: '#D9534F', fontWeight: 600 } : undefined}>{row.isRefund ? '−' : '+'}{money(row.amount)}</td>
                     <td>{row.verification === 'Verified' ? <span className="payment-label paid">Verified</span> : isOwner ? <button className="verify-button" onClick={() => verifyPayment(row.id, row.reservationId)}>Verify payment</button> : <span className="payment-label partial">Pending verification</span>}</td>
                   </tr>)}
-                  {filteredTransactions.length === 0 && <tr><td colSpan={6} className="text-center text-[#8a938b] py-8">No transactions for {periodLabel.toLowerCase()} with these filters.</td></tr>}
+                  {filteredTransactions.length === 0 && <tr><td colSpan={6} className="text-center text-[#778196] py-8">No transactions for {periodLabel.toLowerCase()} with these filters.</td></tr>}
                 </tbody>
               </table>
             </div>
@@ -500,12 +500,12 @@ export function PaymentsFinanceView({ reservations, onUpdateReservations, role, 
                       <td><strong>{item.guest}</strong><small className="table-sub">{item.id} · {item.room} · {item.status}</small></td>
                       <td>{shortDate(item.checkIn)}</td>
                       <td>{money(item.total)}</td>
-                      <td><span>{money(item.paid)}</span><div className="mt-1 h-1 w-20 rounded-full bg-[#eef2ec] overflow-hidden"><i className="block h-full bg-[#557b56]" style={{ width: `${progress}%` }} /></div></td>
+                      <td><span>{money(item.paid)}</span><div className="mt-1 h-1 w-20 rounded-full bg-[#eef2ec] overflow-hidden"><i className="block h-full bg-[#26966F]" style={{ width: `${progress}%` }} /></div></td>
                       <td><span className={`payment-label ${item.paid === 0 ? 'unpaid' : 'partial'}`} style={{ fontSize: 10 }}>{money(due)}</span></td>
-                      <td>{item.reminderSent ? <span className="text-[8px] text-[#8a938b] inline-flex items-center gap-1"><Check size={11} /> Reminder sent{item.reminderSentAt ? ` · ${item.reminderSentAt}` : ''}</span> : <button className="verify-button" onClick={() => sendReminder(item)}>Send reminder</button>}</td>
+                      <td>{item.reminderSent ? <span className="text-[8px] text-[#778196] inline-flex items-center gap-1"><Check size={11} /> Reminder sent{item.reminderSentAt ? ` · ${item.reminderSentAt}` : ''}</span> : <button className="verify-button" onClick={() => sendReminder(item)}>Send reminder</button>}</td>
                     </tr>
                   })}
-                  {outstandingList.length === 0 && <tr><td colSpan={6} className="text-center text-[#8a938b] py-8">All active bookings are fully paid.</td></tr>}
+                  {outstandingList.length === 0 && <tr><td colSpan={6} className="text-center text-[#778196] py-8">All active bookings are fully paid.</td></tr>}
                 </tbody>
               </table>
             </div>
@@ -522,10 +522,10 @@ export function PaymentsFinanceView({ reservations, onUpdateReservations, role, 
                     <td><span className="segment-pill">{item.category}</span></td>
                     <td>{shortDate(item.date)}</td>
                     <td>{item.paidTo}</td>
-                    <td style={{ color: '#9a6258', fontWeight: 600 }}>−{money(item.amount)}</td>
+                    <td style={{ color: '#D9534F', fontWeight: 600 }}>−{money(item.amount)}</td>
                     {isOwner && <td><div className="flex gap-1"><button className="subtle-icon" aria-label={`Edit ${item.description}`} onClick={() => openEditExpense(item)}><Pencil size={13} /></button><button className="subtle-icon" aria-label={`Remove ${item.description}`} onClick={() => removeExpense(item.id)}><X size={14} /></button></div></td>}
                   </tr>)}
-                  {periodExpenses.length === 0 && <tr><td colSpan={6} className="text-center text-[#8a938b] py-8">No expenses recorded for {periodLabel.toLowerCase()}.</td></tr>}
+                  {periodExpenses.length === 0 && <tr><td colSpan={6} className="text-center text-[#778196] py-8">No expenses recorded for {periodLabel.toLowerCase()}.</td></tr>}
                 </tbody>
               </table>
             </div>
@@ -544,9 +544,9 @@ export function PaymentsFinanceView({ reservations, onUpdateReservations, role, 
                       <td><strong>{payout.channel}</strong><small className="table-sub">{payout.period}</small></td>
                       <td>{payout.reservations}</td>
                       <td>{money(payout.expected)}<small className="table-sub">After 15% commission</small></td>
-                      <td>{payout.received === null ? isOwner ? <input type="number" min="1" className="w-24 h-7 border border-[#e3e8e1] rounded-md px-2 text-[10px]" placeholder={String(payout.expected)} value={payoutDrafts[payout.id] ?? ''} onChange={event => setPayoutDrafts({ ...payoutDrafts, [payout.id]: Number(event.target.value) })} /> : '—' : <>{money(payout.received)}<small className="table-sub">{payout.receivedOn ? shortDate(payout.receivedOn) : ''}</small></>}</td>
+                      <td>{payout.received === null ? isOwner ? <input type="number" min="1" className="w-24 h-7 border border-[#E5E9EF] rounded-md px-2 text-[10px]" placeholder={String(payout.expected)} value={payoutDrafts[payout.id] ?? ''} onChange={event => setPayoutDrafts({ ...payoutDrafts, [payout.id]: Number(event.target.value) })} /> : '—' : <>{money(payout.received)}<small className="table-sub">{payout.receivedOn ? shortDate(payout.receivedOn) : ''}</small></>}</td>
                       <td>{difference === null ? '—' : difference === 0 ? <span className="payment-label paid">LKR 0</span> : <span className="payment-label unpaid">{difference < 0 ? '−' : '+'}{money(Math.abs(difference))}</span>}</td>
-                      <td>{status === 'Pending' ? isOwner ? <button className="verify-button" onClick={() => markPayoutReceived(payout)}>Mark received</button> : <span className="payment-label partial">Pending</span> : status === 'Discrepancy' && isOwner ? <button className="verify-button" style={{ color: '#9a6258', background: '#fbf0ee', borderColor: '#f1dcd8' }} onClick={() => resolvePayout(payout)}>Mark resolved</button> : <span className={`payment-label ${status === 'Discrepancy' ? 'unpaid' : 'paid'}`}>{status}</span>}</td>
+                      <td>{status === 'Pending' ? isOwner ? <button className="verify-button" onClick={() => markPayoutReceived(payout)}>Mark received</button> : <span className="payment-label partial">Pending</span> : status === 'Discrepancy' && isOwner ? <button className="verify-button" style={{ color: '#D9534F', background: '#fbf0ee', borderColor: '#f1dcd8' }} onClick={() => resolvePayout(payout)}>Mark resolved</button> : <span className={`payment-label ${status === 'Discrepancy' ? 'unpaid' : 'paid'}`}>{status}</span>}</td>
                     </tr>
                   })}
                 </tbody>
@@ -556,19 +556,19 @@ export function PaymentsFinanceView({ reservations, onUpdateReservations, role, 
           </>}
 
           {tab === 'Refunds' && <div className="flex flex-col gap-3">
-            {state.refunds.map(item => <article key={item.id} className="flex flex-wrap items-center gap-3 rounded-lg border border-[#e9ece7] p-3 text-[10px]">
+            {state.refunds.map(item => <article key={item.id} className="flex flex-wrap items-center gap-3 rounded-xl border border-[#E5E9EF] p-3.5 text-xs">
               <span className="attention-icon rose"><RotateCcw size={15} /></span>
               <div className="flex-1 min-w-[180px]">
-                <strong className="block text-[11px] text-[#202922]">{item.guest} · {item.reservationId} · {money(item.amount)}</strong>
-                <span className="block text-[#7d867e] mt-1">{item.reason}</span>
-                <span className="block text-[8px] text-[#939b94] mt-1">Requested by {item.requestedBy} · {shortDate(item.requestedAt)}</span>
+                <strong className="block text-sm text-[#202939] font-semibold">{item.guest} · {item.reservationId} · {money(item.amount)}</strong>
+                <span className="block text-[#607065] mt-1 text-xs">{item.reason}</span>
+                <span className="block text-xs text-[#8C9990] mt-1">Requested by {item.requestedBy} · {shortDate(item.requestedAt)}</span>
               </div>
               {item.status === 'Pending' && isOwner ? <div className="flex gap-2">
                 <button className="button secondary" onClick={() => decideRefund(item.id, 'Rejected')}>Reject</button>
                 <button className="button primary" onClick={() => decideRefund(item.id, 'Approved')}>Approve refund</button>
               </div> : <span className={`payment-label ${item.status === 'Approved' ? 'paid' : item.status === 'Rejected' ? 'unpaid' : 'partial'}`}>{item.status === 'Pending' ? 'Pending owner approval' : item.status}</span>}
             </article>)}
-            <p className="muted-note text-[9px]">Refunds are requested from the reservation screen and require owner approval before being paid out.</p>
+            <p className="muted-note text-xs">Refunds are requested from the reservation screen and require owner approval before being paid out.</p>
           </div>}
         </section>
 
@@ -588,8 +588,8 @@ export function PaymentsFinanceView({ reservations, onUpdateReservations, role, 
             ['OTA commission (est.)', -commission, 'out'],
             ['Operating expenses', -totalExpenses, 'out'],
             ['Refunds approved', -approvedRefunds, 'out']
-          ].map(([label, value, kind]) => <div key={String(label)} className="flex justify-between py-2 border-b border-[#f0f2ee] text-[10px]"><span className="text-[#687169]">{label}</span><strong style={{ color: kind === 'in' ? '#4a734e' : '#9a6258' }}>{Number(value) < 0 ? '−' : ''}{money(Math.abs(Number(value)))}</strong></div>)}
-          <div className="flex justify-between pt-3 text-[11px]"><strong>Net profit</strong><strong style={{ color: netProfit >= 0 ? '#355d40' : '#9a6258' }}>{money(netProfit)}</strong></div>
+          ].map(([label, value, kind]) => <div key={String(label)} className="flex justify-between py-2 border-b border-[#F0ECE4] text-xs"><span className="text-[#778196]">{label}</span><strong style={{ color: kind === 'in' ? '#175432' : '#9A382D' }}>{Number(value) < 0 ? '−' : ''}{money(Math.abs(Number(value)))}</strong></div>)}
+          <div className="flex justify-between pt-3 text-sm font-semibold"><strong>Net profit</strong><strong style={{ color: netProfit >= 0 ? '#172B4D' : '#9A382D' }}>{money(netProfit)}</strong></div>
         </section>
 
         <section className="card finance-side">
@@ -597,34 +597,34 @@ export function PaymentsFinanceView({ reservations, onUpdateReservations, role, 
           {budgetRows.map(item => {
             const over = item.budget > 0 && item.actual > item.budget
             const percent = item.budget > 0 ? Math.min(100, Math.round(item.actual / item.budget * 100)) : 100
-            return <div key={item.category} className="mb-2.5 text-[9px]">
+            return <div key={item.category} className="mb-3 text-xs">
               <div className="flex items-center justify-between mb-1 gap-2">
-                <span className="text-[#687169]">{item.category}</span>
-                {editingBudgets ? <input type="number" min="0" className="w-20 h-6 border border-[#e3e8e1] rounded-md px-1.5 text-[9px]" value={item.budget || ''} onChange={event => updateBudget(item.category, Number(event.target.value))} aria-label={`${item.category} budget`} /> : <span><strong className="text-[#202922]">{money(item.actual)}</strong> <span className="text-[#939b94]">/ {money(item.budget)}</span></span>}
+                <span className="text-[#778196]">{item.category}</span>
+                {editingBudgets ? <input type="number" min="0" className="w-24 h-7 border border-[#E5E9EF] rounded-md px-2 text-xs" value={item.budget || ''} onChange={event => updateBudget(item.category, Number(event.target.value))} aria-label={`${item.category} budget`} /> : <span><strong className="text-[#202939]">{money(item.actual)}</strong> <span className="text-[#8C9990]">/ {money(item.budget)}</span></span>}
               </div>
-              <div className="h-1.5 rounded-full bg-[#eef2ec] overflow-hidden"><i className="block h-full rounded-full" style={{ width: `${percent}%`, background: over ? '#b4574a' : '#3d7f47' }} /></div>
-              {over && <span className="block mt-1 text-[8px] text-[#9a6258]">Over budget by {money(item.actual - item.budget)}</span>}
+              <div className="h-2 rounded-full bg-[#F7F8FA] border border-[#E5E9EF] overflow-hidden"><i className="block h-full rounded-full" style={{ width: `${percent}%`, background: over ? '#9A382D' : '#172B4D' }} /></div>
+              {over && <span className="block mt-1 text-xs text-[#9A382D] font-medium">Over budget by {money(item.actual - item.budget)}</span>}
             </div>
           })}
-          <div className="flex justify-between pt-2 mt-1 border-t border-[#f0f2ee] text-[10px]"><span className="text-[#687169]">Total</span><span><strong>{money(totalActual)}</strong> <span className="text-[#939b94]">/ {money(totalBudget)}</span></span></div>
+          <div className="flex justify-between pt-2 mt-1 border-t border-[#F0ECE4] text-xs"><span className="text-[#778196] font-medium">Total</span><span><strong>{money(totalActual)}</strong> <span className="text-[#8C9990]">/ {money(totalBudget)}</span></span></div>
         </section>
 
         <section className="card finance-side">
           <div className="card-heading"><div><h2>Payment methods</h2><p>{periodLabel} · collected</p></div></div>
-          {methodBreakdown.map(item => <div key={item.method} className="mb-2.5 text-[9px]">
-            <div className="flex justify-between mb-1"><span className="text-[#687169]">{item.method} <span className="text-[#939b94]">· {item.count}</span></span><strong className="text-[#202922]">{money(item.amount)}</strong></div>
-            <div className="h-1.5 rounded-full bg-[#eef2ec] overflow-hidden"><i className="block h-full rounded-full" style={{ width: `${Math.round(item.amount / methodMax * 100)}%`, background: REVENUE_COLOR }} /></div>
+          {methodBreakdown.map(item => <div key={item.method} className="mb-3 text-xs">
+            <div className="flex justify-between mb-1"><span className="text-[#778196]">{item.method} <span className="text-[#8C9990]">· {item.count}</span></span><strong className="text-[#202939]">{money(item.amount)}</strong></div>
+            <div className="h-2 rounded-full bg-[#F7F8FA] border border-[#E5E9EF] overflow-hidden"><i className="block h-full rounded-full" style={{ width: `${Math.round(item.amount / methodMax * 100)}%`, background: REVENUE_COLOR }} /></div>
           </div>)}
-          {methodBreakdown.length === 0 && <p className="text-[9px] text-[#8a938b]">No payments in this period.</p>}
+          {methodBreakdown.length === 0 && <p className="text-xs text-[#8C9990]">No payments in this period.</p>}
         </section>
 
         <section className="card finance-side">
           <div className="card-heading"><div><h2>Commission by channel</h2><p>{periodLabel} · by check-in date</p></div></div>
-          {channelBreakdown.map(item => <div key={item.channel} className="flex justify-between py-2 border-b border-[#f0f2ee] text-[10px]">
-            <span><strong className="block text-[#202922]">{item.channel}</strong><small className="text-[8px] text-[#939b94]">{item.bookings} booking{item.bookings > 1 ? 's' : ''} · {money(item.gross)}</small></span>
-            <span className="commission-value self-center" style={{ color: item.commission > 0 ? '#9a6258' : '#4a734e' }}>{item.commission > 0 ? `−${money(item.commission)}` : 'No fee'}</span>
+          {channelBreakdown.map(item => <div key={item.channel} className="flex justify-between py-2 border-b border-[#F0ECE4] text-xs">
+            <span><strong className="block text-[#202939]">{item.channel}</strong><small className="text-xs text-[#8C9990]">{item.bookings} booking{item.bookings > 1 ? 's' : ''} · {money(item.gross)}</small></span>
+            <span className="commission-value self-center" style={{ color: item.commission > 0 ? '#9A382D' : '#175432' }}>{item.commission > 0 ? `−${money(item.commission)}` : 'No fee'}</span>
           </div>)}
-          {channelBreakdown.length === 0 && <p className="text-[9px] text-[#8a938b]">No bookings in this period.</p>}
+          {channelBreakdown.length === 0 && <p className="text-xs text-[#8C9990]">No bookings in this period.</p>}
           <label className="slider-label mt-4">Shift OTA bookings to direct <strong>{shiftPercent}%</strong></label>
           <input className="savings-slider" type="range" min="0" max="50" value={shiftPercent} onChange={event => setShiftPercent(Number(event.target.value))} />
           <p className="savings-note">Potential commission saved: <strong>{money(potentialSavings)}</strong></p>
@@ -646,7 +646,7 @@ export function PaymentsFinanceView({ reservations, onUpdateReservations, role, 
             Receipt (optional)
             <div className="flex items-center gap-2">
               <label className="button secondary cursor-pointer"><Paperclip size={14} /> {expenseForm.receiptName ? 'Replace file' : 'Attach file'}<input type="file" accept="image/*,.pdf" className="hidden" onChange={event => setExpenseForm({ ...expenseForm, receiptName: event.target.files?.[0]?.name ?? expenseForm.receiptName })} /></label>
-              {expenseForm.receiptName && <span className="inline-flex items-center gap-1 text-[9px] text-[#687169]">{expenseForm.receiptName}<button className="subtle-icon" aria-label="Remove receipt" onClick={() => setExpenseForm({ ...expenseForm, receiptName: '' })}><X size={12} /></button></span>}
+              {expenseForm.receiptName && <span className="inline-flex items-center gap-1 text-[9px] text-[#778196]">{expenseForm.receiptName}<button className="subtle-icon" aria-label="Remove receipt" onClick={() => setExpenseForm({ ...expenseForm, receiptName: '' })}><X size={12} /></button></span>}
             </div>
           </div>
         </div>
@@ -667,7 +667,7 @@ export function PaymentsFinanceView({ reservations, onUpdateReservations, role, 
             ['Reference', invoice.reference || '—'],
             ['Payment ID', invoice.id],
             ['Status', invoice.verification]
-          ].map(([label, value]) => <div key={label} className="flex justify-between py-2 border-b border-[#f0f2ee]"><span className="text-[#687169]">{label}</span><span className="text-[#202922]">{value}</span></div>)}
+          ].map(([label, value]) => <div key={label} className="flex justify-between py-2 border-b border-[#f0f2ee]"><span className="text-[#778196]">{label}</span><span className="text-[#202939]">{value}</span></div>)}
           <div className="flex justify-between pt-3 text-[12px]"><strong>{invoice.isRefund ? 'Amount refunded' : 'Amount received'}</strong><strong>{money(invoice.amount)}</strong></div>
         </div>
         <div className="modal-footer"><button className="button secondary" onClick={() => setInvoice(null)}>Close</button><button className="button primary" onClick={() => printInvoice(invoice)}><Printer size={15} /> Print receipt</button></div>
@@ -675,3 +675,4 @@ export function PaymentsFinanceView({ reservations, onUpdateReservations, role, 
     </div>}
   </>
 }
+

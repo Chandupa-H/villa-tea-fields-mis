@@ -609,8 +609,8 @@ export function AIFeaturesView({
         <div className="w-12 h-12 rounded-full bg-amber-50 text-amber-700 flex items-center justify-center mx-auto mb-3">
           <ShieldCheck size={24} />
         </div>
-        <h2 className="text-base font-bold text-[#202922]">Access Restricted</h2>
-        <p className="text-xs text-[#627065] mt-1.5">
+        <h2 className="text-base font-bold text-[#202939]">Access Restricted</h2>
+        <p className="text-xs text-[#778196] mt-1.5">
           Your active role ({role}) does not have permission to view AI and Financial Intelligence features.
         </p>
       </div>
@@ -627,21 +627,21 @@ export function AIFeaturesView({
         </div>
         {allowedTabs.length > 1 && (
           <div className="heading-actions">
-            <div className="flex bg-[#edf1e9] p-1 rounded-lg border border-[#e1e6dc] gap-1">
+            <div className="flex bg-[#F0F3F7] p-1 rounded-lg border border-[#E5E9EF] gap-1">
               {allowedTabs.map(tab => (
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
                   className={`px-3 py-1.5 text-xs font-semibold rounded-md flex items-center gap-1.5 transition-all ${
                     activeTab === tab.id
-                      ? 'bg-[#31583d] text-white shadow-sm'
-                      : 'text-[#425246] hover:bg-[#e2e7dd]'
+                      ? 'bg-[#172B4D] text-white shadow-sm'
+                      : 'text-[#425246] hover:bg-[#EEF2F6]'
                   }`}
                 >
                   {tab.icon}
                   <span>{tab.label}</span>
                   {tab.badge && (
-                    <span className="bg-[#b33a3a] text-white text-[10px] px-1.5 py-0.2 rounded-full font-bold ml-0.5">
+                    <span className="bg-[#D9534F] text-white text-[10px] px-1.5 py-0.2 rounded-full font-bold ml-0.5">
                       {tab.badge}
                     </span>
                   )}
@@ -672,12 +672,12 @@ export function AIFeaturesView({
             <div className="lg:col-span-2 card p-5 flex flex-col h-[620px] shadow-sm">
               <div className="flex items-center justify-between border-b pb-3 mb-4">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-[#edf2ed] border border-[#d2ddd0] flex items-center justify-center text-[#31583d]">
+                  <div className="w-10 h-10 rounded-full bg-[#F0F3F7] border border-[#E5E9EF] flex items-center justify-center text-[#172B4D]">
                     <Bot size={20} />
                   </div>
                   <div>
-                    <strong className="text-sm text-[#202922] block">{currentConfig.assistantName}</strong>
-                    <span className="text-xs text-[#6e7870] flex items-center gap-1.5">
+                    <strong className="text-sm text-[#202939] block">{currentConfig.assistantName}</strong>
+                    <span className="text-xs text-[#778196] flex items-center gap-1.5">
                       <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
                       {currentConfig.assistantRole}
                     </span>
@@ -707,14 +707,14 @@ export function AIFeaturesView({
                       <div
                         className={`max-w-[85%] rounded-xl p-3.5 text-xs leading-relaxed ${
                           msg.sender === 'user'
-                            ? 'bg-[#31583d] text-white rounded-br-none shadow-sm'
-                            : 'bg-[#f4f6f2] text-[#242e26] border border-[#e5eae2] rounded-bl-none whitespace-pre-line'
+                            ? 'bg-[#172B4D] text-white rounded-br-none shadow-sm'
+                            : 'bg-[#F7F8FA] text-[#202939] border border-[#E5E9EF] rounded-bl-none whitespace-pre-line'
                         }`}
                       >
                         <p>{msg.text}</p>
                         <span
                           className={`block text-[10px] mt-1.5 text-right ${
-                            msg.sender === 'user' ? 'text-white/70' : 'text-[#879188]'
+                            msg.sender === 'user' ? 'text-white/70' : 'text-[#778196]'
                           }`}
                         >
                           {msg.timestamp}
@@ -722,12 +722,12 @@ export function AIFeaturesView({
 
                         {/* Suggestion Chips */}
                         {msg.suggestions && msg.suggestions.length > 0 && (
-                          <div className="mt-3 pt-2.5 border-t border-[#e1e7de] flex flex-wrap gap-1.5">
+                          <div className="mt-3 pt-2.5 border-t border-[#E5E9EF] flex flex-wrap gap-1.5">
                             {msg.suggestions.map(sug => (
                               <button
                                 key={sug}
                                 onClick={() => handleSendMessage(sug)}
-                                className="bg-white hover:bg-[#edf2ed] text-[#31583d] border border-[#d2ddd1] px-2.5 py-1 rounded-full text-[11px] font-medium transition-colors text-left"
+                                className="bg-white hover:bg-[#F0F3F7] text-[#172B4D] border border-[#E5E9EF] px-2.5 py-1 rounded-full text-[11px] font-medium transition-colors text-left"
                               >
                                 {sug}
                               </button>
@@ -740,8 +740,8 @@ export function AIFeaturesView({
                 ))}
 
                 {isTyping && (
-                  <div className="flex items-center gap-2 text-xs text-[#737e75] italic">
-                    <Bot size={14} className="text-[#31583d] animate-bounce" />
+                  <div className="flex items-center gap-2 text-xs text-[#778196] italic">
+                    <Bot size={14} className="text-[#172B4D] animate-bounce" />
                     <span>Processing hotel records...</span>
                   </div>
                 )}
@@ -758,7 +758,7 @@ export function AIFeaturesView({
                       if (e.key === 'Enter') handleSendMessage()
                     }}
                     placeholder={currentConfig.placeholder}
-                    className="flex-1 border border-[#dcdfd8] rounded-lg px-3.5 py-2.5 text-xs focus:outline-none focus:ring-1 focus:ring-[#31583d]"
+                    className="flex-1 border border-[#E5E9EF] rounded-lg px-3.5 py-2.5 text-xs focus:outline-none focus:ring-1 focus:ring-[#172B4D]"
                   />
                   <button
                     onClick={() => handleSendMessage()}
@@ -776,7 +776,7 @@ export function AIFeaturesView({
               <div className="card p-4">
                 <div className="card-heading pb-2 mb-3 border-b">
                   <div>
-                    <h2 className="text-sm font-bold text-[#202922]">Position AI Queries</h2>
+                    <h2 className="text-sm font-bold text-[#202939]">Position AI Queries</h2>
                   </div>
                 </div>
                 <div className="space-y-2">
@@ -784,21 +784,21 @@ export function AIFeaturesView({
                     <div
                       key={prompt}
                       onClick={() => handleSendMessage(prompt)}
-                      className="flex items-center justify-between p-2 rounded-lg bg-[#f9faf8] hover:bg-[#edf2ed] border border-[#edf0ea] text-xs cursor-pointer text-[#334036] transition-colors"
+                      className="flex items-center justify-between p-2 rounded-lg bg-[#F7F8FA] hover:bg-[#F0F3F7] border border-[#E5E9EF] text-xs cursor-pointer text-[#202939] transition-colors"
                     >
                       <span className="font-medium">{prompt}</span>
-                      <ChevronRight size={14} className="text-[#889289] shrink-0 ml-1" />
+                      <ChevronRight size={14} className="text-[#778196] shrink-0 ml-1" />
                     </div>
                   ))}
                 </div>
               </div>
 
-              <div className="card p-4 bg-[#f8f9f6] border border-[#e7ebe4]">
+              <div className="card p-4 bg-[#F7F8FA] border border-[#E5E9EF]">
                 <div className="card-heading pb-2 mb-3 border-b flex items-center justify-between">
                   <div>
-                    <h2 className="text-sm font-bold text-[#202922]">Customer Inquiries & Handoff Queue</h2>
+                    <h2 className="text-sm font-bold text-[#202939]">Customer Inquiries & Handoff Queue</h2>
                   </div>
-                  <span className="text-[10px] font-bold bg-[#edf2ed] text-[#31583d] px-2 py-0.5 rounded">
+                  <span className="text-[10px] font-bold bg-[#F0F3F7] text-[#172B4D] px-2 py-0.5 rounded">
                     {inquiryTickets.filter(t => t.status === 'Pending').length} Pending
                   </span>
                 </div>
@@ -809,13 +809,13 @@ export function AIFeaturesView({
                       key={ticket.id}
                       className={`p-2.5 rounded-lg border text-xs ${
                         ticket.status === 'Actioned'
-                          ? 'bg-white/60 border-[#e5ebe2] opacity-60'
-                          : 'bg-white border-[#dce3da] shadow-2xs'
+                          ? 'bg-white/60 border-[#E5E9EF] opacity-60'
+                          : 'bg-white border-[#E5E9EF] shadow-2xs'
                       }`}
                     >
                       <div className="flex items-center justify-between gap-2 mb-1">
-                        <strong className="text-[#202922]">{ticket.guest}</strong>
-                        <span className="text-[10px] font-mono text-[#768278]">{ticket.time}</span>
+                        <strong className="text-[#202939]">{ticket.guest}</strong>
+                        <span className="text-[10px] font-mono text-[#778196]">{ticket.time}</span>
                       </div>
                       <p className="text-[#4f5c51] leading-relaxed mb-2 text-[11px]">{ticket.summary}</p>
                       <div className="flex items-center justify-between pt-1.5 border-t border-[#f0f3ee] text-[11px]">
@@ -823,7 +823,7 @@ export function AIFeaturesView({
                         {ticket.status === 'Pending' ? (
                           <button
                             onClick={() => handleResolveTicket(ticket.id)}
-                            className="text-[#31583d] font-semibold hover:underline"
+                            className="text-[#172B4D] font-semibold hover:underline"
                           >
                             Mark Handled
                           </button>
@@ -861,7 +861,7 @@ export function AIFeaturesView({
           <div className="card p-4 flex flex-wrap items-center justify-between gap-4">
             <div className="flex items-center gap-3">
               <span className="text-xs font-bold text-[#445147] uppercase tracking-wide">Summary Interval:</span>
-              <div className="flex bg-[#edf1e9] p-1 rounded-lg border border-[#e1e6dc] gap-1">
+              <div className="flex bg-[#F0F3F7] p-1 rounded-lg border border-[#E5E9EF] gap-1">
                 {(['Daily', 'Weekly', 'Monthly', 'Annual'] as const)
                   .filter(period => period !== 'Annual' || role === 'Owner')
                   .map(period => (
@@ -870,8 +870,8 @@ export function AIFeaturesView({
                       onClick={() => setReportPeriod(period)}
                       className={`px-3 py-1 text-xs font-semibold rounded-md transition-all ${
                         reportPeriod === period
-                          ? 'bg-[#31583d] text-white shadow-sm'
-                          : 'text-[#4b594f] hover:bg-[#e2e7dd]'
+                          ? 'bg-[#172B4D] text-white shadow-sm'
+                          : 'text-[#4b594f] hover:bg-[#EEF2F6]'
                       }`}
                     >
                       {period}
@@ -883,7 +883,7 @@ export function AIFeaturesView({
                   aria-label="Financial report month"
                   value={selectedMonth}
                   onChange={event => setSelectedMonth(event.target.value)}
-                  className="border border-[#d7ddd4] rounded-lg bg-white px-2.5 py-1.5 text-xs text-[#31583d]"
+                  className="border border-[#d7ddd4] rounded-lg bg-white px-2.5 py-1.5 text-xs text-[#172B4D]"
                 >
                   {reportMonths.map(month => <option key={month}>{month}</option>)}
                 </select>
@@ -917,16 +917,16 @@ export function AIFeaturesView({
             <section className="card p-5" aria-label="Monthly room occupancy for 2026">
               <div className="card-heading pb-3 mb-4 border-b">
                 <div>
-                  <h2 className="text-sm font-bold text-[#202922]">Monthly room occupancy</h2>
+                  <h2 className="text-sm font-bold text-[#202939]">Monthly room occupancy</h2>
                   <p className="text-xs text-[#707c72]">Room nights booked ÷ room nights available · 4 rooms · demo reservations</p>
                 </div>
-                <strong className="text-xs text-[#31583d]">2026</strong>
+                <strong className="text-xs text-[#172B4D]">2026</strong>
               </div>
               <div className="grid grid-cols-6 md:grid-cols-12 gap-2 items-end h-36">
                 {monthlyOccupancy.map(month => (
                   <div key={month.label} className="flex flex-col items-center justify-end gap-1.5 h-full" title={`${month.label}: ${month.percent}% occupancy`}>
-                    <span className="text-[10px] font-semibold text-[#31583d]">{month.percent}%</span>
-                    <div className="w-full max-w-8 bg-[#edf1e9] rounded-t overflow-hidden flex items-end h-20">
+                    <span className="text-[10px] font-semibold text-[#172B4D]">{month.percent}%</span>
+                    <div className="w-full max-w-8 bg-[#F0F3F7] rounded-t overflow-hidden flex items-end h-20">
                       <div className="w-full rounded-t bg-[#d1ab6b] transition-all" style={{ height: `${month.percent}%` }} />
                     </div>
                     <span className="text-[10px] text-[#707c72]">{month.label}</span>
@@ -984,21 +984,21 @@ export function AIFeaturesView({
             <div className="card p-5">
               <div className="card-heading pb-3 mb-4 border-b">
                 <div>
-                  <h2 className="text-sm font-bold text-[#202922]">Income Stream Distribution</h2>
+                  <h2 className="text-sm font-bold text-[#202939]">Income Stream Distribution</h2>
                 </div>
               </div>
               <div className="space-y-4">
                 {[
-                  { label: 'Room Stays & Suites', amount: currentSummary.roomRevenue, pct: currentSummary.grossIncome ? Math.round(currentSummary.roomRevenue / currentSummary.grossIncome * 100) : 0, color: '#31583d' },
+                  { label: 'Room Stays & Suites', amount: currentSummary.roomRevenue, pct: currentSummary.grossIncome ? Math.round(currentSummary.roomRevenue / currentSummary.grossIncome * 100) : 0, color: '#172B4D' },
                   { label: 'Tea Lounge & Dining (F&B)', amount: currentSummary.fnbRevenue, pct: currentSummary.grossIncome ? Math.round(currentSummary.fnbRevenue / currentSummary.grossIncome * 100) : 0, color: '#889f8d' },
                   { label: 'Guided Tea Plantation Experiences', amount: currentSummary.toursRevenue, pct: currentSummary.grossIncome ? Math.round(currentSummary.toursRevenue / currentSummary.grossIncome * 100) : 0, color: '#d1ab6b' }
                 ].map(stream => (
                   <div key={stream.label} className="space-y-1.5">
                     <div className="flex justify-between text-xs">
                       <span className="font-medium text-[#2d382f]">{stream.label}</span>
-                      <strong className="text-[#202922]">{money(stream.amount)}</strong>
+                      <strong className="text-[#202939]">{money(stream.amount)}</strong>
                     </div>
-                    <div className="w-full bg-[#edf1e9] h-2.5 rounded-full overflow-hidden">
+                    <div className="w-full bg-[#F0F3F7] h-2.5 rounded-full overflow-hidden">
                       <div
                         className="h-full rounded-full transition-all duration-500"
                         style={{ width: `${stream.pct}%`, backgroundColor: stream.color }}
@@ -1012,7 +1012,7 @@ export function AIFeaturesView({
             <div className="card p-5">
               <div className="card-heading pb-3 mb-4 border-b">
                 <div>
-                  <h2 className="text-sm font-bold text-[#202922]">Expense Categories</h2>
+                  <h2 className="text-sm font-bold text-[#202939]">Expense Categories</h2>
                 </div>
               </div>
               <div className="space-y-4">
@@ -1024,9 +1024,9 @@ export function AIFeaturesView({
                   <div key={exp.label} className="space-y-1.5">
                     <div className="flex justify-between text-xs">
                       <span className="font-medium text-[#2d382f]">{exp.label}</span>
-                      <strong className="text-[#202922]">{money(exp.amount)}</strong>
+                      <strong className="text-[#202939]">{money(exp.amount)}</strong>
                     </div>
-                    <div className="w-full bg-[#edf1e9] h-2.5 rounded-full overflow-hidden">
+                    <div className="w-full bg-[#F0F3F7] h-2.5 rounded-full overflow-hidden">
                       <div
                         className="h-full rounded-full transition-all duration-500"
                         style={{ width: `${exp.pct}%`, backgroundColor: exp.color }}
@@ -1042,9 +1042,9 @@ export function AIFeaturesView({
           <div className="card p-5">
             <div className="card-heading pb-3 mb-4 border-b flex justify-between items-center">
               <div>
-                <h2 className="text-sm font-bold text-[#202922]">Statement Summary</h2>
+                <h2 className="text-sm font-bold text-[#202939]">Statement Summary</h2>
               </div>
-              <span className="text-xs text-[#31583d] bg-[#edf2ed] px-2.5 py-1 rounded font-semibold">
+              <span className="text-xs text-[#172B4D] bg-[#F0F3F7] px-2.5 py-1 rounded font-semibold">
                 Audit Status: Balanced
               </span>
             </div>
@@ -1115,8 +1115,8 @@ export function AIFeaturesView({
                     <td>Net Operating Performance</td>
                     <td className="text-emerald-800">+{money(currentSummary.grossIncome)}</td>
                     <td className="text-rose-800">-{money(currentSummary.totalExpenses)}</td>
-                    <td className="text-[#31583d] text-sm">+{money(currentSummary.netProfit)}</td>
-                    <td><span className="text-xs text-[#31583d]">Demo estimate</span></td>
+                    <td className="text-[#172B4D] text-sm">+{money(currentSummary.netProfit)}</td>
+                    <td><span className="text-xs text-[#172B4D]">Demo estimate</span></td>
                   </tr>
                 </tbody>
               </table>
@@ -1145,7 +1145,7 @@ export function AIFeaturesView({
             <div className="flex items-center gap-3">
               <div className="flex items-center gap-2">
                 <span className="w-2.5 h-2.5 rounded-full bg-amber-500 animate-ping"></span>
-                <strong className="text-xs text-[#202922]">
+                <strong className="text-xs text-[#202939]">
                   {openDiscrepanciesCount} Anomalies Requiring Management Review
                 </strong>
               </div>
@@ -1166,7 +1166,7 @@ export function AIFeaturesView({
           {/* Detected Discrepancies Grid */}
           <div className="space-y-3">
             <div className="flex items-center justify-between">
-              <h2 className="text-sm font-bold text-[#202922] flex items-center gap-2">
+              <h2 className="text-sm font-bold text-[#202939] flex items-center gap-2">
                 <AlertTriangle size={16} className="text-amber-600" />
                 Active Financial Discrepancies & Anomalies
               </h2>
@@ -1179,7 +1179,7 @@ export function AIFeaturesView({
                   key={disc.id}
                   className={`card p-4 border transition-all ${
                     disc.status === 'Resolved'
-                      ? 'bg-[#f8faf8] border-[#e1e7de] opacity-60'
+                      ? 'bg-[#f8faf8] border-[#E5E9EF] opacity-60'
                       : disc.severity === 'Critical'
                       ? 'bg-[#fffbfa] border-[#f0c8c4]'
                       : disc.severity === 'Warning'
@@ -1200,7 +1200,7 @@ export function AIFeaturesView({
                       >
                         {disc.severity}
                       </span>
-                      <strong className="text-xs text-[#202922]">{disc.type}</strong>
+                      <strong className="text-xs text-[#202939]">{disc.type}</strong>
                     </div>
                     <span className="text-xs font-mono text-[#5b655d]">{disc.id}</span>
                   </div>
@@ -1212,7 +1212,7 @@ export function AIFeaturesView({
                     <div>
                       <span>Ref: <strong>{disc.referenceId}</strong></span>
                       <span className="mx-2">·</span>
-                      <strong className="text-[#202922]">{money(disc.amount)}</strong>
+                      <strong className="text-[#202939]">{money(disc.amount)}</strong>
                     </div>
 
                     {disc.status === 'Resolved' ? (
@@ -1223,7 +1223,7 @@ export function AIFeaturesView({
                     ) : (
                       <button
                         onClick={() => setSelectedDiscrepancy(disc)}
-                        className="button secondary text-xs py-1 px-2.5 border border-[#ced5cb] hover:bg-[#edf2ed]"
+                        className="button secondary text-xs py-1 px-2.5 border border-[#ced5cb] hover:bg-[#F0F3F7]"
                       >
                         Investigate & Resolve
                       </button>
@@ -1238,7 +1238,7 @@ export function AIFeaturesView({
           <div className="card p-5">
             <div className="card-heading pb-3 mb-4 border-b flex flex-wrap items-center justify-between gap-3">
               <div>
-                <h2 className="text-sm font-bold text-[#202922]">Audit Trail & System Activity</h2>
+                <h2 className="text-sm font-bold text-[#202939]">Audit Trail & System Activity</h2>
               </div>
 
               <div className="flex items-center gap-2">
@@ -1327,8 +1327,8 @@ export function AIFeaturesView({
             </div>
 
             <div className="space-y-3.5 my-3 text-xs">
-              <div className="p-3 bg-[#f7f9f6] rounded-lg border border-[#e2e7dd]">
-                <strong className="block text-[#202922] mb-1">{selectedDiscrepancy.description}</strong>
+              <div className="p-3 bg-[#f7f9f6] rounded-lg border border-[#EEF2F6]">
+                <strong className="block text-[#202939] mb-1">{selectedDiscrepancy.description}</strong>
                 <p className="text-[#556257] leading-relaxed">{selectedDiscrepancy.details}</p>
                 <div className="mt-2.5 pt-2 border-t border-[#dee4da] flex justify-between">
                   <span>Reference: <strong>{selectedDiscrepancy.referenceId}</strong></span>
@@ -1345,7 +1345,7 @@ export function AIFeaturesView({
                   value={resolutionNote}
                   onChange={e => setResolutionNote(e.target.value)}
                   placeholder="e.g. Bank statement checked with Commercial Bank; second transfer was an accidental customer double-swipe. Refund initiated."
-                  className="w-full border border-[#cbd3c8] rounded-lg p-2.5 text-xs focus:ring-1 focus:ring-[#31583d] focus:outline-none"
+                  className="w-full border border-[#cbd3c8] rounded-lg p-2.5 text-xs focus:ring-1 focus:ring-[#172B4D] focus:outline-none"
                 />
               </div>
             </div>
@@ -1368,3 +1368,5 @@ export function AIFeaturesView({
     </div>
   )
 }
+
+

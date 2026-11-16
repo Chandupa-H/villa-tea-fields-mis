@@ -1,26 +1,35 @@
 <svg width="180" height="180" viewBox="0 0 180 180" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <style>
-    @media (prefers-color-scheme: light) {
-      .background { fill: black; }
-      .foreground { fill: white; }
-    }
-    @media (prefers-color-scheme: dark) {
-      .background { fill: white; }
-      .foreground { fill: black; }
-    }
-  </style>
-  <g clip-path="url(#clip0_7960_43945)">
-    <rect class="background" width="180" height="180" rx="37" />
-    <g style="transform: scale(95%); transform-origin: center">
-      <path class="foreground"
-        d="M101.141 53H136.632C151.023 53 162.689 64.6662 162.689 79.0573V112.904H148.112V79.0573C148.112 78.7105 148.098 78.3662 148.072 78.0251L112.581 112.898C112.701 112.902 112.821 112.904 112.941 112.904H148.112V126.672H112.941C98.5504 126.672 86.5638 114.891 86.5638 100.5V66.7434H101.141V100.5C101.141 101.15 101.191 101.792 101.289 102.422L137.56 66.7816C137.255 66.7563 136.945 66.7434 136.632 66.7434H101.141V53Z" />
-      <path class="foreground"
-        d="M65.2926 124.136L14 66.7372H34.6355L64.7495 100.436V66.7372H80.1365V118.47C80.1365 126.278 70.4953 129.958 65.2926 124.136Z" />
-    </g>
-  </g>
   <defs>
-    <clipPath id="clip0_7960_43945">
-      <rect width="180" height="180" fill="white" />
-    </clipPath>
+    <linearGradient id="vtBg" x1="0" y1="0" x2="180" y2="180" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#1B335A" />
+      <stop offset="100%" stop-color="#0F1D34" />
+    </linearGradient>
+    <linearGradient id="leafGrad" x1="110" y1="54" x2="158" y2="22" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#207067" />
+      <stop offset="100%" stop-color="#3AC9B8" />
+    </linearGradient>
+    <linearGradient id="budGrad" x1="96" y1="52" x2="112" y2="30" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#26966F" />
+      <stop offset="100%" stop-color="#4ADE80" />
+    </linearGradient>
   </defs>
+
+  <!-- Deep Navy Container with rounded corners -->
+  <rect width="180" height="180" rx="42" fill="url(#vtBg)" />
+  <rect x="2" y="2" width="176" height="176" rx="40" stroke="#27877D" stroke-width="2.5" stroke-opacity="0.35" />
+
+  <!-- Tea Leaves & Sprout Motif (Two Leaves and a Bud) -->
+  <!-- Left smaller bud -->
+  <path d="M105 50 C97 43 97 33 107 28 C114 34 112 45 105 50 Z" fill="url(#budGrad)" />
+  
+  <!-- Right primary tea leaf -->
+  <path d="M115 52 C115 37 132 24 158 24 C155 43 140 56 115 52 Z" fill="url(#leafGrad)" />
+  <path d="M120 49 Q137 39 153 27" stroke="#E6FDFB" stroke-width="2" stroke-linecap="round" stroke-opacity="0.8" />
+
+  <!-- Monogram VT in crisp white -->
+  <!-- Letter V -->
+  <path d="M36 58 L54 58 L72 114 L88 58 L104 58 L79 130 C76.5 137 67.5 137 65 130 L36 58 Z" fill="#FFFFFF" />
+
+  <!-- Letter T -->
+  <path d="M104 58 L160 58 C162.2 58 164 59.8 164 62 L164 69 C164 71.2 162.2 73 160 73 L141 73 L141 130 C141 132.8 138.8 135 136 135 L124 135 C121.2 135 119 132.8 119 130 L119 73 L104 73 C101.8 73 100 71.2 100 69 L100 62 C100 59.8 101.8 58 104 58 Z" fill="#FFFFFF" />
 </svg>

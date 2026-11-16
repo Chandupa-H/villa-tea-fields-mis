@@ -543,10 +543,10 @@ export function ReservationsView({
   }
 
   return (
-    <div className="reservations-module space-y-5">
+    <div className="reservations-module w-full min-w-0 max-w-full space-y-5">
       {/* Pending Approval Alert */}
       {canApprove && stats.pending > 0 && (
-        <div className="bg-amber-50 border border-amber-200 rounded-xl p-3 flex flex-wrap items-center justify-between gap-3 text-xs text-amber-900">
+        <div className="bg-amber-50 border border-amber-200 rounded-xl p-3 flex flex-wrap items-center justify-between gap-3 text-xs text-amber-900 w-full min-w-0">
           <div className="flex items-center gap-2">
             <AlertCircle size={16} className="text-amber-600 shrink-0" />
             <span>
@@ -563,11 +563,11 @@ export function ReservationsView({
       )}
 
       {/* Main Page Heading */}
-      <div className="page-heading flex flex-wrap items-center justify-between gap-3">
+      <div className="page-heading flex flex-wrap items-center justify-between gap-3 w-full min-w-0">
         <div>
-          <p className="eyebrow text-xs uppercase tracking-wider text-[#818982] font-semibold">HOTEL OPERATIONS</p>
-          <h1 className="text-2xl font-bold text-[#202922]">Reservations & Bookings</h1>
-          <p className="subheading text-xs text-[#818982]">
+          <p className="eyebrow text-xs uppercase tracking-wider text-[#778196] font-semibold">HOTEL OPERATIONS</p>
+          <h1 className="text-2xl font-bold text-[#202939]">Reservations & Bookings</h1>
+          <p className="subheading text-xs text-[#778196]">
             Manage bookings, room availability, and guest stays.
           </p>
         </div>
@@ -584,7 +584,7 @@ export function ReservationsView({
 
           {canCreateReservation && (
             <button
-              className="button primary flex items-center gap-1.5 text-xs bg-[#31583d] text-white px-3.5 py-2 rounded-lg font-medium shadow-sm hover:bg-[#274731] transition"
+              className="button primary flex items-center gap-1.5 text-xs bg-[#172B4D] text-white px-3.5 py-2 rounded-lg font-medium shadow-sm hover:bg-[#0F1D34] transition"
               onClick={() => {
                 setFormData({
                   guest: '',
@@ -609,44 +609,44 @@ export function ReservationsView({
       </div>
 
       {/* Statistics Banner */}
-      <div className={`grid ${canViewFinancials ? 'grid-cols-2 md:grid-cols-4' : 'grid-cols-3'} gap-3`}>
-        <div className="bg-white border border-[#e9ece7] rounded-xl p-3 shadow-xs">
-          <span className="text-[11px] text-[#818982] block font-medium">TOTAL RESERVATIONS</span>
-          <strong className="text-xl font-bold text-[#202922]">{stats.total}</strong>
+      <div className={`grid ${canViewFinancials ? 'grid-cols-2 lg:grid-cols-4' : 'grid-cols-3'} gap-3 w-full min-w-0`}>
+        <div className="bg-white border border-[#E5E9EF] rounded-xl p-3 shadow-xs min-w-0">
+          <span className="text-[11px] text-[#778196] block font-medium">TOTAL RESERVATIONS</span>
+          <strong className="text-xl font-bold text-[#202939]">{stats.total}</strong>
           <span className="text-[10px] text-emerald-700 block mt-0.5">{stats.confirmed} active / confirmed</span>
         </div>
 
-        <div className="bg-white border border-[#e9ece7] rounded-xl p-3 shadow-xs">
-          <span className="text-[11px] text-[#818982] block font-medium">AWAITING APPROVAL</span>
-          <strong className={`text-xl font-bold ${stats.pending > 0 ? 'text-amber-600' : 'text-[#202922]'}`}>
+        <div className="bg-white border border-[#E5E9EF] rounded-xl p-3 shadow-xs min-w-0">
+          <span className="text-[11px] text-[#778196] block font-medium">AWAITING APPROVAL</span>
+          <strong className={`text-xl font-bold ${stats.pending > 0 ? 'text-amber-600' : 'text-[#202939]'}`}>
             {String(stats.pending).padStart(2, '0')}
           </strong>
-          <span className="text-[10px] text-[#818982] block mt-0.5">Pending review</span>
+          <span className="text-[10px] text-[#778196] block mt-0.5">Pending review</span>
         </div>
 
-        <div className="bg-white border border-[#e9ece7] rounded-xl p-3 shadow-xs">
-          <span className="text-[11px] text-[#818982] block font-medium">ARRIVING TODAY</span>
-          <strong className="text-xl font-bold text-[#202922]">{String(stats.arrivingToday).padStart(2, '0')}</strong>
+        <div className="bg-white border border-[#E5E9EF] rounded-xl p-3 shadow-xs min-w-0">
+          <span className="text-[11px] text-[#778196] block font-medium">ARRIVING TODAY</span>
+          <strong className="text-xl font-bold text-[#202939]">{String(stats.arrivingToday).padStart(2, '0')}</strong>
           <span className="text-[10px] text-blue-700 block mt-0.5">Nov 14, 2026</span>
         </div>
 
         {canViewFinancials && (
-          <div className="bg-white border border-[#e9ece7] rounded-xl p-3 shadow-xs">
-            <span className="text-[11px] text-[#818982] block font-medium">REVENUE COLLECTED</span>
-            <strong className="text-xl font-bold text-[#31583d]">{money(stats.totalRevenue)}</strong>
-            <span className="text-[10px] text-[#818982] block mt-0.5">Outstanding: {money(stats.outstanding)}</span>
+          <div className="bg-white border border-[#E5E9EF] rounded-xl p-3 shadow-xs min-w-0">
+            <span className="text-[11px] text-[#778196] block font-medium">REVENUE COLLECTED</span>
+            <strong className="text-xl font-bold text-[#172B4D]">{money(stats.totalRevenue)}</strong>
+            <span className="text-[10px] text-[#778196] block mt-0.5">Outstanding: {money(stats.outstanding)}</span>
           </div>
         )}
       </div>
 
       {/* Module Sub-tabs */}
-      <div className="flex border-b border-[#e9ece7] gap-4 text-xs font-medium">
+      <div className="flex border-b border-[#E5E9EF] gap-4 text-xs font-medium w-full min-w-0 overflow-x-auto">
         <button
           onClick={() => setActiveTab('table')}
-          className={`pb-2.5 flex items-center gap-1.5 transition ${
+          className={`pb-2.5 flex items-center gap-1.5 transition whitespace-nowrap outline-none focus:outline-none ${
             activeTab === 'table'
-              ? 'border-b-2 border-[#31583d] text-[#31583d] font-semibold'
-              : 'text-[#818982] hover:text-[#202922]'
+              ? 'border-b-2 border-[#172B4D] text-[#172B4D] font-semibold'
+              : 'text-[#778196] hover:text-[#202939]'
           }`}
         >
           <FileText size={15} /> All Reservations ({reservations.length})
@@ -654,10 +654,10 @@ export function ReservationsView({
 
         <button
           onClick={() => setActiveTab('availability')}
-          className={`pb-2.5 flex items-center gap-1.5 transition ${
+          className={`pb-2.5 flex items-center gap-1.5 transition whitespace-nowrap outline-none focus:outline-none ${
             activeTab === 'availability'
-              ? 'border-b-2 border-[#31583d] text-[#31583d] font-semibold'
-              : 'text-[#818982] hover:text-[#202922]'
+              ? 'border-b-2 border-[#172B4D] text-[#172B4D] font-semibold'
+              : 'text-[#778196] hover:text-[#202939]'
           }`}
         >
           <CalendarDays size={15} /> Room Availability Matrix
@@ -666,10 +666,10 @@ export function ReservationsView({
         {canViewReports && (
           <button
             onClick={() => setActiveTab('reports')}
-            className={`pb-2.5 flex items-center gap-1.5 transition ${
+            className={`pb-2.5 flex items-center gap-1.5 transition whitespace-nowrap outline-none focus:outline-none ${
               activeTab === 'reports'
-                ? 'border-b-2 border-[#31583d] text-[#31583d] font-semibold'
-                : 'text-[#818982] hover:text-[#202922]'
+                ? 'border-b-2 border-[#172B4D] text-[#172B4D] font-semibold'
+                : 'text-[#778196] hover:text-[#202939]'
             }`}
           >
             <ArrowUpRight size={15} /> Analytics & Reporting
@@ -679,13 +679,13 @@ export function ReservationsView({
 
       {/* TAB 1: ALL RESERVATIONS TABLE */}
       {activeTab === 'table' && (
-        <section className="bg-white border border-[#e9ece7] rounded-xl shadow-xs overflow-hidden">
+        <section className="bg-white border border-[#E5E9EF] rounded-xl shadow-xs overflow-hidden w-full min-w-0 max-w-full">
           {/* Filter Bar */}
-          <div className="p-3.5 border-b border-[#e9ece7] flex flex-wrap items-center justify-between gap-3 bg-[#fafbf9]">
-            <div className="flex flex-wrap items-center gap-2.5 flex-1 min-w-[280px]">
+          <div className="p-3.5 border-b border-[#E5E9EF] flex flex-wrap items-center justify-between gap-3 bg-[#FAFBFC] w-full min-w-0">
+            <div className="flex flex-wrap items-center gap-2.5 flex-1 min-w-0">
               {/* Search */}
-              <div className="flex items-center gap-2 bg-white border border-[#e9ece7] rounded-lg px-2.5 py-1.5 flex-1 max-w-sm">
-                <Search size={15} className="text-[#818982]" />
+              <div className="flex items-center gap-2 bg-white border border-[#E5E9EF] rounded-lg px-2.5 py-1.5 flex-1 min-w-[180px] max-w-sm">
+                <Search size={15} className="text-[#778196]" />
                 <input
                   type="text"
                   placeholder="Search by ID, guest, room or source..."
@@ -704,7 +704,7 @@ export function ReservationsView({
               <select
                 value={statusFilter}
                 onChange={e => setStatusFilter(e.target.value)}
-                className="bg-white border border-[#e9ece7] rounded-lg px-2.5 py-1.5 text-xs text-[#202922] outline-none"
+                className="bg-white border border-[#E5E9EF] rounded-lg px-2.5 py-1.5 text-xs text-[#202939] outline-none"
               >
                 <option>All statuses</option>
                 <option>Pending Approval</option>
@@ -718,7 +718,7 @@ export function ReservationsView({
               <select
                 value={roomFilter}
                 onChange={e => setRoomFilter(e.target.value)}
-                className="bg-white border border-[#e9ece7] rounded-lg px-2.5 py-1.5 text-xs text-[#202922] outline-none"
+                className="bg-white border border-[#E5E9EF] rounded-lg px-2.5 py-1.5 text-xs text-[#202939] outline-none"
               >
                 <option>All rooms</option>
                 <option>Room 01</option>
@@ -728,29 +728,29 @@ export function ReservationsView({
               </select>
 
               {/* Date Filter */}
-              <div className="flex items-center border border-[#e9ece7] rounded-lg bg-white overflow-hidden text-xs">
+              <div className="flex items-center border border-[#E5E9EF] rounded-lg bg-white overflow-hidden text-xs">
                 <button
                   onClick={() => setDateFilter('all')}
-                  className={`px-2.5 py-1.5 transition ${dateFilter === 'all' ? 'bg-[#eef2ec] text-[#31583d] font-medium' : 'text-[#818982]'}`}
+                  className={`px-2.5 py-1.5 transition ${dateFilter === 'all' ? 'bg-[#eef2ec] text-[#172B4D] font-medium' : 'text-[#778196]'}`}
                 >
                   All Dates
                 </button>
                 <button
                   onClick={() => setDateFilter('today')}
-                  className={`px-2.5 py-1.5 transition ${dateFilter === 'today' ? 'bg-[#eef2ec] text-[#31583d] font-medium' : 'text-[#818982]'}`}
+                  className={`px-2.5 py-1.5 transition ${dateFilter === 'today' ? 'bg-[#eef2ec] text-[#172B4D] font-medium' : 'text-[#778196]'}`}
                 >
                   Today
                 </button>
                 <button
                   onClick={() => setDateFilter('upcoming')}
-                  className={`px-2.5 py-1.5 transition ${dateFilter === 'upcoming' ? 'bg-[#eef2ec] text-[#31583d] font-medium' : 'text-[#818982]'}`}
+                  className={`px-2.5 py-1.5 transition ${dateFilter === 'upcoming' ? 'bg-[#eef2ec] text-[#172B4D] font-medium' : 'text-[#778196]'}`}
                 >
                   Upcoming
                 </button>
               </div>
             </div>
 
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 shrink-0">
               <button
                 onClick={() => {
                   setSearchQuery('')
@@ -758,14 +758,14 @@ export function ReservationsView({
                   setRoomFilter('All rooms')
                   setDateFilter('all')
                 }}
-                className="text-xs text-[#818982] hover:text-[#202922] px-2 py-1.5 rounded hover:bg-neutral-100"
+                className="text-xs text-[#778196] hover:text-[#202939] px-2 py-1.5 rounded hover:bg-neutral-100"
               >
                 Reset
               </button>
               {canExport && (
                 <button
                   onClick={handleExportCSV}
-                  className="flex items-center gap-1.5 text-xs bg-white border border-[#e9ece7] px-3 py-1.5 rounded-lg text-[#202922] hover:bg-neutral-50 transition"
+                  className="flex items-center gap-1.5 text-xs bg-white border border-[#E5E9EF] px-3 py-1.5 rounded-lg text-[#202939] hover:bg-neutral-50 transition"
                 >
                   <Download size={14} /> Export CSV
                 </button>
@@ -774,30 +774,30 @@ export function ReservationsView({
           </div>
 
           {/* Table */}
-          <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse text-xs">
+          <div className="overflow-x-auto w-full min-w-0">
+            <table className="w-full text-left border-collapse text-xs min-w-[860px]">
               <thead>
-                <tr className="border-b border-[#e9ece7] bg-[#f7f8f5] text-[#818982] uppercase tracking-wider text-[10px]">
-                  <th className="py-3 px-3.5 font-semibold">RESERVATION ID</th>
-                  <th className="py-3 px-3.5 font-semibold">GUEST DETAILS</th>
-                  <th className="py-3 px-3.5 font-semibold">STAY DATES</th>
-                  <th className="py-3 px-3.5 font-semibold">ROOM & GUESTS</th>
-                  <th className="py-3 px-3.5 font-semibold">SOURCE</th>
-                  {canViewFinancials && <th className="py-3 px-3.5 font-semibold">FINANCIALS</th>}
-                  {canViewFinancials && <th className="py-3 px-3.5 font-semibold">PAYMENT</th>}
-                  <th className="py-3 px-3.5 font-semibold">STATUS</th>
-                  <th className="py-3 px-3.5 font-semibold text-right">ACTIONS</th>
+                <tr className="border-b border-[#E5E9EF] bg-[#F7F8FA] text-[#778196] uppercase tracking-wider text-[10px]">
+                  <th className="py-2.5 px-3 font-semibold whitespace-nowrap w-px">RESERVATION ID</th>
+                  <th className="py-2.5 px-3 font-semibold w-full min-w-[180px]">GUEST DETAILS</th>
+                  <th className="py-2.5 px-3 font-semibold whitespace-nowrap w-px">STAY DATES</th>
+                  <th className="py-2.5 px-3 font-semibold whitespace-nowrap w-px">ROOM & GUESTS</th>
+                  <th className="py-2.5 px-3 font-semibold whitespace-nowrap w-px">SOURCE</th>
+                  {canViewFinancials && <th className="py-2.5 px-3 font-semibold whitespace-nowrap w-px">FINANCIALS</th>}
+                  {canViewFinancials && <th className="py-2.5 px-3 font-semibold whitespace-nowrap w-px">PAYMENT</th>}
+                  <th className="py-2.5 pl-3 pr-2 font-semibold whitespace-nowrap w-px">STATUS</th>
+                  <th className="py-2.5 pl-2 pr-3 font-semibold text-right whitespace-nowrap w-px">ACTIONS</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-[#e9ece7]">
+              <tbody className="divide-y divide-[#E5E9EF]">
                 {filteredReservations.map(res => {
                   const checkInFormatted = new Date(`${res.checkIn}T12:00:00`).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
                   const checkOutFormatted = new Date(`${res.checkOut}T12:00:00`).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
                   const isPending = res.status === 'Pending Approval'
 
                   return (
-                    <tr key={res.id} className="hover:bg-[#fafbf9] transition">
-                      <td className="py-3 px-3.5 font-mono font-bold text-[#31583d]">
+                    <tr key={res.id} className="hover:bg-[#FAFBFC] transition">
+                      <td className="py-2.5 px-3 font-mono font-bold text-[#172B4D] whitespace-nowrap w-px">
                         <button
                           onClick={() => {
                             setSelectedReservation(res)
@@ -809,43 +809,43 @@ export function ReservationsView({
                         </button>
                       </td>
 
-                      <td className="py-3 px-3.5">
+                      <td className="py-2.5 px-3 w-full min-w-[180px]">
                         <div className="flex items-center gap-2">
                           <div className="w-7 h-7 rounded-full bg-[#e7eee7] text-[#416247] flex items-center justify-center font-bold text-[10px]">
                             {res.guest.split(' ').map(p => p[0]).slice(0, 2).join('')}
                           </div>
                           <div>
-                            <strong className="block text-[#202922]">{res.guest}</strong>
-                            <small className="text-[#818982] block text-[10px]">{res.guestEmail}</small>
+                            <strong className="block text-[#202939]">{res.guest}</strong>
+                            <small className="text-[#778196] block text-[10px]">{res.guestEmail}</small>
                           </div>
                         </div>
                       </td>
 
-                      <td className="py-3 px-3.5 whitespace-nowrap">
-                        <strong className="block text-[#202922]">{checkInFormatted} → {checkOutFormatted}</strong>
-                        <small className="text-[#818982] text-[10px]">
+                      <td className="py-2.5 px-3 whitespace-nowrap w-px">
+                        <strong className="block text-[#202939]">{checkInFormatted} → {checkOutFormatted}</strong>
+                        <small className="text-[#778196] text-[10px]">
                           {Math.max(1, Math.round((new Date(res.checkOut).getTime() - new Date(res.checkIn).getTime()) / 86400000))} nights
                         </small>
                       </td>
 
-                      <td className="py-3 px-3.5">
-                        <span className="font-semibold text-[#202922] block">{res.room}</span>
-                        <small className="text-[#818982] text-[10px]">{res.guests} {res.guests === 1 ? 'Guest' : 'Guests'}</small>
+                      <td className="py-2.5 px-3 whitespace-nowrap w-px">
+                        <span className="font-semibold text-[#202939] block">{res.room}</span>
+                        <small className="text-[#778196] text-[10px]">{res.guests} {res.guests === 1 ? 'Guest' : 'Guests'}</small>
                       </td>
 
-                      <td className="py-3 px-3.5">
-                        <span className="text-[#202922]">{res.source.replace('Direct · ', '')}</span>
+                      <td className="py-2.5 px-3 whitespace-nowrap w-px">
+                        <span className="text-[#202939]">{res.source.replace('Direct · ', '')}</span>
                       </td>
 
                       {canViewFinancials && (
-                        <td className="py-3 px-3.5 whitespace-nowrap">
-                          <strong className="block text-[#202922]">{money(res.total)}</strong>
-                          <small className="text-[#818982] text-[10px]">Paid: {money(res.paid)}</small>
+                        <td className="py-2.5 px-3 whitespace-nowrap w-px">
+                          <strong className="block text-[#202939]">{money(res.total)}</strong>
+                          <small className="text-[#778196] text-[10px]">Paid: {money(res.paid)}</small>
                         </td>
                       )}
 
                       {canViewFinancials && (
-                        <td className="py-3 px-3.5">
+                        <td className="py-2.5 px-3 whitespace-nowrap w-px">
                           <span className={`inline-block px-2 py-0.5 rounded text-[10px] font-semibold ${
                             res.paymentStatus === 'Paid'
                               ? 'bg-emerald-100 text-emerald-800'
@@ -860,7 +860,7 @@ export function ReservationsView({
                         </td>
                       )}
 
-                      <td className="py-3 px-3.5">
+                      <td className="py-2.5 pl-3 pr-2 whitespace-nowrap w-px">
                         <span className={`inline-block px-2 py-0.5 rounded text-[10px] font-semibold ${
                           res.status === 'Confirmed'
                             ? 'bg-emerald-100 text-emerald-800'
@@ -876,13 +876,13 @@ export function ReservationsView({
                         </span>
                       </td>
 
-                      <td className="py-3 px-3.5 text-right whitespace-nowrap">
+                      <td className="py-2.5 pl-2 pr-3 text-right whitespace-nowrap w-px">
                         <div className="flex items-center justify-end gap-1.5">
                           {isPending && canApprove ? (
                             <>
                               <button
                                 onClick={() => handleApprove(res.id, 'Confirmed')}
-                                className="px-2 py-1 rounded bg-[#31583d] text-white text-[11px] font-medium hover:bg-[#25442e] transition"
+                                className="px-2 py-1 rounded bg-[#172B4D] text-white text-[11px] font-medium hover:bg-[#25442e] transition"
                               >
                                 Approve
                               </button>
@@ -900,7 +900,7 @@ export function ReservationsView({
                                   setSelectedReservation(res)
                                   setModalMode('details')
                                 }}
-                                className="p-1.5 rounded hover:bg-neutral-100 text-[#818982] hover:text-[#202922]"
+                                className="p-1.5 rounded hover:bg-neutral-100 text-[#778196] hover:text-[#202939]"
                                 title="View Details"
                               >
                                 <Eye size={15} />
@@ -909,7 +909,7 @@ export function ReservationsView({
                               {canModify && res.status !== 'Cancelled' && (
                                 <button
                                   onClick={() => openEditModal(res)}
-                                  className="p-1.5 rounded hover:bg-neutral-100 text-[#818982] hover:text-[#202922]"
+                                  className="p-1.5 rounded hover:bg-neutral-100 text-[#778196] hover:text-[#202939]"
                                   title="Modify Dates or Room"
                                 >
                                   <Edit3 size={15} />
@@ -922,7 +922,7 @@ export function ReservationsView({
                                     setSelectedReservation(res)
                                     setModalMode('voucher')
                                   }}
-                                  className="p-1.5 rounded hover:bg-neutral-100 text-[#818982] hover:text-[#202922]"
+                                  className="p-1.5 rounded hover:bg-neutral-100 text-[#778196] hover:text-[#202939]"
                                   title="Print / Download Voucher"
                                 >
                                   <Printer size={15} />
@@ -939,9 +939,9 @@ export function ReservationsView({
             </table>
 
             {filteredReservations.length === 0 && (
-              <div className="p-8 text-center text-[#818982]">
+              <div className="p-8 text-center text-[#778196]">
                 <Search size={28} className="mx-auto mb-2 text-neutral-400" />
-                <p className="font-semibold text-[#202922]">No reservations match your search or filter</p>
+                <p className="font-semibold text-[#202939]">No reservations match your search or filter</p>
                 <p className="text-xs mt-1">Try resetting the status or keyword filters.</p>
               </div>
             )}
@@ -951,11 +951,11 @@ export function ReservationsView({
 
       {/* TAB 2: ROOM AVAILABILITY MATRIX */}
       {activeTab === 'availability' && (
-        <section className="bg-white border border-[#e9ece7] rounded-xl p-4 shadow-xs space-y-4">
-          <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[#e9ece7] pb-3">
+        <section className="bg-white border border-[#E5E9EF] rounded-xl p-4 shadow-xs space-y-4 w-full min-w-0 max-w-full">
+          <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[#E5E9EF] pb-3">
             <div>
-              <h2 className="text-base font-bold text-[#202922]">Room Availability Matrix</h2>
-              <p className="text-xs text-[#818982]">
+              <h2 className="text-base font-bold text-[#202939]">Room Availability Matrix</h2>
+              <p className="text-xs text-[#778196]">
                 Daily room occupancy, arrivals, and maintenance schedule.
               </p>
             </div>
@@ -968,15 +968,15 @@ export function ReservationsView({
           </div>
 
           {/* Daily Matrix Grid for Nov 14 - Nov 28, 2026 */}
-          <div className="overflow-x-auto">
-            <table className="w-full text-center border border-[#e9ece7] text-xs">
+          <div className="overflow-x-auto w-full min-w-0">
+            <table className="w-full text-center border border-[#E5E9EF] text-xs min-w-[700px]">
               <thead>
-                <tr className="bg-[#f7f8f5] text-[#818982] text-[10px]">
-                  <th className="p-2 border border-[#e9ece7] text-left w-36">ROOM</th>
+                <tr className="bg-[#F7F8FA] text-[#778196] text-[10px]">
+                  <th className="p-2 border border-[#E5E9EF] text-left w-36">ROOM</th>
                   {Array.from({ length: 14 }).map((_, idx) => {
                     const d = 14 + idx
                     return (
-                      <th key={d} className="p-2 border border-[#e9ece7] min-w-[50px]">
+                      <th key={d} className="p-2 border border-[#E5E9EF] min-w-[50px]">
                         <div>Nov {d}</div>
                         <span className="text-[9px] text-gray-400 font-normal">2026</span>
                       </th>
@@ -987,11 +987,11 @@ export function ReservationsView({
               <tbody>
                 {ROOM_DATA.map(room => (
                   <tr key={room.name}>
-                    <td className="p-2.5 border border-[#e9ece7] text-left font-semibold bg-[#fafbf9]">
-                      <div className="text-[#202922]">{room.name}</div>
-                      <div className="text-[10px] text-[#818982] font-normal">{room.type}</div>
+                    <td className="p-2.5 border border-[#E5E9EF] text-left font-semibold bg-[#FAFBFC]">
+                      <div className="text-[#202939]">{room.name}</div>
+                      <div className="text-[10px] text-[#778196] font-normal">{room.type}</div>
                       {canViewFinancials && (
-                        <div className="text-[10px] text-[#31583d] font-semibold">{money(room.rate)}/night</div>
+                        <div className="text-[10px] text-[#172B4D] font-semibold">{money(room.rate)}/night</div>
                       )}
                     </td>
 
@@ -1017,7 +1017,7 @@ export function ReservationsView({
                         return (
                           <td
                             key={dayStr}
-                            className="p-1 border border-[#e9ece7] bg-rose-50 text-rose-800 text-[10px]"
+                            className="p-1 border border-[#E5E9EF] bg-rose-50 text-rose-800 text-[10px]"
                             title={`Blocked: ${matchingBlock.reason}`}
                           >
                             <div className="bg-rose-500 text-white rounded py-1 px-0.5 text-[9px] font-bold">
@@ -1035,7 +1035,7 @@ export function ReservationsView({
                         return (
                           <td
                             key={dayStr}
-                            className="p-1 border border-[#e9ece7] hover:bg-neutral-100 transition cursor-pointer"
+                            className="p-1 border border-[#E5E9EF] hover:bg-neutral-100 transition cursor-pointer"
                             onClick={() => {
                               setSelectedReservation(matchingRes)
                               setModalMode('details')
@@ -1050,7 +1050,7 @@ export function ReservationsView({
                       }
 
                       return (
-                        <td key={dayStr} className="p-1 border border-[#e9ece7] bg-emerald-50/40">
+                        <td key={dayStr} className="p-1 border border-[#E5E9EF] bg-emerald-50/40">
                           <span className="text-[10px] text-emerald-800 font-medium">Free</span>
                         </td>
                       )
@@ -1062,18 +1062,18 @@ export function ReservationsView({
           </div>
 
           {/* Blocked dates summary */}
-          <div className="bg-[#fafbf9] border border-[#e9ece7] rounded-lg p-3 text-xs">
-            <h3 className="font-semibold text-[#202922] mb-1.5 flex items-center gap-1.5">
+          <div className="bg-[#FAFBFC] border border-[#E5E9EF] rounded-lg p-3 text-xs">
+            <h3 className="font-semibold text-[#202939] mb-1.5 flex items-center gap-1.5">
               <Ban size={14} className="text-rose-600" /> Active Maintenance & Administrative Blocks
             </h3>
             {blockedRooms.length === 0 ? (
-              <p className="text-[#818982]">No active room blocks.</p>
+              <p className="text-[#778196]">No active room blocks.</p>
             ) : (
               <div className="space-y-1.5">
                 {blockedRooms.map((b, i) => (
-                  <div key={i} className="flex items-center justify-between bg-white border border-[#e9ece7] p-2 rounded">
+                  <div key={i} className="flex items-center justify-between bg-white border border-[#E5E9EF] p-2 rounded">
                     <div>
-                      <strong className="text-[#202922]">{b.room}</strong>: {b.startDate} to {b.endDate} — <span className="text-[#818982]">{b.reason}</span>
+                      <strong className="text-[#202939]">{b.room}</strong>: {b.startDate} to {b.endDate} — <span className="text-[#778196]">{b.reason}</span>
                     </div>
                     {canBlockRooms && (
                       <button
@@ -1096,14 +1096,14 @@ export function ReservationsView({
 
       {/* TAB 3: RESERVATION ANALYTICS & REPORTING */}
       {canViewReports && activeTab === 'reports' && (
-        <section className="space-y-4">
+        <section className="space-y-4 w-full min-w-0 max-w-full">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
             {/* Status breakdown card */}
-            <div className="bg-white border border-[#e9ece7] rounded-xl p-4 shadow-xs">
-              <h3 className="font-bold text-[#202922] text-sm mb-3">Booking Status Distribution</h3>
+            <div className="bg-white border border-[#E5E9EF] rounded-xl p-4 shadow-xs">
+              <h3 className="font-bold text-[#202939] text-sm mb-3">Booking Status Distribution</h3>
               <div className="space-y-2 text-xs">
                 <div className="flex items-center justify-between">
-                  <span className="text-[#818982]">Confirmed & Active</span>
+                  <span className="text-[#778196]">Confirmed & Active</span>
                   <strong className="text-emerald-700">{stats.confirmed} ({Math.round((stats.confirmed / (stats.total || 1)) * 100)}%)</strong>
                 </div>
                 <div className="w-full bg-neutral-100 rounded-full h-2 overflow-hidden">
@@ -1111,7 +1111,7 @@ export function ReservationsView({
                 </div>
 
                 <div className="flex items-center justify-between pt-2">
-                  <span className="text-[#818982]">Pending Approval</span>
+                  <span className="text-[#778196]">Pending Approval</span>
                   <strong className="text-amber-600">{stats.pending} ({Math.round((stats.pending / (stats.total || 1)) * 100)}%)</strong>
                 </div>
                 <div className="w-full bg-neutral-100 rounded-full h-2 overflow-hidden">
@@ -1119,7 +1119,7 @@ export function ReservationsView({
                 </div>
 
                 <div className="flex items-center justify-between pt-2">
-                  <span className="text-[#818982]">Cancelled</span>
+                  <span className="text-[#778196]">Cancelled</span>
                   <strong className="text-rose-600">{stats.cancelled} ({Math.round((stats.cancelled / (stats.total || 1)) * 100)}%)</strong>
                 </div>
                 <div className="w-full bg-neutral-100 rounded-full h-2 overflow-hidden">
@@ -1129,27 +1129,27 @@ export function ReservationsView({
             </div>
 
             {/* Revenue breakdown card */}
-            <div className="bg-white border border-[#e9ece7] rounded-xl p-4 shadow-xs">
-              <h3 className="font-bold text-[#202922] text-sm mb-3">Revenue & Payment Summary</h3>
+            <div className="bg-white border border-[#E5E9EF] rounded-xl p-4 shadow-xs">
+              <h3 className="font-bold text-[#202939] text-sm mb-3">Revenue & Payment Summary</h3>
               <div className="space-y-3 text-xs">
                 <div className="p-2.5 rounded-lg bg-[#eef2ec] flex justify-between items-center">
-                  <span className="text-[#31583d] font-medium">Collected Revenue:</span>
-                  <strong className="text-[#31583d] text-sm">{money(stats.totalRevenue)}</strong>
+                  <span className="text-[#172B4D] font-medium">Collected Revenue:</span>
+                  <strong className="text-[#172B4D] text-sm">{money(stats.totalRevenue)}</strong>
                 </div>
                 <div className="p-2.5 rounded-lg bg-amber-50 flex justify-between items-center">
                   <span className="text-amber-900 font-medium">Pending Balance:</span>
                   <strong className="text-amber-800 text-sm">{money(stats.outstanding)}</strong>
                 </div>
                 <div className="p-2.5 rounded-lg bg-neutral-100 flex justify-between items-center">
-                  <span className="text-[#202922] font-medium">Total Booking Value:</span>
-                  <strong className="text-[#202922] text-sm">{money(stats.totalRevenue + stats.outstanding)}</strong>
+                  <span className="text-[#202939] font-medium">Total Booking Value:</span>
+                  <strong className="text-[#202939] text-sm">{money(stats.totalRevenue + stats.outstanding)}</strong>
                 </div>
               </div>
             </div>
 
             {/* Channel mix */}
-            <div className="bg-white border border-[#e9ece7] rounded-xl p-4 shadow-xs">
-              <h3 className="font-bold text-[#202922] text-sm mb-3">Reservation Channels</h3>
+            <div className="bg-white border border-[#E5E9EF] rounded-xl p-4 shadow-xs">
+              <h3 className="font-bold text-[#202939] text-sm mb-3">Reservation Channels</h3>
               <div className="space-y-2 text-xs">
                 {[
                   { name: 'Direct · Website', count: reservations.filter(r => r.source.includes('Website')).length },
@@ -1158,22 +1158,22 @@ export function ReservationsView({
                   { name: 'Airbnb & Agoda', count: reservations.filter(r => r.source.includes('Airbnb') || r.source.includes('Agoda')).length }
                 ].map((channel, i) => (
                   <div key={i} className="flex items-center justify-between py-1 border-b border-[#f1f3ef] last:border-0">
-                    <span className="text-[#818982]">{channel.name}</span>
-                    <strong className="text-[#202922]">{channel.count} bookings</strong>
+                    <span className="text-[#778196]">{channel.name}</span>
+                    <strong className="text-[#202939]">{channel.count} bookings</strong>
                   </div>
                 ))}
               </div>
             </div>
           </div>
 
-          <div className="bg-white border border-[#e9ece7] rounded-xl p-4 shadow-xs flex items-center justify-between">
+          <div className="bg-white border border-[#E5E9EF] rounded-xl p-4 shadow-xs flex items-center justify-between">
             <div>
-              <h4 className="font-bold text-[#202922] text-sm">Export Reservation Report</h4>
-              <p className="text-xs text-[#818982]">Generate operational CSV spreadsheet with reservation and payment details.</p>
+              <h4 className="font-bold text-[#202939] text-sm">Export Reservation Report</h4>
+              <p className="text-xs text-[#778196]">Generate operational CSV spreadsheet with reservation and payment details.</p>
             </div>
             <button
               onClick={handleExportCSV}
-              className="flex items-center gap-1.5 text-xs bg-[#31583d] text-white px-3.5 py-2 rounded-lg font-medium hover:bg-[#274731] transition"
+              className="flex items-center gap-1.5 text-xs bg-[#172B4D] text-white px-3.5 py-2 rounded-lg font-medium hover:bg-[#0F1D34] transition"
             >
               <Download size={15} /> Export CSV
             </button>
@@ -1188,15 +1188,15 @@ export function ReservationsView({
       {/* MODAL 1: CREATE NEW RESERVATION */}
       {showCreateModal && (
         <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto">
-          <div className="bg-white rounded-2xl max-w-xl w-full p-6 shadow-2xl border border-[#e9ece7] my-8 animate-in fade-in zoom-in-95 duration-150">
-            <div className="flex items-center justify-between pb-3 border-b border-[#e9ece7]">
+          <div className="bg-white rounded-2xl max-w-xl w-full p-6 shadow-2xl border border-[#E5E9EF] my-8 animate-in fade-in zoom-in-95 duration-150">
+            <div className="flex items-center justify-between pb-3 border-b border-[#E5E9EF]">
               <div>
-                <span className="text-[10px] tracking-wider uppercase font-bold text-[#31583d]">NEW BOOKING REQUEST</span>
-                <h2 className="text-lg font-bold text-[#202922]">Create Guest Reservation</h2>
+                <span className="text-[10px] tracking-wider uppercase font-bold text-[#172B4D]">NEW BOOKING REQUEST</span>
+                <h2 className="text-lg font-bold text-[#202939]">Create Guest Reservation</h2>
               </div>
               <button
                 onClick={() => setShowCreateModal(false)}
-                className="p-1 rounded-full hover:bg-neutral-100 text-[#818982]"
+                className="p-1 rounded-full hover:bg-neutral-100 text-[#778196]"
               >
                 <X size={18} />
               </button>
@@ -1205,45 +1205,45 @@ export function ReservationsView({
             <form onSubmit={handleCreateSubmit} className="space-y-4 mt-4 text-xs">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-[#818982] font-medium mb-1">Guest Full Name *</label>
+                  <label className="block text-[#778196] font-medium mb-1">Guest Full Name *</label>
                   <input
                     type="text"
                     required
                     placeholder="e.g. Kasun Fernando"
                     value={formData.guest}
                     onChange={e => setFormData({ ...formData, guest: e.target.value })}
-                    className="w-full border border-[#e9ece7] rounded-lg px-3 py-2 text-xs outline-none focus:border-[#31583d]"
+                    className="w-full border border-[#E5E9EF] rounded-lg px-3 py-2 text-xs outline-none focus:border-[#172B4D]"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-[#818982] font-medium mb-1">Guest Email</label>
+                  <label className="block text-[#778196] font-medium mb-1">Guest Email</label>
                   <input
                     type="email"
                     placeholder="guest@example.com"
                     value={formData.guestEmail}
                     onChange={e => setFormData({ ...formData, guestEmail: e.target.value })}
-                    className="w-full border border-[#e9ece7] rounded-lg px-3 py-2 text-xs outline-none focus:border-[#31583d]"
+                    className="w-full border border-[#E5E9EF] rounded-lg px-3 py-2 text-xs outline-none focus:border-[#172B4D]"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-[#818982] font-medium mb-1">Phone Number</label>
+                  <label className="block text-[#778196] font-medium mb-1">Phone Number</label>
                   <input
                     type="text"
                     placeholder="+94 77 123 4567"
                     value={formData.guestPhone}
                     onChange={e => setFormData({ ...formData, guestPhone: e.target.value })}
-                    className="w-full border border-[#e9ece7] rounded-lg px-3 py-2 text-xs outline-none focus:border-[#31583d]"
+                    className="w-full border border-[#E5E9EF] rounded-lg px-3 py-2 text-xs outline-none focus:border-[#172B4D]"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-[#818982] font-medium mb-1">Room Assignment</label>
+                  <label className="block text-[#778196] font-medium mb-1">Room Assignment</label>
                   <select
                     value={formData.room}
                     onChange={e => setFormData({ ...formData, room: e.target.value })}
-                    className="w-full border border-[#e9ece7] rounded-lg px-3 py-2 text-xs outline-none focus:border-[#31583d]"
+                    className="w-full border border-[#E5E9EF] rounded-lg px-3 py-2 text-xs outline-none focus:border-[#172B4D]"
                   >
                     {ROOM_DATA.map(r => (
                       <option key={r.name} value={r.name}>
@@ -1254,33 +1254,33 @@ export function ReservationsView({
                 </div>
 
                 <div>
-                  <label className="block text-[#818982] font-medium mb-1">Check-in Date *</label>
+                  <label className="block text-[#778196] font-medium mb-1">Check-in Date *</label>
                   <input
                     type="date"
                     required
                     value={formData.checkIn}
                     onChange={e => setFormData({ ...formData, checkIn: e.target.value })}
-                    className="w-full border border-[#e9ece7] rounded-lg px-3 py-2 text-xs outline-none focus:border-[#31583d]"
+                    className="w-full border border-[#E5E9EF] rounded-lg px-3 py-2 text-xs outline-none focus:border-[#172B4D]"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-[#818982] font-medium mb-1">Check-out Date *</label>
+                  <label className="block text-[#778196] font-medium mb-1">Check-out Date *</label>
                   <input
                     type="date"
                     required
                     value={formData.checkOut}
                     onChange={e => setFormData({ ...formData, checkOut: e.target.value })}
-                    className="w-full border border-[#e9ece7] rounded-lg px-3 py-2 text-xs outline-none focus:border-[#31583d]"
+                    className="w-full border border-[#E5E9EF] rounded-lg px-3 py-2 text-xs outline-none focus:border-[#172B4D]"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-[#818982] font-medium mb-1">Guests Count</label>
+                  <label className="block text-[#778196] font-medium mb-1">Guests Count</label>
                   <select
                     value={formData.guests}
                     onChange={e => setFormData({ ...formData, guests: Number(e.target.value) })}
-                    className="w-full border border-[#e9ece7] rounded-lg px-3 py-2 text-xs outline-none focus:border-[#31583d]"
+                    className="w-full border border-[#E5E9EF] rounded-lg px-3 py-2 text-xs outline-none focus:border-[#172B4D]"
                   >
                     <option value={1}>1 Guest</option>
                     <option value={2}>2 Guests</option>
@@ -1290,11 +1290,11 @@ export function ReservationsView({
                 </div>
 
                 <div>
-                  <label className="block text-[#818982] font-medium mb-1">Booking Source</label>
+                  <label className="block text-[#778196] font-medium mb-1">Booking Source</label>
                   <select
                     value={formData.source}
                     onChange={e => setFormData({ ...formData, source: e.target.value })}
-                    className="w-full border border-[#e9ece7] rounded-lg px-3 py-2 text-xs outline-none focus:border-[#31583d]"
+                    className="w-full border border-[#E5E9EF] rounded-lg px-3 py-2 text-xs outline-none focus:border-[#172B4D]"
                   >
                     <option>Direct · Website</option>
                     <option>Direct · WhatsApp</option>
@@ -1317,14 +1317,14 @@ export function ReservationsView({
               )}
 
               {/* Price calculation preview */}
-              <div className="bg-[#fafbf9] border border-[#e9ece7] p-3 rounded-lg flex items-center justify-between">
+              <div className="bg-[#FAFBFC] border border-[#E5E9EF] p-3 rounded-lg flex items-center justify-between">
                 <div>
-                  <span className="text-[#818982] block text-[11px]">Calculated Cost</span>
-                  <span className="text-[#202922] font-medium">
+                  <span className="text-[#778196] block text-[11px]">Calculated Cost</span>
+                  <span className="text-[#202939] font-medium">
                     {Math.max(1, Math.round((new Date(formData.checkOut).getTime() - new Date(formData.checkIn).getTime()) / 86400000))} nights × {money((ROOM_DATA.find(r => r.name === formData.room) || ROOM_DATA[0]).rate)}
                   </span>
                 </div>
-                <strong className="text-base text-[#31583d]">
+                <strong className="text-base text-[#172B4D]">
                   {money(
                     Math.max(1, Math.round((new Date(formData.checkOut).getTime() - new Date(formData.checkIn).getTime()) / 86400000)) *
                     (ROOM_DATA.find(r => r.name === formData.room) || ROOM_DATA[0]).rate
@@ -1334,7 +1334,7 @@ export function ReservationsView({
 
               {canViewFinancials && (
                 <div>
-                  <label className="block text-[#818982] font-medium mb-1">Initial Deposit / Advance Payment (Optional)</label>
+                  <label className="block text-[#778196] font-medium mb-1">Initial Deposit / Advance Payment (Optional)</label>
                   <div className="grid grid-cols-2 gap-2">
                     <input
                       type="number"
@@ -1342,12 +1342,12 @@ export function ReservationsView({
                       placeholder="LKR amount"
                       value={formData.initialPaid || ''}
                       onChange={e => setFormData({ ...formData, initialPaid: Number(e.target.value) })}
-                      className="border border-[#e9ece7] rounded-lg px-3 py-2 text-xs outline-none focus:border-[#31583d]"
+                      className="border border-[#E5E9EF] rounded-lg px-3 py-2 text-xs outline-none focus:border-[#172B4D]"
                     />
                     <select
                       value={formData.paymentMethod}
                       onChange={e => setFormData({ ...formData, paymentMethod: e.target.value as PaymentMethod })}
-                      className="border border-[#e9ece7] rounded-lg px-3 py-2 text-xs outline-none focus:border-[#31583d]"
+                      className="border border-[#E5E9EF] rounded-lg px-3 py-2 text-xs outline-none focus:border-[#172B4D]"
                     >
                       <option>Credit Card</option>
                       <option>Bank Transfer</option>
@@ -1359,28 +1359,28 @@ export function ReservationsView({
               )}
 
               <div>
-                <label className="block text-[#818982] font-medium mb-1">Special Requests / Dietary Requirements</label>
+                <label className="block text-[#778196] font-medium mb-1">Special Requests / Dietary Requirements</label>
                 <textarea
                   rows={2}
                   placeholder="e.g. Vegetarian breakfast, late check-in at 7 PM..."
                   value={formData.specialRequests}
                   onChange={e => setFormData({ ...formData, specialRequests: e.target.value })}
-                  className="w-full border border-[#e9ece7] rounded-lg px-3 py-2 text-xs outline-none focus:border-[#31583d]"
+                  className="w-full border border-[#E5E9EF] rounded-lg px-3 py-2 text-xs outline-none focus:border-[#172B4D]"
                 />
               </div>
 
-              <div className="flex items-center justify-end gap-2 pt-3 border-t border-[#e9ece7]">
+              <div className="flex items-center justify-end gap-2 pt-3 border-t border-[#E5E9EF]">
                 <button
                   type="button"
                   onClick={() => setShowCreateModal(false)}
-                  className="px-4 py-2 border border-[#e9ece7] rounded-lg text-[#202922] hover:bg-neutral-50 transition"
+                  className="px-4 py-2 border border-[#E5E9EF] rounded-lg text-[#202939] hover:bg-neutral-50 transition"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={checkConflict(formData.room, formData.checkIn, formData.checkOut)}
-                  className="px-4 py-2 bg-[#31583d] text-white rounded-lg font-medium hover:bg-[#274731] transition disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="px-4 py-2 bg-[#172B4D] text-white rounded-lg font-medium hover:bg-[#0F1D34] transition disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   Submit Reservation Request
                 </button>
@@ -1393,11 +1393,11 @@ export function ReservationsView({
       {/* MODAL 2: RESERVATION DETAILS & AUDIT TRAIL */}
       {modalMode === 'details' && selectedReservation && (
         <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto">
-          <div className="bg-white rounded-2xl max-w-2xl w-full p-6 shadow-2xl border border-[#e9ece7] my-8 animate-in fade-in zoom-in-95 duration-150 space-y-4">
-            <div className="flex items-center justify-between pb-3 border-b border-[#e9ece7]">
+          <div className="bg-white rounded-2xl max-w-2xl w-full p-6 shadow-2xl border border-[#E5E9EF] my-8 animate-in fade-in zoom-in-95 duration-150 space-y-4">
+            <div className="flex items-center justify-between pb-3 border-b border-[#E5E9EF]">
               <div>
                 <div className="flex items-center gap-2">
-                  <span className="font-mono text-xs bg-[#eef2ec] text-[#31583d] px-2 py-0.5 rounded font-bold">
+                  <span className="font-mono text-xs bg-[#eef2ec] text-[#172B4D] px-2 py-0.5 rounded font-bold">
                     {selectedReservation.id}
                   </span>
                   <span className={`px-2 py-0.5 rounded text-[10px] font-semibold ${
@@ -1406,22 +1406,22 @@ export function ReservationsView({
                     {selectedReservation.status}
                   </span>
                 </div>
-                <h2 className="text-xl font-bold text-[#202922] mt-1">{selectedReservation.guest}</h2>
+                <h2 className="text-xl font-bold text-[#202939] mt-1">{selectedReservation.guest}</h2>
               </div>
               <button
                 onClick={() => setModalMode(null)}
-                className="p-1 rounded-full hover:bg-neutral-100 text-[#818982]"
+                className="p-1 rounded-full hover:bg-neutral-100 text-[#778196]"
               >
                 <X size={18} />
               </button>
             </div>
 
             {/* Quick Action Ribbon */}
-            <div className="flex flex-wrap items-center gap-2 pb-2 border-b border-[#e9ece7]">
+            <div className="flex flex-wrap items-center gap-2 pb-2 border-b border-[#E5E9EF]">
               {canViewFinancials && (
                 <button
                   onClick={() => setModalMode('voucher')}
-                  className="flex items-center gap-1.5 text-xs bg-[#eef2ec] text-[#31583d] px-3 py-1.5 rounded-lg hover:bg-[#dfe8dd] font-medium"
+                  className="flex items-center gap-1.5 text-xs bg-[#eef2ec] text-[#172B4D] px-3 py-1.5 rounded-lg hover:bg-[#dfe8dd] font-medium"
                 >
                   <Printer size={14} /> Booking Voucher
                 </button>
@@ -1433,7 +1433,7 @@ export function ReservationsView({
                     setPaymentAmount(Math.max(0, selectedReservation.total - selectedReservation.paid))
                     setModalMode('payment')
                   }}
-                  className="flex items-center gap-1.5 text-xs bg-[#31583d] text-white px-3 py-1.5 rounded-lg hover:bg-[#25442e] font-medium"
+                  className="flex items-center gap-1.5 text-xs bg-[#172B4D] text-white px-3 py-1.5 rounded-lg hover:bg-[#25442e] font-medium"
                 >
                   <DollarSign size={14} /> Record Payment
                 </button>
@@ -1442,7 +1442,7 @@ export function ReservationsView({
               {canModify && selectedReservation.status !== 'Cancelled' && (
                 <button
                   onClick={() => openEditModal(selectedReservation)}
-                  className="flex items-center gap-1.5 text-xs border border-[#e9ece7] px-3 py-1.5 rounded-lg text-[#202922] hover:bg-neutral-50"
+                  className="flex items-center gap-1.5 text-xs border border-[#E5E9EF] px-3 py-1.5 rounded-lg text-[#202939] hover:bg-neutral-50"
                 >
                   <Edit3 size={14} /> Modify Stay
                 </button>
@@ -1460,7 +1460,7 @@ export function ReservationsView({
               {!isHousekeeper && (
                 <button
                   onClick={() => handleSendReminder(selectedReservation)}
-                  className="flex items-center gap-1.5 text-xs border border-[#e9ece7] px-3 py-1.5 rounded-lg text-[#202922] hover:bg-neutral-50"
+                  className="flex items-center gap-1.5 text-xs border border-[#E5E9EF] px-3 py-1.5 rounded-lg text-[#202939] hover:bg-neutral-50"
                 >
                   <Send size={14} /> {selectedReservation.reminderSent ? 'Resend Reminder' : 'Send Reminder'}
                 </button>
@@ -1468,45 +1468,45 @@ export function ReservationsView({
             </div>
 
             {/* Info Grid */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-xs bg-[#fafbf9] p-3.5 rounded-xl border border-[#e9ece7]">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-xs bg-[#FAFBFC] p-3.5 rounded-xl border border-[#E5E9EF]">
               <div>
-                <span className="text-[#818982] block">Room</span>
-                <strong className="text-[#202922]">{selectedReservation.room}</strong>
+                <span className="text-[#778196] block">Room</span>
+                <strong className="text-[#202939]">{selectedReservation.room}</strong>
               </div>
               <div>
-                <span className="text-[#818982] block">Stay Period</span>
-                <strong className="text-[#202922]">{selectedReservation.checkIn} to {selectedReservation.checkOut}</strong>
+                <span className="text-[#778196] block">Stay Period</span>
+                <strong className="text-[#202939]">{selectedReservation.checkIn} to {selectedReservation.checkOut}</strong>
               </div>
               <div>
-                <span className="text-[#818982] block">Booking Channel</span>
-                <strong className="text-[#202922]">{selectedReservation.source}</strong>
+                <span className="text-[#778196] block">Booking Channel</span>
+                <strong className="text-[#202939]">{selectedReservation.source}</strong>
               </div>
               <div>
-                <span className="text-[#818982] block">Guest Count</span>
-                <strong className="text-[#202922]">{selectedReservation.guests} Persons</strong>
+                <span className="text-[#778196] block">Guest Count</span>
+                <strong className="text-[#202939]">{selectedReservation.guests} Persons</strong>
               </div>
             </div>
 
             {/* Special Requests */}
             {selectedReservation.specialRequests && (
-              <div className="bg-[#fafbf9] border border-[#e9ece7] p-3 rounded-xl text-xs">
-                <span className="text-[#818982] block font-medium mb-0.5">Special Requests & Preferences</span>
-                <p className="text-[#202922] font-medium">{selectedReservation.specialRequests}</p>
+              <div className="bg-[#FAFBFC] border border-[#E5E9EF] p-3 rounded-xl text-xs">
+                <span className="text-[#778196] block font-medium mb-0.5">Special Requests & Preferences</span>
+                <p className="text-[#202939] font-medium">{selectedReservation.specialRequests}</p>
               </div>
             )}
 
             {/* Financial Overview (Hidden for Housekeeper) */}
             {canViewFinancials && (
-              <div className="bg-white border border-[#e9ece7] p-3.5 rounded-xl text-xs space-y-2">
+              <div className="bg-white border border-[#E5E9EF] p-3.5 rounded-xl text-xs space-y-2">
                 <div className="flex items-center justify-between font-semibold">
-                  <span className="text-[#202922]">Total Reservation Value</span>
-                  <span className="text-base text-[#31583d]">{money(selectedReservation.total)}</span>
+                  <span className="text-[#202939]">Total Reservation Value</span>
+                  <span className="text-base text-[#172B4D]">{money(selectedReservation.total)}</span>
                 </div>
-                <div className="flex items-center justify-between text-[#818982]">
+                <div className="flex items-center justify-between text-[#778196]">
                   <span>Amount Paid</span>
                   <span className="text-emerald-700 font-medium">{money(selectedReservation.paid)}</span>
                 </div>
-                <div className="flex items-center justify-between text-[#818982]">
+                <div className="flex items-center justify-between text-[#778196]">
                   <span>Outstanding Balance</span>
                   <span className="text-rose-700 font-medium">{money(Math.max(0, selectedReservation.total - selectedReservation.paid))}</span>
                 </div>
@@ -1514,18 +1514,18 @@ export function ReservationsView({
                 {/* Payment Progress Bar */}
                 <div className="w-full bg-neutral-100 rounded-full h-2 overflow-hidden mt-1">
                   <div
-                    className="bg-[#31583d] h-2 rounded-full"
+                    className="bg-[#172B4D] h-2 rounded-full"
                     style={{ width: `${Math.min(100, (selectedReservation.paid / (selectedReservation.total || 1)) * 100)}%` }}
                   />
                 </div>
 
                 {selectedReservation.payments && selectedReservation.payments.length > 0 && (
                   <div className="pt-2 border-t border-[#f1f3ef] mt-2">
-                    <span className="text-[11px] font-bold text-[#818982] block mb-1">Payment Transactions</span>
+                    <span className="text-[11px] font-bold text-[#778196] block mb-1">Payment Transactions</span>
                     <div className="space-y-1">
                       {selectedReservation.payments.map(p => (
                         <div key={p.id} className="flex items-center justify-between text-[11px] py-0.5">
-                          <span className="text-[#818982]">{p.date} • {p.method} ({p.receiptNumber})</span>
+                          <span className="text-[#778196]">{p.date} • {p.method} ({p.receiptNumber})</span>
                           <div className="flex items-center gap-2">
                             <strong className={p.isRefund ? 'text-purple-700' : 'text-emerald-700'}>
                               {p.isRefund ? `-${money(p.amount)} (Refund)` : `+${money(p.amount)}`}
@@ -1535,7 +1535,7 @@ export function ReservationsView({
                                 setActiveReceipt(p)
                                 setModalMode('receipt')
                               }}
-                              className="text-[#31583d] hover:underline"
+                              className="text-[#172B4D] hover:underline"
                             >
                               Receipt
                             </button>
@@ -1550,19 +1550,19 @@ export function ReservationsView({
 
             {/* Audit History Trail */}
             <div className="space-y-2">
-              <h3 className="font-bold text-xs text-[#202922] uppercase tracking-wider">
+              <h3 className="font-bold text-xs text-[#202939] uppercase tracking-wider">
                 Reservation History & Audit Trail
               </h3>
-              <div className="max-h-44 overflow-y-auto border border-[#e9ece7] rounded-xl p-3 space-y-2 bg-[#fafbf9] text-xs">
+              <div className="max-h-44 overflow-y-auto border border-[#E5E9EF] rounded-xl p-3 space-y-2 bg-[#FAFBFC] text-xs">
                 {(selectedReservation.history || []).map((h, i) => (
                   <div key={h.id || i} className="flex items-start gap-2 text-[11px] pb-1.5 border-b border-[#f0f2ee] last:border-0">
-                    <Clock size={13} className="text-[#818982] shrink-0 mt-0.5" />
+                    <Clock size={13} className="text-[#778196] shrink-0 mt-0.5" />
                     <div className="flex-1">
                       <div className="flex items-center justify-between">
-                        <strong className="text-[#202922]">{h.action}</strong>
-                        <span className="text-[10px] text-[#818982]">{h.timestamp}</span>
+                        <strong className="text-[#202939]">{h.action}</strong>
+                        <span className="text-[10px] text-[#778196]">{h.timestamp}</span>
                       </div>
-                      <p className="text-[#818982]">{h.note}</p>
+                      <p className="text-[#778196]">{h.note}</p>
                       <small className="text-[10px] text-emerald-800 font-medium">By: {h.performedBy}</small>
                     </div>
                   </div>
@@ -1570,10 +1570,10 @@ export function ReservationsView({
               </div>
             </div>
 
-            <div className="flex justify-end pt-3 border-t border-[#e9ece7]">
+            <div className="flex justify-end pt-3 border-t border-[#E5E9EF]">
               <button
                 onClick={() => setModalMode(null)}
-                className="px-4 py-2 bg-neutral-100 hover:bg-neutral-200 text-[#202922] rounded-lg text-xs font-medium"
+                className="px-4 py-2 bg-neutral-100 hover:bg-neutral-200 text-[#202939] rounded-lg text-xs font-medium"
               >
                 Close
               </button>
@@ -1585,42 +1585,42 @@ export function ReservationsView({
       {/* MODAL 3: BOOKING CONFIRMATION VOUCHER */}
       {modalMode === 'voucher' && selectedReservation && (
         <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto">
-          <div className="bg-white rounded-2xl max-w-xl w-full p-8 shadow-2xl border border-[#e9ece7] my-8 animate-in fade-in zoom-in-95">
+          <div className="bg-white rounded-2xl max-w-xl w-full p-8 shadow-2xl border border-[#E5E9EF] my-8 animate-in fade-in zoom-in-95">
             {/* Printable Voucher Paper */}
-            <div className="border-4 border-double border-[#31583d]/40 p-6 rounded-xl space-y-4 bg-[#fdfdfc]">
-              <div className="flex justify-between items-start border-b border-[#e9ece7] pb-4">
+            <div className="border-4 border-double border-[#172B4D]/40 p-6 rounded-xl space-y-4 bg-[#fdfdfc]">
+              <div className="flex justify-between items-start border-b border-[#E5E9EF] pb-4">
                 <div>
-                  <h1 className="text-xl font-serif font-bold text-[#31583d]">Villa Tea Fields</h1>
-                  <p className="text-[11px] text-[#818982]">Nuwara Eliya, Central Highlands, Sri Lanka</p>
-                  <p className="text-[10px] text-[#818982]">Tel: +94 52 222 3456 • stay@villateafields.com</p>
+                  <h1 className="text-xl font-serif font-bold text-[#172B4D]">Villa Tea Fields</h1>
+                  <p className="text-[11px] text-[#778196]">Nuwara Eliya, Central Highlands, Sri Lanka</p>
+                  <p className="text-[10px] text-[#778196]">Tel: +94 52 222 3456 • stay@villateafields.com</p>
                 </div>
                 <div className="text-right">
-                  <span className="text-[10px] tracking-wider uppercase font-bold text-[#818982] block">BOOKING CONFIRMATION</span>
-                  <strong className="text-base font-mono text-[#31583d]">{selectedReservation.id}</strong>
+                  <span className="text-[10px] tracking-wider uppercase font-bold text-[#778196] block">BOOKING CONFIRMATION</span>
+                  <strong className="text-base font-mono text-[#172B4D]">{selectedReservation.id}</strong>
                   <span className="block text-[10px] text-emerald-700 font-semibold mt-1">Status: Confirmed</span>
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-3 text-xs">
                 <div>
-                  <span className="text-[10px] text-[#818982] block uppercase">GUEST DETAILS</span>
-                  <strong className="text-[#202922] block">{selectedReservation.guest}</strong>
-                  <span className="text-[11px] text-[#818982] block">{selectedReservation.guestEmail}</span>
-                  <span className="text-[11px] text-[#818982] block">{selectedReservation.guestPhone}</span>
+                  <span className="text-[10px] text-[#778196] block uppercase">GUEST DETAILS</span>
+                  <strong className="text-[#202939] block">{selectedReservation.guest}</strong>
+                  <span className="text-[11px] text-[#778196] block">{selectedReservation.guestEmail}</span>
+                  <span className="text-[11px] text-[#778196] block">{selectedReservation.guestPhone}</span>
                 </div>
                 <div>
-                  <span className="text-[10px] text-[#818982] block uppercase">STAY DETAILS</span>
-                  <strong className="text-[#202922] block">{selectedReservation.room}</strong>
-                  <span className="text-[11px] text-[#202922] block">
+                  <span className="text-[10px] text-[#778196] block uppercase">STAY DETAILS</span>
+                  <strong className="text-[#202939] block">{selectedReservation.room}</strong>
+                  <span className="text-[11px] text-[#202939] block">
                     Check-in: <strong>{selectedReservation.checkIn}</strong> (2:00 PM)
                   </span>
-                  <span className="text-[11px] text-[#202922] block">
+                  <span className="text-[11px] text-[#202939] block">
                     Check-out: <strong>{selectedReservation.checkOut}</strong> (11:00 AM)
                   </span>
                 </div>
               </div>
 
-              <div className="bg-[#f7f8f5] p-3 rounded-lg text-xs space-y-1">
+              <div className="bg-[#F7F8FA] p-3 rounded-lg text-xs space-y-1">
                 <div className="flex justify-between">
                   <span>Room Charge:</span>
                   <strong>{money(selectedReservation.total)}</strong>
@@ -1629,13 +1629,13 @@ export function ReservationsView({
                   <span>Advance Paid:</span>
                   <strong>{money(selectedReservation.paid)}</strong>
                 </div>
-                <div className="flex justify-between border-t border-[#e9ece7] pt-1 text-sm font-bold text-[#31583d]">
+                <div className="flex justify-between border-t border-[#E5E9EF] pt-1 text-sm font-bold text-[#172B4D]">
                   <span>Balance Due at Check-in:</span>
                   <span>{money(Math.max(0, selectedReservation.total - selectedReservation.paid))}</span>
                 </div>
               </div>
 
-              <div className="text-[10px] text-[#818982] border-t border-[#e9ece7] pt-2 space-y-1">
+              <div className="text-[10px] text-[#778196] border-t border-[#E5E9EF] pt-2 space-y-1">
                 <p>• Cancellation Policy: Free cancellation up to 48 hours prior to arrival.</p>
                 <p>• Complimentary Ceylon Tea service and breakfast included with every stay.</p>
                 <p>• Please present this voucher and valid photo identification upon arrival.</p>
@@ -1645,13 +1645,13 @@ export function ReservationsView({
             <div className="flex justify-end gap-2 mt-4">
               <button
                 onClick={() => setModalMode('details')}
-                className="px-4 py-2 border border-[#e9ece7] rounded-lg text-xs font-medium text-[#202922] hover:bg-neutral-50"
+                className="px-4 py-2 border border-[#E5E9EF] rounded-lg text-xs font-medium text-[#202939] hover:bg-neutral-50"
               >
                 Back to Details
               </button>
               <button
                 onClick={() => window.print()}
-                className="px-4 py-2 bg-[#31583d] text-white rounded-lg text-xs font-medium hover:bg-[#274731] flex items-center gap-1.5"
+                className="px-4 py-2 bg-[#172B4D] text-white rounded-lg text-xs font-medium hover:bg-[#0F1D34] flex items-center gap-1.5"
               >
                 <Printer size={14} /> Print / Save Voucher
               </button>
@@ -1663,36 +1663,36 @@ export function ReservationsView({
       {/* MODAL 4: MODIFY RESERVATION */}
       {modalMode === 'edit' && selectedReservation && (
         <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto">
-          <div className="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-[#e9ece7] my-8 animate-in fade-in zoom-in-95">
-            <div className="flex items-center justify-between pb-3 border-b border-[#e9ece7]">
+          <div className="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-[#E5E9EF] my-8 animate-in fade-in zoom-in-95">
+            <div className="flex items-center justify-between pb-3 border-b border-[#E5E9EF]">
               <div>
                 <span className="text-[10px] tracking-wider uppercase font-bold text-amber-700">RESERVATION MODIFICATION</span>
-                <h2 className="text-lg font-bold text-[#202922]">Modify Stay {selectedReservation.id}</h2>
+                <h2 className="text-lg font-bold text-[#202939]">Modify Stay {selectedReservation.id}</h2>
               </div>
-              <button onClick={() => setModalMode('details')} className="p-1 rounded-full hover:bg-neutral-100 text-[#818982]">
+              <button onClick={() => setModalMode('details')} className="p-1 rounded-full hover:bg-neutral-100 text-[#778196]">
                 <X size={18} />
               </button>
             </div>
 
             <form onSubmit={handleEditSubmit} className="space-y-4 mt-4 text-xs">
               <div>
-                <label className="block text-[#818982] font-medium mb-1">Guest Name</label>
+                <label className="block text-[#778196] font-medium mb-1">Guest Name</label>
                 <input
                   type="text"
                   required
                   value={formData.guest}
                   onChange={e => setFormData({ ...formData, guest: e.target.value })}
-                  className="w-full border border-[#e9ece7] rounded-lg px-3 py-2 text-xs outline-none focus:border-[#31583d]"
+                  className="w-full border border-[#E5E9EF] rounded-lg px-3 py-2 text-xs outline-none focus:border-[#172B4D]"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-[#818982] font-medium mb-1">Room Assignment</label>
+                  <label className="block text-[#778196] font-medium mb-1">Room Assignment</label>
                   <select
                     value={formData.room}
                     onChange={e => setFormData({ ...formData, room: e.target.value })}
-                    className="w-full border border-[#e9ece7] rounded-lg px-3 py-2 text-xs outline-none focus:border-[#31583d]"
+                    className="w-full border border-[#E5E9EF] rounded-lg px-3 py-2 text-xs outline-none focus:border-[#172B4D]"
                   >
                     {ROOM_DATA.map(r => (
                       <option key={r.name} value={r.name}>
@@ -1702,11 +1702,11 @@ export function ReservationsView({
                   </select>
                 </div>
                 <div>
-                  <label className="block text-[#818982] font-medium mb-1">Guests Count</label>
+                  <label className="block text-[#778196] font-medium mb-1">Guests Count</label>
                   <select
                     value={formData.guests}
                     onChange={e => setFormData({ ...formData, guests: Number(e.target.value) })}
-                    className="w-full border border-[#e9ece7] rounded-lg px-3 py-2 text-xs outline-none focus:border-[#31583d]"
+                    className="w-full border border-[#E5E9EF] rounded-lg px-3 py-2 text-xs outline-none focus:border-[#172B4D]"
                   >
                     <option value={1}>1 Guest</option>
                     <option value={2}>2 Guests</option>
@@ -1718,23 +1718,23 @@ export function ReservationsView({
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-[#818982] font-medium mb-1">Check-in Date</label>
+                  <label className="block text-[#778196] font-medium mb-1">Check-in Date</label>
                   <input
                     type="date"
                     required
                     value={formData.checkIn}
                     onChange={e => setFormData({ ...formData, checkIn: e.target.value })}
-                    className="w-full border border-[#e9ece7] rounded-lg px-3 py-2 text-xs outline-none focus:border-[#31583d]"
+                    className="w-full border border-[#E5E9EF] rounded-lg px-3 py-2 text-xs outline-none focus:border-[#172B4D]"
                   />
                 </div>
                 <div>
-                  <label className="block text-[#818982] font-medium mb-1">Check-out Date</label>
+                  <label className="block text-[#778196] font-medium mb-1">Check-out Date</label>
                   <input
                     type="date"
                     required
                     value={formData.checkOut}
                     onChange={e => setFormData({ ...formData, checkOut: e.target.value })}
-                    className="w-full border border-[#e9ece7] rounded-lg px-3 py-2 text-xs outline-none focus:border-[#31583d]"
+                    className="w-full border border-[#E5E9EF] rounded-lg px-3 py-2 text-xs outline-none focus:border-[#172B4D]"
                   />
                 </div>
               </div>
@@ -1748,28 +1748,28 @@ export function ReservationsView({
               )}
 
               <div>
-                <label className="block text-[#818982] font-medium mb-1">Special Notes / Change Reason</label>
+                <label className="block text-[#778196] font-medium mb-1">Special Notes / Change Reason</label>
                 <textarea
                   rows={2}
                   value={formData.specialRequests}
                   onChange={e => setFormData({ ...formData, specialRequests: e.target.value })}
                   placeholder="Reason for modifying dates or room..."
-                  className="w-full border border-[#e9ece7] rounded-lg px-3 py-2 text-xs outline-none focus:border-[#31583d]"
+                  className="w-full border border-[#E5E9EF] rounded-lg px-3 py-2 text-xs outline-none focus:border-[#172B4D]"
                 />
               </div>
 
-              <div className="flex justify-end gap-2 pt-3 border-t border-[#e9ece7]">
+              <div className="flex justify-end gap-2 pt-3 border-t border-[#E5E9EF]">
                 <button
                   type="button"
                   onClick={() => setModalMode('details')}
-                  className="px-4 py-2 border border-[#e9ece7] rounded-lg text-xs"
+                  className="px-4 py-2 border border-[#E5E9EF] rounded-lg text-xs"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={checkConflict(formData.room, formData.checkIn, formData.checkOut, selectedReservation.id)}
-                  className="px-4 py-2 bg-[#31583d] text-white rounded-lg font-medium text-xs hover:bg-[#274731] disabled:opacity-50"
+                  className="px-4 py-2 bg-[#172B4D] text-white rounded-lg font-medium text-xs hover:bg-[#0F1D34] disabled:opacity-50"
                 >
                   Save Modifications
                 </button>
@@ -1782,13 +1782,13 @@ export function ReservationsView({
       {/* MODAL 5: CANCELLATION & POLICY */}
       {modalMode === 'cancel' && selectedReservation && (
         <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto">
-          <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-[#e9ece7] my-8 animate-in fade-in zoom-in-95">
-            <div className="flex items-center justify-between pb-3 border-b border-[#e9ece7]">
+          <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-[#E5E9EF] my-8 animate-in fade-in zoom-in-95">
+            <div className="flex items-center justify-between pb-3 border-b border-[#E5E9EF]">
               <div>
                 <span className="text-[10px] tracking-wider uppercase font-bold text-rose-700">RESERVATION CANCELLATION</span>
-                <h2 className="text-lg font-bold text-[#202922]">Cancel Booking {selectedReservation.id}</h2>
+                <h2 className="text-lg font-bold text-[#202939]">Cancel Booking {selectedReservation.id}</h2>
               </div>
-              <button onClick={() => setModalMode('details')} className="p-1 rounded-full hover:bg-neutral-100 text-[#818982]">
+              <button onClick={() => setModalMode('details')} className="p-1 rounded-full hover:bg-neutral-100 text-[#778196]">
                 <X size={18} />
               </button>
             </div>
@@ -1803,11 +1803,11 @@ export function ReservationsView({
               </div>
 
               <div>
-                <label className="block text-[#818982] font-medium mb-1">Select Cancellation Reason *</label>
+                <label className="block text-[#778196] font-medium mb-1">Select Cancellation Reason *</label>
                 <select
                   value={cancellationReason}
                   onChange={e => setCancellationReason(e.target.value)}
-                  className="w-full border border-[#e9ece7] rounded-lg px-3 py-2 text-xs outline-none focus:border-[#31583d]"
+                  className="w-full border border-[#E5E9EF] rounded-lg px-3 py-2 text-xs outline-none focus:border-[#172B4D]"
                 >
                   <option>Change of travel plans</option>
                   <option>Emergency / Illness</option>
@@ -1818,10 +1818,10 @@ export function ReservationsView({
                 </select>
               </div>
 
-              <div className="flex justify-end gap-2 pt-3 border-t border-[#e9ece7]">
+              <div className="flex justify-end gap-2 pt-3 border-t border-[#E5E9EF]">
                 <button
                   onClick={() => setModalMode('details')}
-                  className="px-4 py-2 border border-[#e9ece7] rounded-lg text-xs"
+                  className="px-4 py-2 border border-[#E5E9EF] rounded-lg text-xs"
                 >
                   Keep Reservation
                 </button>
@@ -1840,19 +1840,19 @@ export function ReservationsView({
       {/* MODAL 6: RECORD PAYMENT */}
       {modalMode === 'payment' && selectedReservation && (
         <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto">
-          <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-[#e9ece7] my-8 animate-in fade-in zoom-in-95">
-            <div className="flex items-center justify-between pb-3 border-b border-[#e9ece7]">
+          <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-[#E5E9EF] my-8 animate-in fade-in zoom-in-95">
+            <div className="flex items-center justify-between pb-3 border-b border-[#E5E9EF]">
               <div>
-                <span className="text-[10px] tracking-wider uppercase font-bold text-[#31583d]">FINANCIAL MANAGEMENT</span>
-                <h2 className="text-lg font-bold text-[#202922]">Record Payment for {selectedReservation.id}</h2>
+                <span className="text-[10px] tracking-wider uppercase font-bold text-[#172B4D]">FINANCIAL MANAGEMENT</span>
+                <h2 className="text-lg font-bold text-[#202939]">Record Payment for {selectedReservation.id}</h2>
               </div>
-              <button onClick={() => setModalMode('details')} className="p-1 rounded-full hover:bg-neutral-100 text-[#818982]">
+              <button onClick={() => setModalMode('details')} className="p-1 rounded-full hover:bg-neutral-100 text-[#778196]">
                 <X size={18} />
               </button>
             </div>
 
             <form onSubmit={handlePaymentSubmit} className="space-y-4 mt-4 text-xs">
-              <div className="bg-[#fafbf9] border border-[#e9ece7] p-3 rounded-lg flex justify-between">
+              <div className="bg-[#FAFBFC] border border-[#E5E9EF] p-3 rounded-lg flex justify-between">
                 <span>Remaining Due:</span>
                 <strong className="text-rose-700 font-bold">
                   {money(Math.max(0, selectedReservation.total - selectedReservation.paid))}
@@ -1860,23 +1860,23 @@ export function ReservationsView({
               </div>
 
               <div>
-                <label className="block text-[#818982] font-medium mb-1">Payment Amount (LKR) *</label>
+                <label className="block text-[#778196] font-medium mb-1">Payment Amount (LKR) *</label>
                 <input
                   type="number"
                   min="1"
                   required
                   value={paymentAmount || ''}
                   onChange={e => setPaymentAmount(Number(e.target.value))}
-                  className="w-full border border-[#e9ece7] rounded-lg px-3 py-2 text-xs outline-none focus:border-[#31583d]"
+                  className="w-full border border-[#E5E9EF] rounded-lg px-3 py-2 text-xs outline-none focus:border-[#172B4D]"
                 />
               </div>
 
               <div>
-                <label className="block text-[#818982] font-medium mb-1">Payment Method</label>
+                <label className="block text-[#778196] font-medium mb-1">Payment Method</label>
                 <select
                   value={paymentMethod}
                   onChange={e => setPaymentMethod(e.target.value as PaymentMethod)}
-                  className="w-full border border-[#e9ece7] rounded-lg px-3 py-2 text-xs outline-none focus:border-[#31583d]"
+                  className="w-full border border-[#E5E9EF] rounded-lg px-3 py-2 text-xs outline-none focus:border-[#172B4D]"
                 >
                   <option>Bank Transfer</option>
                   <option>Credit Card</option>
@@ -1886,27 +1886,27 @@ export function ReservationsView({
               </div>
 
               <div>
-                <label className="block text-[#818982] font-medium mb-1">Transaction Reference / Note</label>
+                <label className="block text-[#778196] font-medium mb-1">Transaction Reference / Note</label>
                 <input
                   type="text"
                   placeholder="e.g. BOC slip #99324 / POS terminal"
                   value={paymentRef}
                   onChange={e => setPaymentRef(e.target.value)}
-                  className="w-full border border-[#e9ece7] rounded-lg px-3 py-2 text-xs outline-none focus:border-[#31583d]"
+                  className="w-full border border-[#E5E9EF] rounded-lg px-3 py-2 text-xs outline-none focus:border-[#172B4D]"
                 />
               </div>
 
-              <div className="flex justify-end gap-2 pt-3 border-t border-[#e9ece7]">
+              <div className="flex justify-end gap-2 pt-3 border-t border-[#E5E9EF]">
                 <button
                   type="button"
                   onClick={() => setModalMode('details')}
-                  className="px-4 py-2 border border-[#e9ece7] rounded-lg text-xs"
+                  className="px-4 py-2 border border-[#E5E9EF] rounded-lg text-xs"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-[#31583d] text-white rounded-lg font-medium text-xs hover:bg-[#274731]"
+                  className="px-4 py-2 bg-[#172B4D] text-white rounded-lg font-medium text-xs hover:bg-[#0F1D34]"
                 >
                   Record Payment & Issue Receipt
                 </button>
@@ -1919,45 +1919,45 @@ export function ReservationsView({
       {/* MODAL 7: PAYMENT RECEIPT */}
       {modalMode === 'receipt' && selectedReservation && activeReceipt && (
         <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto">
-          <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-[#e9ece7] my-8 animate-in fade-in zoom-in-95 space-y-4">
-            <div className="border border-[#e9ece7] p-5 rounded-xl bg-[#fdfdfc] text-xs space-y-3 font-mono">
-              <div className="text-center border-b border-[#e9ece7] pb-3">
-                <h3 className="text-base font-bold text-[#31583d] font-serif">Villa Tea Fields</h3>
-                <p className="text-[10px] text-[#818982]">Official Payment Receipt</p>
-                <p className="text-[10px] text-[#202922] font-bold mt-1">{activeReceipt.receiptNumber}</p>
+          <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-[#E5E9EF] my-8 animate-in fade-in zoom-in-95 space-y-4">
+            <div className="border border-[#E5E9EF] p-5 rounded-xl bg-[#fdfdfc] text-xs space-y-3 font-mono">
+              <div className="text-center border-b border-[#E5E9EF] pb-3">
+                <h3 className="text-base font-bold text-[#172B4D] font-serif">Villa Tea Fields</h3>
+                <p className="text-[10px] text-[#778196]">Official Payment Receipt</p>
+                <p className="text-[10px] text-[#202939] font-bold mt-1">{activeReceipt.receiptNumber}</p>
               </div>
 
               <div className="space-y-1 text-[11px]">
                 <div className="flex justify-between">
-                  <span className="text-[#818982]">Reservation ID:</span>
+                  <span className="text-[#778196]">Reservation ID:</span>
                   <span className="font-bold">{selectedReservation.id}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-[#818982]">Guest:</span>
+                  <span className="text-[#778196]">Guest:</span>
                   <span className="font-bold">{selectedReservation.guest}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-[#818982]">Payment Date:</span>
+                  <span className="text-[#778196]">Payment Date:</span>
                   <span>{activeReceipt.date}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-[#818982]">Method:</span>
+                  <span className="text-[#778196]">Method:</span>
                   <span>{activeReceipt.method}</span>
                 </div>
                 {activeReceipt.reference && (
                   <div className="flex justify-between">
-                    <span className="text-[#818982]">Reference:</span>
+                    <span className="text-[#778196]">Reference:</span>
                     <span>{activeReceipt.reference}</span>
                   </div>
                 )}
               </div>
 
-              <div className="border-t border-b border-[#e9ece7] py-2 flex justify-between items-center text-sm font-bold text-[#31583d]">
+              <div className="border-t border-b border-[#E5E9EF] py-2 flex justify-between items-center text-sm font-bold text-[#172B4D]">
                 <span>AMOUNT RECEIVED:</span>
                 <span>{money(activeReceipt.amount)}</span>
               </div>
 
-              <div className="text-[10px] text-[#818982] text-center pt-1">
+              <div className="text-[10px] text-[#778196] text-center pt-1">
                 Thank you for staying at Villa Tea Fields.
               </div>
             </div>
@@ -1965,13 +1965,13 @@ export function ReservationsView({
             <div className="flex justify-end gap-2">
               <button
                 onClick={() => setModalMode('details')}
-                className="px-4 py-2 border border-[#e9ece7] rounded-lg text-xs text-[#202922]"
+                className="px-4 py-2 border border-[#E5E9EF] rounded-lg text-xs text-[#202939]"
               >
                 Back to Details
               </button>
               <button
                 onClick={() => window.print()}
-                className="px-4 py-2 bg-[#31583d] text-white rounded-lg text-xs font-medium flex items-center gap-1.5"
+                className="px-4 py-2 bg-[#172B4D] text-white rounded-lg text-xs font-medium flex items-center gap-1.5"
               >
                 <Printer size={14} /> Print Receipt
               </button>
@@ -1983,13 +1983,13 @@ export function ReservationsView({
       {/* MODAL 8: ADMIN BLOCK ROOM DATES */}
       {showBlockModal && (
         <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto">
-          <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-[#e9ece7] my-8 animate-in fade-in zoom-in-95">
-            <div className="flex items-center justify-between pb-3 border-b border-[#e9ece7]">
+          <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-[#E5E9EF] my-8 animate-in fade-in zoom-in-95">
+            <div className="flex items-center justify-between pb-3 border-b border-[#E5E9EF]">
               <div>
                 <span className="text-[10px] tracking-wider uppercase font-bold text-rose-700">ADMINISTRATIVE CONTROL</span>
-                <h2 className="text-lg font-bold text-[#202922]">Block Room Availability</h2>
+                <h2 className="text-lg font-bold text-[#202939]">Block Room Availability</h2>
               </div>
-              <button onClick={() => setShowBlockModal(false)} className="p-1 rounded-full hover:bg-neutral-100 text-[#818982]">
+              <button onClick={() => setShowBlockModal(false)} className="p-1 rounded-full hover:bg-neutral-100 text-[#778196]">
                 <X size={18} />
               </button>
             </div>
@@ -2008,11 +2008,11 @@ export function ReservationsView({
               className="space-y-4 mt-4 text-xs"
             >
               <div>
-                <label className="block text-[#818982] font-medium mb-1">Select Room</label>
+                <label className="block text-[#778196] font-medium mb-1">Select Room</label>
                 <select
                   value={newBlock.room}
                   onChange={e => setNewBlock({ ...newBlock, room: e.target.value })}
-                  className="w-full border border-[#e9ece7] rounded-lg px-3 py-2 text-xs outline-none focus:border-[#31583d]"
+                  className="w-full border border-[#E5E9EF] rounded-lg px-3 py-2 text-xs outline-none focus:border-[#172B4D]"
                 >
                   {ROOM_DATA.map(r => (
                     <option key={r.name} value={r.name}>{r.name} ({r.type})</option>
@@ -2022,44 +2022,44 @@ export function ReservationsView({
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-[#818982] font-medium mb-1">Start Date</label>
+                  <label className="block text-[#778196] font-medium mb-1">Start Date</label>
                   <input
                     type="date"
                     required
                     value={newBlock.startDate}
                     onChange={e => setNewBlock({ ...newBlock, startDate: e.target.value })}
-                    className="w-full border border-[#e9ece7] rounded-lg px-3 py-2 text-xs outline-none focus:border-[#31583d]"
+                    className="w-full border border-[#E5E9EF] rounded-lg px-3 py-2 text-xs outline-none focus:border-[#172B4D]"
                   />
                 </div>
                 <div>
-                  <label className="block text-[#818982] font-medium mb-1">End Date</label>
+                  <label className="block text-[#778196] font-medium mb-1">End Date</label>
                   <input
                     type="date"
                     required
                     value={newBlock.endDate}
                     onChange={e => setNewBlock({ ...newBlock, endDate: e.target.value })}
-                    className="w-full border border-[#e9ece7] rounded-lg px-3 py-2 text-xs outline-none focus:border-[#31583d]"
+                    className="w-full border border-[#E5E9EF] rounded-lg px-3 py-2 text-xs outline-none focus:border-[#172B4D]"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-[#818982] font-medium mb-1">Block Reason</label>
+                <label className="block text-[#778196] font-medium mb-1">Block Reason</label>
                 <input
                   type="text"
                   required
                   placeholder="e.g. Deep Cleaning / Private Tea Festival VIP"
                   value={newBlock.reason}
                   onChange={e => setNewBlock({ ...newBlock, reason: e.target.value })}
-                  className="w-full border border-[#e9ece7] rounded-lg px-3 py-2 text-xs outline-none focus:border-[#31583d]"
+                  className="w-full border border-[#E5E9EF] rounded-lg px-3 py-2 text-xs outline-none focus:border-[#172B4D]"
                 />
               </div>
 
-              <div className="flex justify-end gap-2 pt-3 border-t border-[#e9ece7]">
+              <div className="flex justify-end gap-2 pt-3 border-t border-[#E5E9EF]">
                 <button
                   type="button"
                   onClick={() => setShowBlockModal(false)}
-                  className="px-4 py-2 border border-[#e9ece7] rounded-lg text-xs"
+                  className="px-4 py-2 border border-[#E5E9EF] rounded-lg text-xs"
                 >
                   Cancel
                 </button>
@@ -2077,3 +2077,5 @@ export function ReservationsView({
     </div>
   )
 }
+
+
